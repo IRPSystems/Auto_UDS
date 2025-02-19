@@ -1,9 +1,8 @@
-#main.py
-import os
-import glob
 import re
 from id_conditions import ID_CONDITIONS
 from logger import setup_logger
+import os
+import glob
 
 logger = setup_logger()
 
@@ -102,7 +101,6 @@ def process_tx_rx_lines(tx_lines, rx_lines):
 
             logger.debug(f"Inspecting rx_values: {rx_values}")
 
-            # Check for Negative Response in Rx data
             if "Negative Response" in rx_values or "NRC=Sub Function Not Supported" in rx_values:
                 logger.error(f"Negative Response detected: {rx_values}")
                 logger.error(f"Failed Response for Tx: {tx_line.split(':')[0]} {tx_identifier} : {' '.join(tx_values[2:])}")
@@ -142,23 +140,21 @@ def process_tx_rx_lines(tx_lines, rx_lines):
                 logger.info(f"Converted result: {result}")
 
 
-import os
-import glob
+
 
 if __name__ == "__main__":
     folder_path = r"C:\\temp3"
 
-    # Get all .uds.txt files in the folder
     files = glob.glob(os.path.join(folder_path, "*.uds.txt"))
 
     if not files:
         logger.info("No matching files found.")
     else:
-        # Find the newest file by comparing the modification times
+
         newest_file = max(files, key=os.path.getmtime)
         logger.info(f"The newest file is: {newest_file}")
 
-        # Process the newest file
+
         tx_lines, rx_lines = process_uds_file(newest_file)
 
         if tx_lines or rx_lines:
