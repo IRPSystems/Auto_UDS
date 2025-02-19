@@ -76,7 +76,7 @@ def validate_response(tx_values, rx_values, id_key):
 
 def process_tx_rx_lines(tx_lines, rx_lines):
     seen_identifiers = set()
-    rx_identifier = 0
+    passed_identifiers = set()
 
     for tx_line in tx_lines:
         tx_values = extract_values_from_line(tx_line)
@@ -96,40 +96,41 @@ def process_tx_rx_lines(tx_lines, rx_lines):
                     rx_lines.remove(rx_line)
                     break
 
+
         if matched_rx_line:
             rx_values = extract_values_from_line(matched_rx_line)
 
-
-            logger.debug(f"Inspecting rx_values: {rx_values}")
-
-            if "Negative Response" in rx_values or "NRC=Sub Function Not Supported" in rx_values:
-                logger.error(f"Negative Response detected: {rx_values}")
+            if rx_values and ("Negative Response" in rx_values or "NRC=Sub Function Not Supported" in rx_values):
+                logger.error(f"Negative Response detected: {matched_rx_line}")
                 logger.error(f"Failed Response for Tx: {tx_line.split(':')[0]} {tx_identifier} : {' '.join(tx_values[2:])}")
                 continue
+
             if rx_values[2:] == tx_values[2:]:
                 logger.info(f"Matching Tx and Rx: {tx_line.split(':')[0]} {tx_identifier} : {' '.join(tx_values[2:])}")
                 result = convert(tx_values[2:])
                 if result != "0" and result != "wrong output":
                     logger.info(f"Converted result: {result} (pass)")
+                    passed_identifiers.add(tx_identifier)
             else:
                 logger.warning(f"Mismatch Tx and Rx: {tx_line.split(':')[0]} {tx_identifier} : {' '.join(tx_values[2:])}")
                 logger.error(f"Rx: Failed")
 
     for rx_line in rx_lines:
+
         rx_values = extract_values_from_line(rx_line)
-        # if len(rx_values) < 4:
-        #     #rx_lines.remove(rx_line)
+        # if len(rx_values) < 3 :
         #     continue
+        print(f"Processed Rx Line: {rx_line}")
 
+        rx_identifier = "".join(byte.replace("0x", "").upper() for byte in rx_values[:2])
 
+        if rx_identifier in passed_identifiers:
+            continue
 
-        if re.search(r"negative response", rx_line, re.IGNORECASE):
-            # if "Negative Response" in rx_line.strip().lower():
-            rx_identifier = "".join(byte.replace("0x", "").upper() for byte in tx_values[:2])
+        if re.search(r"(negative\s*response|NRC=.*Failure|NRC=.*Not Supported)", rx_line, re.IGNORECASE):
             logger.error(f"Negative Response detected: {rx_line}")
-            logger.error(f"Failed Response for Rx: Read Data By Identifier {rx_identifier} : {' '.join(rx_values[2:])}")
+            logger.error(f"Failed Response for Rx: Read Data By Identifier {tx_identifier} : {' '.join(rx_values[2:])}")
         else:
-            rx_identifier = "".join(byte.replace("0x", "").upper() for byte in rx_values[:2])
             logger.info(f"Read Data By Identifier: Rx) Read Data By Identifier {rx_identifier} : {' '.join(rx_values[2:])}")
             logger.debug(f"Inspecting rx_values: {rx_values}")
 
@@ -139,8 +140,6 @@ def process_tx_rx_lines(tx_lines, rx_lines):
                 logger.error("Converted result: wrong output")
             else:
                 logger.info(f"Converted result: {result}")
-
-
 
 
 if __name__ == "__main__":
