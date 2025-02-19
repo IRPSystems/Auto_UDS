@@ -14,7 +14,7 @@ send 22 F187
 send 22 F18A
 
 #ECU Manufacturing Date F18B
-send 2E F18B 31 38 30 32 32 30 32 35
+send 2E F18B 1E 0C 07 E9 00 00
 send 22 F18B
 
 #ECU Serial Number F18C
@@ -24,23 +24,27 @@ send 22 F18C
 #Security Access 0x27 need to add
 #Access Timing Parameter 0x83
 
+tester on
+send 10 03
+security 1
+
 #Model number 0100
 send 2E 0100 49 52 50 4D 6F 64 65 6C 4E 75 6D 62 65 72 30 30 30 31
 send 22 0100
 
-Write&Read VIN identifier number F190
-send 2E F190 31 32 33 41 42 43 34 35 36 44 45 46 37 38 39 47 49
+# Write&Read VIN identifier number F190
+send 2E F190 31 32 33 41 42 43 34 35 36 44 45 46 37 38 39 47 46
 send 22 F190
 
-#Write&Read SystemNameorEnginetype F197
-send 2E F197 10203040506070809010203040506070
+# Write&Read SystemNameorEnginetype F197
+send 2E F197 10 20 30 40 50 60 70 80 90 10 20 30 40 50 60 70
 send 22 F197
 
-#Repair Shop Code/Tester Serial Number F198
+# Repair Shop Code/Tester Serial Number F198
 send 2E F198 69 20 61 6D 20 61 20 74 65 73 74 65 72 00 00 00
 send 22 F198
 
-#Programing  Date F199
+# Programing  Date F199
 send 2E F199 31 39 30 32 32 35
 send 22 F199
 
@@ -52,7 +56,7 @@ send 22 F19D
 send 22 F193
 
 #System Supplier ECU Software Number F194
-send 22 F194
+## send 22 F194
 
 #System Supplier ECU Software Version Number F195
 send 22 F195
