@@ -35,23 +35,24 @@ def process_uds_file(file_path):
 
 def convert(values):
     if len(values) < 3:
-        return None
+        return "wrong output"
 
     try:
         data = [int(x, 16) for x in values]
 
-        if all(byte == 0 for byte in data[4:]):
-            return "wrong output"
+
+        while data and data[-1] == 0:
+            data.pop()
 
         result = "".join(chr(x) for x in data)
 
-        if not all(32 <= ord(c) <= 126 for c in result):
+
+        if result.strip() == "0" or not all(32 <= ord(c) <= 126 for c in result):
             return "wrong output"
 
         return result
     except ValueError:
         return "wrong output"
-
 
 
 def validate_response(tx_values, rx_values, id_key):
@@ -154,7 +155,7 @@ if __name__ == "__main__":
         newest_file = max(files, key=os.path.getmtime)
         logger.info(f"The newest file is: {newest_file}")
 
-
+        # Process the newest file
         tx_lines, rx_lines = process_uds_file(newest_file)
 
         if tx_lines or rx_lines:
