@@ -21,7 +21,6 @@ send 22 F18B
 send 2E F18C 49 52 50 53 59 53 54 45 4D 53 31 32 33
 send 22 F18C
 
-#Security Access 0x27 need to add
 #Access Timing Parameter 0x83
 
 tester on
@@ -45,11 +44,11 @@ send 2E F198 69 20 61 6D 20 61 20 74 65 73 74 65 72 00 00 00
 send 22 F198
 
 # Programing  Date F199
-send 2E F199 31 39 30 32 32 35
+send 2E F199 1E 0C 07 E9 00 00
 send 22 F199
 
 #ECU Installation Date F19D
-send 2E F199 31 39 30 32 32 35
+send 2E F19D 1E 0C 07 E9 00 00
 send 22 F19D
 
 #System Supplier ECU Hardware Version Number F193
@@ -61,20 +60,18 @@ send 22 F193
 #System Supplier ECU Software Version Number F195
 send 22 F195
 
-#System Supplier part number F195
-send 22 F195
+#System Supplier part number F1F0
+send 22 F1F0
 
 #Variant Code 0101
-send 2E 0101 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+send 2E 0101 09 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 send 22 0101
-
-#Feature Code 0102
-send 2E 0102 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-send 22 0102
 
 #Feature Code 0102
 send 2E 0102 09 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 send 22 0102
+
+
 
 
 
