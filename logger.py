@@ -2,11 +2,17 @@ import logging
 import colorlog
 import os
 
-def setup_logger():
+def setup_logger(script_name, logs_folder, custom_folder=None):
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.INFO)
 
-    # Define a custom formatter with colors for console output
+
+    for handler in logger.handlers[:]:
+        if isinstance(handler, logging.FileHandler):
+            handler.close()
+            logger.removeHandler(handler)
+
+
     console_formatter = colorlog.ColoredFormatter(
         '%(log_color)s%(asctime)s %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S',
@@ -19,18 +25,22 @@ def setup_logger():
         }
     )
 
-    # Create a stream handler for the console
+
     ch = logging.StreamHandler()
     ch.setFormatter(console_formatter)
     logger.addHandler(ch)
 
-    # Get the current script's directory and set the log file path
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    log_file_path = os.path.join(script_dir, "output.log")
 
-    # Remove the old log file if it exists
+    if custom_folder:
+        log_file_path = os.path.join(logs_folder, custom_folder, f"{script_name}.log")
+    else:
+        log_file_path = os.path.join(logs_folder, f"{script_name}.log")
+
     if os.path.exists(log_file_path):
-        os.remove(log_file_path)
+        try:
+            os.remove(log_file_path)
+        except PermissionError as e:
+            logger.error(f"Failed to remove log file: {e}")
 
     # Create a file handler and set the plain text formatter
     fh = logging.FileHandler(log_file_path)

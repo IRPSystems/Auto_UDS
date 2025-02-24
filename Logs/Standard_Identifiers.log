@@ -1,0 +1,23 @@
+2025-02-24 12:39:31 INFO - Processing file: C:\\temp3\ABCD-20250224_0856.uds.txt
+2025-02-24 12:39:31 INFO - Matching Tx and Rx F18B, Converted: 30 12 7 233 Pass
+2025-02-24 12:39:31 INFO - Matching Tx and Rx F18C, Converted: IRPSYSTEMS123 Pass
+2025-02-24 12:39:31 INFO - Matching Tx and Rx F190, Converted: 123ABC456DEF789GF Pass
+2025-02-24 12:39:31 INFO - Matching Tx and Rx F197, Converted: 16 32 48 64 80 96 112 128 144 16 32 48 64 80 96 112 Pass
+2025-02-24 12:39:31 INFO - Matching Tx and Rx F198, Converted: i am a tester Pass
+2025-02-24 12:39:31 INFO - Matching Tx and Rx F199, Converted: 30 12 7 233 Pass
+2025-02-24 12:39:31 INFO - Matching Tx and Rx F19D, Converted: 30 12 7 233 Pass
+2025-02-24 12:39:31 INFO - Matching Tx and Rx 0101, Converted: 9 Pass
+2025-02-24 12:39:31 INFO - Matching Tx and Rx 0102, Converted: 9 Pass
+2025-02-24 12:39:31 INFO - Matching Tx and Rx 0101, Converted: 9 Pass
+2025-02-24 12:39:31 INFO - Matching Tx and Rx 0102, Converted: 9 Pass
+2025-02-24 12:39:31 INFO - F180 Read Data By Identifier: Converted result: P212MCUIRBHD074
+2025-02-24 12:39:31 INFO - F181 Read Data By Identifier: Converted result: P212MCUIRAHD018
+2025-02-24 12:39:31 INFO - F182 Read Data By Identifier: Converted result: P212MCUIRDHD074
+2025-02-24 12:39:31 INFO - F187 Read Data By Identifier: Converted result: HD80-300A00
+2025-02-24 12:39:31 INFO - F18A Read Data By Identifier: Converted result: IRP_SYSTEMS
+2025-02-24 12:39:31 WARNING - 0102[94m Diagnostic Session Control [0m
+2025-02-24 12:39:31 WARNING - 0102[94m Security Access [0m
+2025-02-24 12:39:31 ERROR - 0102[91m Negative Response detected [0m
+2025-02-24 12:39:31 INFO - F193 Read Data By Identifier: Converted result: HW01
+2025-02-24 12:39:31 INFO - F195 Read Data By Identifier: Converted result: 60.05.18
+2025-02-24 12:39:31 INFO - F1F0 Read Data By Identifier: Converted result: HD80-300A00

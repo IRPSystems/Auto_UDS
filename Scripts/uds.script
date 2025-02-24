@@ -1,0 +1,32 @@
+#Boot  Software  Identification F180
+send 22 F180
+
+#Application Software  Identification F181
+send 22 F181
+
+#Application Data Identification F182
+send 22 F182
+
+
+#Variant Code 0101
+send 2E 0101 09 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+send 22 0101
+
+#Feature Code 0102
+send 2E 0102 09 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+send 22 0102
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

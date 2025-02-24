@@ -4,12 +4,25 @@ from logger import setup_logger
 import os
 import glob
 
-logger = setup_logger()
+###logger = setup_logger()
 
 SKIP_IDENTIFIERS = {"0100", "02", "F186"}
 
+Logs_folder = os.path.join("Logs")
+if not os.path.exists(Logs_folder):
+    os.mkdir(Logs_folder)
 
 
+#####
+def extract_script_name(file_path):
+    with open(file_path, "r", encoding="utf-8") as f:
+        for line in f:
+            if ">>> Script Start" in line:
+                match = re.search(r">>> Script Start:(.*\\Scripts\\([^\\]+)\.script)", line)
+                if match:
+                    return match.group(2)  # Extract only the script name
+    return None
+####
 def extract_values_from_line(line):
     try:
         _, data_part = line.split(":", 1)
@@ -50,16 +63,15 @@ def process_uds_file(file_path):
 
 
 def process_tx_rx_lines(tx_lines, rx_lines):
+    global logger
     seen_identifiers = set()
     passed_identifiers = set()
 
     logger.debug(f"Initial RX lines: {rx_lines}")
 
-    # Process TX lines
     for tx_line in tx_lines:
         tx_values = extract_values_from_line(tx_line)
 
-        # Skip TX lines with only two bytes
         if len(tx_values) == 2:
             logger.debug(f"Skipping TX line with only two bytes: {tx_line}")
             continue
@@ -139,6 +151,14 @@ def process_tx_rx_lines(tx_lines, rx_lines):
 
         rx_identifier = "".join(byte.replace("0x", "").upper() for byte in rx_values[:2])
 
+        if rx_identifier == "F181":
+            result = convert(rx_values[2:])
+            if result and result != "0" and result != "wrong output":
+                result_folder = os.path.join("Logs", result)
+                os.makedirs(result_folder, exist_ok=True)
+               # logger = setup_logger(script_name, Logs_folder, custom_folder=result)
+                logger.debug(f"Creating folder at: {result_folder}")
+
         # Skip specific identifiers
         if rx_identifier in SKIP_IDENTIFIERS:
             logger.debug(f"Skipping RX identifier: {rx_identifier}")
@@ -171,15 +191,24 @@ def process_tx_rx_lines(tx_lines, rx_lines):
         else:
             logger.info(f"{rx_identifier} Read Data By Identifier: Converted result: {result}")
 
+
 if __name__ == "__main__":
+
     folder_path = r"C:\\temp3"
     files = glob.glob(os.path.join(folder_path, "*.uds.txt"))
-
     if not files:
-        logger.info("No matching files found.")
+        print("No matching files found.")
     else:
         newest_file = max(files, key=os.path.getmtime)
-        logger.info(f"The newest file is: {newest_file}")
+        print(f"The newest file is: {newest_file}")
+
+        script_name = extract_script_name(newest_file)
+        if script_name is None:
+            script_name = "default_log"
+
+        logger = setup_logger(script_name, Logs_folder)
+
         tx_lines, rx_lines = process_uds_file(newest_file)
+
         if tx_lines or rx_lines:
             process_tx_rx_lines(tx_lines, rx_lines)
