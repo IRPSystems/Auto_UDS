@@ -1,0 +1,88 @@
+#Application Software  Identification F181
+send 22 F181
+
+#Network Manager
+
+#VCU_100 TimeOut (Default 1000, Scale 20)
+send 2E F1D2 32 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+send 22 F1D2
+
+#VCU_100  TimeOut Healing Time (Default 1000, Scale 20)
+send 2E F1D2 00 32 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+send 22 F1D2
+
+#VCU3_100  TimeOut (Default 1000, Scale 20)
+send 2E F1D2 00 00 32 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+send 22 F1D2
+
+#VCU3_100  TimeOut Healing Time (Default 1000, Scale 10)
+send 2E F1D2 00 00 00 64 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+send 22 F1D2
+
+#VCU5_500  TimeOut (Default 5000, Scale 50)
+send 2E F1D2 00 00 00 00 64 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+send 22 F1D2
+
+#VCU5_500  Healing Time (Default 5000, Scale 50)
+send 2E F1D2 00 00 00 00 00 64 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+send 22 F1D2
+
+#VCU8_10  TimeOut (Default 100, Scale 10)
+send 2E F1D2 00 00 00 00 00 00 0A 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+send 22 F1D2
+
+#VCU8_10  Healing Time (Default 100, Scale 10)
+send 2E F1D2 00 00 00 00 00 00 00 0A 00 00 00 00 00 00 00 00 00 00 00 00 00
+send 22 F1D2
+
+#VCU9_10  TimeOut (Default 50, Scale 10)
+send 2E F1D2 00 00 00 00 00 00 00 00 05 00 00 00 00 00 00 00 00 00 00 00 00
+send 22 F1D2
+
+#VCU9_10  Healing Time (Default 100, Scale 10)
+send 2E F1D2 00 00 00 00 00 00 00 00 00 0A 00 00 00 00 00 00 00 00 00 00 00
+send 22 F1D2
+
+#VCU14_20  TimeOut (Default 200, Scale 10)
+send 2E F1D2 00 00 00 00 00 00 00 00 00 00 14 00 00 00 00 00 00 00 00 00 00
+send 22 F1D2
+
+#VCU14_20  Healing Time (Default 200, Scale 10)
+send 2E F1D2 00 00 00 00 00 00 00 00 00 00 00 14 00 00 00 00 00 00 00 00 00
+send 22 F1D2
+
+#VCU17_500  TimeOut (Default 5000, Scale 50)
+send 2E F1D2 00 00 00 00 00 00 00 00 00 00 00 00 64 00 00 00 00 00 00 00 00
+send 22 F1D2
+
+#VCU17_500  Healing Time (Default 5000, Scale 50)
+send 2E F1D2 00 00 00 00 00 00 00 00 00 00 00 00 00 64 00 00 00 00 00 00 00
+send 22 F1D2
+
+#VCU5_100  TimeOut (Default 5000, Scale 1)
+#send 2E F1D2 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+#send 22 F1D2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
