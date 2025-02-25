@@ -1,0 +1,16 @@
+2025-02-25 10:48:57 INFO - Processing file: C:\\temp3\ABCD-20250225_0958.uds.txt
+2025-02-25 10:48:57 INFO - Matching Tx and Rx F1D2, Converted: 2 Pass
+2025-02-25 10:48:57 ERROR - [91mMismatch Tx and Rx F1D2, VCU_100 TimeOut Fail[0m
+2025-02-25 10:48:57 INFO - Matching Tx and Rx F1D2, Converted: 0 0 50 Pass
+2025-02-25 10:48:57 ERROR - [91mMismatch Tx and Rx F1D2, VCU_100 TimeOut Fail[0m
+2025-02-25 10:48:57 INFO - Matching Tx and Rx F1D2, Converted: 0 0 0 0 100 Pass
+2025-02-25 10:48:57 ERROR - [91mMismatch Tx and Rx F1D2, VCU_100 TimeOut Fail[0m
+2025-02-25 10:48:57 INFO - Matching Tx and Rx F1D2, Converted: 0 0 0 0 0 0 10 Pass
+2025-02-25 10:48:57 INFO - Matching Tx and Rx F1D2, Converted: 0 0 0 0 0 0 0 10 Pass
+2025-02-25 10:48:57 INFO - Matching Tx and Rx F1D2, Converted: 0 0 0 0 0 0 0 0 5 Pass
+2025-02-25 10:48:57 INFO - Matching Tx and Rx F1D2, Converted: 0 0 0 0 0 0 0 0 0 10 Pass
+2025-02-25 10:48:57 INFO - Matching Tx and Rx F1D2, Converted: 0 0 0 0 0 0 0 0 0 0 20 Pass
+2025-02-25 10:48:57 INFO - Matching Tx and Rx F1D2, Converted: 0 0 0 0 0 0 0 0 0 0 0 20 Pass
+2025-02-25 10:48:57 INFO - Matching Tx and Rx F1D2, Converted: 0 0 0 0 0 0 0 0 0 0 0 0 100 Pass
+2025-02-25 10:48:57 ERROR - [91mMismatch Tx and Rx F1D2, VCU_100 TimeOut Fail[0m
+2025-02-25 10:48:57 INFO - F181 Read Data By Identifier: Converted result: P212MCUIRAHD018

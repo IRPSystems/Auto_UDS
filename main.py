@@ -32,7 +32,14 @@ def extract_values_from_line(line):
 
 
 def normalize_values(values):
-     return [x for x in values if x != "0x00"]
+    # values = list(values)  # Ensure it's a list to handle indexing
+    # while values and values[0] == "00":
+    #     values.pop(0)
+    # while values and values[-1] == "00":
+    #     values.pop()
+    # return values
+    return [x for x in values if x != "0x00"]
+
 
 def convert(values):
     if len(values) < 3:
@@ -48,6 +55,18 @@ def convert(values):
         return result
     except ValueError:
         return "wrong output"
+# def convert(values):
+#     if len(values) < 3:
+#         return "wrong output"
+#     try:
+#         data = [int(x, 16) for x in values]
+#         while data and data[-1] == 0:
+#             data.pop()
+#         return " ".join(str(x) for x in data)
+#     except ValueError:
+#         return "wrong output"
+
+
 
 
 def process_uds_file(file_path):
@@ -91,7 +110,6 @@ def process_tx_rx_lines(tx_lines, rx_lines):
         for rx_line in rx_lines[:]:
             rx_values = extract_values_from_line(rx_line)
 
-            # Skip RX lines with only two bytes
             if len(rx_values) == 2:
                 logger.debug(f"Skipping RX line with only two bytes: {rx_line}")
                 rx_lines.remove(rx_line)
@@ -128,7 +146,7 @@ def process_tx_rx_lines(tx_lines, rx_lines):
             logger.debug(f"Normalized RX values: {rx_normalized}")
 
             if rx_normalized == tx_normalized:
-                # Convert and validate the result
+
                 result = convert(tx_values[2:])
                 logger.debug(f"Conversion result: {result}")
                 if result != "0" and result != "wrong output":
@@ -137,11 +155,30 @@ def process_tx_rx_lines(tx_lines, rx_lines):
                 else:
                     logger.error(f"Mismatch Tx and Rx {tx_identifier}, Converted: wrong output Fail")
             else:
-                logger.error(f"Mismatch Tx and Rx {tx_identifier}, Converted: wrong output Fail")
+
+                tx_converted = " ".join(tx_normalized)
+
+                matched_condition = None
+                for key, value in ID_CONDITIONS.items():
+                    if value == tx_converted:
+                        matched_condition = key
+                        break
+
+                if matched_condition:
+                    logger.error(
+                        f"\033[91mMismatch Tx and Rx {tx_identifier}, Matched Condition: {matched_condition} Fail\033[0m")
+                else:
+
+                    closest_key = next((key for key in ID_CONDITIONS.keys()), "Unknown Condition")
+                    logger.error(
+                        f"\033[91mMismatch Tx and Rx {tx_identifier}, {closest_key} Fail\033[0m")
+                # if matched_condition:
+                #     logger.error(f"Mismatch Tx and Rx {tx_identifier}, Matched Condition: {matched_condition} Fail")
+                # else:
+                #     logger.error(f"Mismatch Tx and Rx {tx_identifier}, Wrong Output Failed")
 
     logger.debug(f"Remaining RX lines before standalone processing: {rx_lines}")
 
-    # Process remaining RX lines
     for rx_line in rx_lines:
         rx_values = extract_values_from_line(rx_line)
 
@@ -159,7 +196,6 @@ def process_tx_rx_lines(tx_lines, rx_lines):
                # logger = setup_logger(script_name, Logs_folder, custom_folder=result)
                 logger.debug(f"Creating folder at: {result_folder}")
 
-        # Skip specific identifiers
         if rx_identifier in SKIP_IDENTIFIERS:
             logger.debug(f"Skipping RX identifier: {rx_identifier}")
             continue
@@ -173,7 +209,6 @@ def process_tx_rx_lines(tx_lines, rx_lines):
             continue
 
         seen_identifiers.add(rx_identifier)
-
         if "Negative Response" in rx_line or "NRC=Sub Function Not Supported" in rx_line:
             tx_identifier = "".join(byte.replace("0x", "").upper() for byte in tx_values[:2])
             logger.error(f"{tx_identifier}\033[91m Negative Response detected \033[0m")
