@@ -1,0 +1,21 @@
+2025-02-26 15:28:31 INFO - Processing file: C:\\temp3\ABCD-20250226_1354.uds.txt
+2025-02-26 15:28:31 INFO - Matching Tx and Rx F18B, Converted: [93m30 12 7 233[0m Pass
+2025-02-26 15:28:31 INFO - Matching Tx and Rx F18C, Converted: [93mIRPSYSTEMS123[0m Pass
+2025-02-26 15:28:31 INFO - Matching Tx and Rx F190, Converted: [93m123ABC456DEF789GF[0m Pass
+2025-02-26 15:28:31 INFO - Matching Tx and Rx F197, Converted: [93m16 32 48 64 80 96 112 128 144 16 32 48 64 80 96 112[0m Pass
+2025-02-26 15:28:31 INFO - Matching Tx and Rx F198, Converted: [93mi am a tester[0m Pass
+2025-02-26 15:28:31 INFO - Matching Tx and Rx F199, Converted: [93m30 12 7 233[0m Pass
+2025-02-26 15:28:31 INFO - Matching Tx and Rx F19D, Converted: [93m30 12 7 233[0m Pass
+2025-02-26 15:28:31 INFO - Matching Tx and Rx 0101, Converted: [93m1[0m Pass
+2025-02-26 15:28:31 INFO - Matching Tx and Rx 0102, Converted: [93m1[0m Pass
+2025-02-26 15:28:31 INFO - F180 Read Data By Identifier: Converted result: [93mP212MCUIRBHD074[0m
+2025-02-26 15:28:31 INFO - F181 Read Data By Identifier: Converted result: [93mP212MCUIRAHD018[0m
+2025-02-26 15:28:31 INFO - F182 Read Data By Identifier: Converted result: [93mP212MCUIRDHD074[0m
+2025-02-26 15:28:31 INFO - F187 Read Data By Identifier: Converted result: [93mHD80-300A00[0m
+2025-02-26 15:28:31 INFO - F18A Read Data By Identifier: Converted result: [93mIRP_SYSTEMS[0m
+2025-02-26 15:28:31 WARNING - 0102[94m Diagnostic Session Control [0m
+2025-02-26 15:28:31 WARNING - 0102[94m Security Access [0m
+2025-02-26 15:28:31 ERROR - Rx) Negative Response             : SID=Write Data By Identifier, NRC=General Programming Failure[91m Negative Response detected [0m
+2025-02-26 15:28:31 INFO - F193 Read Data By Identifier: Converted result: [93mHW01[0m
+2025-02-26 15:28:31 INFO - F195 Read Data By Identifier: Converted result: [93m60.05.18[0m
+2025-02-26 15:28:31 INFO - F1F0 Read Data By Identifier: Converted result: [93mHD80-300A00[0m

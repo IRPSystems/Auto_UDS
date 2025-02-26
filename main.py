@@ -3,8 +3,8 @@ from id_conditions import ID_CONDITIONS
 from logger import setup_logger
 import os
 import glob
-
-###logger = setup_logger()
+import shutil
+import logging
 
 SKIP_IDENTIFIERS = {"0100", "02", "F186"}
 
@@ -12,17 +12,15 @@ Logs_folder = os.path.join("Logs")
 if not os.path.exists(Logs_folder):
     os.mkdir(Logs_folder)
 
-
-#####
 def extract_script_name(file_path):
     with open(file_path, "r", encoding="utf-8") as f:
         for line in f:
             if ">>> Script Start" in line:
                 match = re.search(r">>> Script Start:(.*\\Scripts\\([^\\]+)\.script)", line)
                 if match:
-                    return match.group(2)  # Extract only the script name
+                    return match.group(2)
     return None
-####
+
 def extract_values_from_line(line):
     try:
         _, data_part = line.split(":", 1)
@@ -30,23 +28,14 @@ def extract_values_from_line(line):
         return []
     return re.findall(r'0x[0-9A-Fa-f]{2}', data_part)
 
-
 def normalize_values(values):
-    # values = list(values)  # Ensure it's a list to handle indexing
-    # while values and values[0] == "00":
-    #     values.pop(0)
-    # while values and values[-1] == "00":
-    #     values.pop()
-    # return values
     return [x for x in values if x != "0x00"]
-
 
 def convert(values):
     if len(values) < 3:
         return "wrong output"
     try:
         data = [int(x, 16) for x in values]
-
         while data and data[-1] == 0:
             data.pop()
         result = "".join(chr(x) for x in data)
@@ -55,19 +44,20 @@ def convert(values):
         return result
     except ValueError:
         return "wrong output"
-# def convert(values):
-#     if len(values) < 3:
-#         return "wrong output"
-#     try:
-#         data = [int(x, 16) for x in values]
-#         while data and data[-1] == 0:
-#             data.pop()
-#         return " ".join(str(x) for x in data)
-#     except ValueError:
-#         return "wrong output"
 
+def get_tx_position(tx_values):
+    for i, value in enumerate(tx_values[2:], start=0):
+        if value != "0x00":
+            return i
+    return -1
 
-
+def get_condition_from_position(position):
+    for key, value in ID_CONDITIONS.items():
+        value_parts = value.split()
+        for i, part in enumerate(value_parts):
+            if part != "00" and i == position:
+                return key
+    return "Unknown Condition"
 
 def process_uds_file(file_path):
     logger.info(f"Processing file: {file_path}")
@@ -80,11 +70,11 @@ def process_uds_file(file_path):
                 rx_lines.append(line.strip())
     return tx_lines, rx_lines
 
-
 def process_tx_rx_lines(tx_lines, rx_lines):
     global logger
     seen_identifiers = set()
     passed_identifiers = set()
+    result_folder = None
 
     logger.debug(f"Initial RX lines: {rx_lines}")
 
@@ -92,9 +82,8 @@ def process_tx_rx_lines(tx_lines, rx_lines):
         tx_values = extract_values_from_line(tx_line)
 
         if len(tx_values) == 2:
-            logger.debug(f"Skipping TX line with only two bytes: {tx_line}")
+          #  logger.debug(f"Skipping TX line with only two bytes: {tx_line}")
             continue
-
 
         if len(tx_values) < 3:
             continue
@@ -102,8 +91,12 @@ def process_tx_rx_lines(tx_lines, rx_lines):
         tx_identifier = "".join(byte.replace("0x", "").upper() for byte in tx_values[:2])
 
         if tx_identifier in SKIP_IDENTIFIERS:
-            logger.debug(f"Skipping TX identifier: {tx_identifier}")
+            #logger.debug(f"Skipping TX identifier: {tx_identifier}")
             continue
+
+
+        tx_position = get_tx_position(tx_values)
+        expected_condition = get_condition_from_position(tx_position) if tx_position >= 0 else "Unknown Condition"
 
         matched_rx_line = None
 
@@ -111,16 +104,15 @@ def process_tx_rx_lines(tx_lines, rx_lines):
             rx_values = extract_values_from_line(rx_line)
 
             if len(rx_values) == 2:
-                logger.debug(f"Skipping RX line with only two bytes: {rx_line}")
+                #logger.debug(f"Skipping RX line with only two bytes: {rx_line}")
                 rx_lines.remove(rx_line)
                 continue
 
             if len(rx_values) >= 4:
                 rx_identifier = "".join(byte.replace("0x", "").upper() for byte in rx_values[:2])
 
-
                 if rx_identifier in SKIP_IDENTIFIERS:
-                    logger.debug(f"Skipping RX identifier: {rx_identifier}")
+                    #logger.debug(f"Skipping RX identifier: {rx_identifier}")
                     rx_lines.remove(rx_line)
                     continue
 
@@ -132,59 +124,51 @@ def process_tx_rx_lines(tx_lines, rx_lines):
         if matched_rx_line:
             rx_values = extract_values_from_line(matched_rx_line)
 
-            logger.debug(f"Matched RX line: {matched_rx_line}")
-            logger.debug(f"Remaining RX lines after removal: {rx_lines}")
+            #logger.debug(f"Matched RX line: {matched_rx_line}")
+           # logger.debug(f"Remaining RX lines after removal: {rx_lines}")
 
-
-            logger.debug(f"Raw TX values: {tx_values[2:]}")
-            logger.debug(f"Raw RX values: {rx_values[2:]}")
+           # logger.debug(f"Raw TX values: {tx_values[2:]}")
+            #logger.debug(f"Raw RX values: {rx_values[2:]}")
 
             tx_normalized = normalize_values(tx_values[2:])
             rx_normalized = normalize_values(rx_values[2:])
 
-            logger.debug(f"Normalized TX values: {tx_normalized}")
-            logger.debug(f"Normalized RX values: {rx_normalized}")
+           # logger.debug(f"Normalized TX values: {tx_normalized}")
+            #logger.debug(f"Normalized RX values: {rx_normalized}")
 
             if rx_normalized == tx_normalized:
-
                 result = convert(tx_values[2:])
-                logger.debug(f"Conversion result: {result}")
+                #logger.debug(f"Conversion result: {result}")
                 if result != "0" and result != "wrong output":
-                    logger.info(f"Matching Tx and Rx {tx_identifier}, Converted: {result} Pass")
-                    passed_identifiers.add(tx_identifier)
+                    if script_name == "Standard_Identifiers":
+                         logger.info(f"Matching Tx and Rx {tx_identifier}, Converted: \033[93m{result}\033[0m Pass")
+                         passed_identifiers.add(tx_identifier)
+                    else:
+                        continue
+                        #logger.info(f"Matching Tx and Rx {tx_identifier},  Pass")
                 else:
                     logger.error(f"Mismatch Tx and Rx {tx_identifier}, Converted: wrong output Fail")
             else:
-
-                tx_converted = " ".join(tx_normalized)
-
-                matched_condition = None
-                for key, value in ID_CONDITIONS.items():
-                    if value == tx_converted:
-                        matched_condition = key
-                        break
-
-                if matched_condition:
-                    logger.error(
-                        f"\033[91mMismatch Tx and Rx {tx_identifier}, Matched Condition: {matched_condition} Fail\033[0m")
+                rx_raw = " ".join(byte.replace("0x", "").upper() for byte in rx_values[2:])
+                #logger.debug(f"rx_raw for {tx_identifier}: {rx_raw}")
+                if script_name == "Standard_Identifiers":
+                    logger.error(f"Mismatch Tx and Rx {tx_identifier}, Converted: wrong output Fail")
                 else:
+                    logger.error(f"Mismatch Tx and Rx {tx_identifier}, {expected_condition} Fail")
 
-                    closest_key = next((key for key in ID_CONDITIONS.keys()), "Unknown Condition")
-                    logger.error(
-                        f"\033[91mMismatch Tx and Rx {tx_identifier}, {closest_key} Fail\033[0m")
-                # if matched_condition:
-                #     logger.error(f"Mismatch Tx and Rx {tx_identifier}, Matched Condition: {matched_condition} Fail")
-                # else:
-                #     logger.error(f"Mismatch Tx and Rx {tx_identifier}, Wrong Output Failed")
-
-    logger.debug(f"Remaining RX lines before standalone processing: {rx_lines}")
+    #logger.debug(f"Remaining RX lines before standalone processing: {rx_lines}")
 
     for rx_line in rx_lines:
         rx_values = extract_values_from_line(rx_line)
 
         if len(rx_values) == 2:
-            logger.debug(f"Skipping RX line with only two bytes: {rx_line}")
+            #logger.debug(f"Skipping RX line with only two bytes: {rx_line}")
             continue
+
+        # if len(rx_values) < 3:
+        #     if "Negative Response" in rx_line or "NRC=Sub Function Not Supported" in rx_line:
+        #         logger.error(f"{tx_identifier}\033[91m Negative Response detected \033[0m")
+        #     continue
 
         rx_identifier = "".join(byte.replace("0x", "").upper() for byte in rx_values[:2])
 
@@ -193,11 +177,10 @@ def process_tx_rx_lines(tx_lines, rx_lines):
             if result and result != "0" and result != "wrong output":
                 result_folder = os.path.join("Logs", result)
                 os.makedirs(result_folder, exist_ok=True)
-               # logger = setup_logger(script_name, Logs_folder, custom_folder=result)
-                logger.debug(f"Creating folder at: {result_folder}")
+               # logger.debug(f"Creating folder at: {result_folder}")
 
         if rx_identifier in SKIP_IDENTIFIERS:
-            logger.debug(f"Skipping RX identifier: {rx_identifier}")
+           # logger.debug(f"Skipping RX identifier: {rx_identifier}")
             continue
 
         if rx_identifier in passed_identifiers:
@@ -224,11 +207,24 @@ def process_tx_rx_lines(tx_lines, rx_lines):
         if result == "0" or result == "wrong output":
             logger.error(f"{rx_identifier} Read Data By Identifier: Converted result: wrong output")
         else:
-            logger.info(f"{rx_identifier} Read Data By Identifier: Converted result: {result}")
+            logger.info(f"{rx_identifier} Read Data By Identifier: Converted result: \033[93m{result}\033[0m")
 
+    # Close the FileHandler before moving the log file
+    for handler in logger.handlers[:]:
+        if isinstance(handler, logging.FileHandler):
+            handler.close()
+            logger.removeHandler(handler)
+
+    original_log_file = os.path.join(Logs_folder, f"{script_name}.log")
+    if result_folder and os.path.exists(original_log_file):
+        new_log_file = os.path.join(result_folder, f"{script_name}.log")
+        try:
+            shutil.move(original_log_file, new_log_file)
+            #logger.debug(f"Moved log file from {original_log_file} to {new_log_file}")
+        except Exception as e:
+            logger.error(f"Failed to move log file: {e}")
 
 if __name__ == "__main__":
-
     folder_path = r"C:\\temp3"
     files = glob.glob(os.path.join(folder_path, "*.uds.txt"))
     if not files:
@@ -242,8 +238,10 @@ if __name__ == "__main__":
             script_name = "default_log"
 
         logger = setup_logger(script_name, Logs_folder)
+        #logger.setLevel(logging.DEBUG)
 
         tx_lines, rx_lines = process_uds_file(newest_file)
+        #print(f"The newest file is: {newest_file}")
 
         if tx_lines or rx_lines:
             process_tx_rx_lines(tx_lines, rx_lines)
