@@ -68,6 +68,8 @@ def process_uds_file(file_path):
                 tx_lines.append(line.strip())
             elif line.startswith("Rx)"):
                 rx_lines.append(line.strip())
+            elif "Tester Present:ON" in line:
+                logger.info("\033[94mTester Present: ON \033[0m")
     return tx_lines, rx_lines
 
 def process_tx_rx_lines(tx_lines, rx_lines):
