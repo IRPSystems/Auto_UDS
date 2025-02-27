@@ -78,13 +78,13 @@ def process_tx_rx_lines(tx_lines, rx_lines):
     passed_identifiers = set()
     result_folder = None
 
-    logger.debug(f"Initial RX lines: {rx_lines}")
+    #logger.debug(f"Initial RX lines: {rx_lines}")
 
     for tx_line in tx_lines:
         tx_values = extract_values_from_line(tx_line)
 
         if len(tx_values) == 2:
-          #  logger.debug(f"Skipping TX line with only two bytes: {tx_line}")
+            #logger.debug(f"Skipping TX line with only two bytes: {tx_line}")
             continue
 
         if len(tx_values) < 3:
@@ -127,27 +127,27 @@ def process_tx_rx_lines(tx_lines, rx_lines):
             rx_values = extract_values_from_line(matched_rx_line)
 
             #logger.debug(f"Matched RX line: {matched_rx_line}")
-           # logger.debug(f"Remaining RX lines after removal: {rx_lines}")
+            #logger.debug(f"Remaining RX lines after removal: {rx_lines}")
 
-           # logger.debug(f"Raw TX values: {tx_values[2:]}")
+            #logger.debug(f"Raw TX values: {tx_values[2:]}")
             #logger.debug(f"Raw RX values: {rx_values[2:]}")
 
             tx_normalized = normalize_values(tx_values[2:])
             rx_normalized = normalize_values(rx_values[2:])
 
-           # logger.debug(f"Normalized TX values: {tx_normalized}")
+            #logger.debug(f"Normalized TX values: {tx_normalized}")
             #logger.debug(f"Normalized RX values: {rx_normalized}")
 
             if rx_normalized == tx_normalized:
                 result = convert(tx_values[2:])
-                #logger.debug(f"Conversion result: {result}")
+               # logger.debug(f"Conversion result: {result}") # debug F1D2
                 if result != "0" and result != "wrong output":
                     if script_name == "Standard_Identifiers":
                          logger.info(f"Matching Tx and Rx {tx_identifier}, Converted: \033[93m{result}\033[0m Pass")
                          passed_identifiers.add(tx_identifier)
                     else:
                         continue
-                        #logger.info(f"Matching Tx and Rx {tx_identifier},  Pass")
+                        logger.info(f"Matching Tx and Rx {tx_identifier},  Pass")
                 else:
                     logger.error(f"Mismatch Tx and Rx {tx_identifier}, Converted: wrong output Fail")
             else:
@@ -167,10 +167,10 @@ def process_tx_rx_lines(tx_lines, rx_lines):
             #logger.debug(f"Skipping RX line with only two bytes: {rx_line}")
             continue
 
-        # if len(rx_values) < 3:
-        #     if "Negative Response" in rx_line or "NRC=Sub Function Not Supported" in rx_line:
-        #         logger.error(f"{tx_identifier}\033[91m Negative Response detected \033[0m")
-        #     continue
+        if len(rx_values) < 3:
+            if "Negative Response" in rx_line or "NRC=Sub Function Not Supported" in rx_line:
+                logger.error(f"{tx_identifier}\033[91m Negative Response detected \033[0m")
+            continue
 
         rx_identifier = "".join(byte.replace("0x", "").upper() for byte in rx_values[:2])
 
@@ -179,18 +179,18 @@ def process_tx_rx_lines(tx_lines, rx_lines):
             if result and result != "0" and result != "wrong output":
                 result_folder = os.path.join("Logs", result)
                 os.makedirs(result_folder, exist_ok=True)
-               # logger.debug(f"Creating folder at: {result_folder}")
+                logger.debug(f"Creating folder at: {result_folder}")
 
         if rx_identifier in SKIP_IDENTIFIERS:
-           # logger.debug(f"Skipping RX identifier: {rx_identifier}")
+            #logger.debug(f"Skipping RX identifier: {rx_identifier}")
             continue
 
         if rx_identifier in passed_identifiers:
-            logger.debug(f"Skipping already matched RX identifier: {rx_identifier}")
+            #logger.debug(f"Skipping already matched RX identifier: {rx_identifier}")
             continue
 
         if rx_identifier in seen_identifiers:
-            logger.debug(f"Skipping already processed RX identifier: {rx_identifier}")
+            #logger.debug(f"Skipping already processed RX identifier: {rx_identifier}")
             continue
 
         seen_identifiers.add(rx_identifier)
@@ -223,6 +223,7 @@ def process_tx_rx_lines(tx_lines, rx_lines):
         try:
             shutil.move(original_log_file, new_log_file)
             #logger.debug(f"Moved log file from {original_log_file} to {new_log_file}")
+            logger.debug(f"Created log file in {new_log_file}")
         except Exception as e:
             logger.error(f"Failed to move log file: {e}")
 
@@ -240,7 +241,7 @@ if __name__ == "__main__":
             script_name = "default_log"
 
         logger = setup_logger(script_name, Logs_folder)
-        #logger.setLevel(logging.DEBUG)
+        logger.setLevel(logging.DEBUG)
 
         tx_lines, rx_lines = process_uds_file(newest_file)
         #print(f"The newest file is: {newest_file}")
