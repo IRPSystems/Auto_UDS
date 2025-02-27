@@ -1,6 +1,0 @@
-2025-02-26 16:30:19 INFO - Processing file: C:\\temp3\ABCD-20250226_1629.uds.txt
-2025-02-26 16:30:19 ERROR - Mismatch Tx and Rx F1D2, VCU_100 TimeOut Healing Time Fail
-2025-02-26 16:30:19 ERROR - Mismatch Tx and Rx F1D2, VCU3_100 TimeOut Healing Time Fail
-2025-02-26 16:30:19 ERROR - Mismatch Tx and Rx F1D2, VCU5_500  Healing Time Fail
-2025-02-26 16:30:19 ERROR - Mismatch Tx and Rx F1D2, VCU17_500 Healing Time Fail
-2025-02-26 16:30:19 INFO - F181 Read Data By Identifier: Converted result: [93mP212MCUIRAHD018[0m
