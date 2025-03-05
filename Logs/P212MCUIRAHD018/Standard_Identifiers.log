@@ -1,0 +1,24 @@
+2025-03-05 09:49:49 INFO - Processing file: C:\\temp3\ABCD-202503050946.uds.txt
+2025-03-05 09:49:49 INFO - [94mTester Present: ON [0m
+2025-03-05 09:49:49 INFO - Matching Tx and Rx F18B, Converted: [93m30 12 7 233[0m Pass
+2025-03-05 09:49:49 INFO - Matching Tx and Rx F18C, Converted: [93mIRPSYSTEMS123[0m Pass
+2025-03-05 09:49:49 INFO - Matching Tx and Rx F190, Converted: [93m123ABC456DEF789GF[0m Pass
+2025-03-05 09:49:49 INFO - Matching Tx and Rx F197, Converted: [93m16 32 48 64 80 96 112 128 144 16 32 48 64 80 96 112[0m Pass
+2025-03-05 09:49:49 INFO - Matching Tx and Rx F198, Converted: [93mi am a tester[0m Pass
+2025-03-05 09:49:49 INFO - Matching Tx and Rx F199, Converted: [93m101224[0m Pass
+2025-03-05 09:49:49 INFO - Matching Tx and Rx F19D, Converted: [93m101224[0m Pass
+2025-03-05 09:49:49 INFO - Matching Tx and Rx 0101, Converted: [93m1[0m Pass
+2025-03-05 09:49:49 INFO - Matching Tx and Rx 0102, Converted: [93m1[0m Pass
+2025-03-05 09:49:49 INFO - Matching Tx and Rx 1500, Converted: [93m0 0 17 96[0m Pass
+2025-03-05 09:49:49 INFO - F180 Read Data By Identifier: Converted result: [93mP212MCUIRBHD075[0m
+2025-03-05 09:49:49 DEBUG - Creating folder at: Logs\P212MCUIRAHD018
+2025-03-05 09:49:49 INFO - F181 Read Data By Identifier: Converted result: [93mP212MCUIRAHD018[0m
+2025-03-05 09:49:49 INFO - F182 Read Data By Identifier: Converted result: [93mP212MCUIRDHD075[0m
+2025-03-05 09:49:49 INFO - F187 Read Data By Identifier: Converted result: [93mHD80-300A00[0m
+2025-03-05 09:49:49 INFO - F18A Read Data By Identifier: Converted result: [93mIRP_SYSTEMS[0m
+2025-03-05 09:49:49 WARNING - 1500[94m Diagnostic Session Control [0m
+2025-03-05 09:49:49 WARNING - 1500[94m Security Access [0m
+2025-03-05 09:49:49 INFO - F193 Read Data By Identifier: Converted result: [93mHW01[0m
+2025-03-05 09:49:49 INFO - F195 Read Data By Identifier: Converted result: [93m02.05.18[0m
+2025-03-05 09:49:49 INFO - F1F0 Read Data By Identifier: Converted result: [93mHD80-300A00[0m
+2025-03-05 09:49:49 INFO - 0304 Read Data By Identifier: Converted result: [93m210 17 215 12 34 86[0m

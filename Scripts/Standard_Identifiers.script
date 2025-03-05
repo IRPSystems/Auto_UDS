@@ -14,7 +14,7 @@ send 22 F187
 send 22 F18A
 
 #ECU Manufacturing Date F18B
-send 2E F18B 1E 0C 07 E9 00 00
+send 2E F18B 1E 0C 07E9 00 00
 send 22 F18B
 
 #ECU Serial Number F18C
@@ -43,12 +43,12 @@ send 22 F197
 send 2E F198 69 20 61 6D 20 61 20 74 65 73 74 65 72 00 00 00
 send 22 F198
 
-# Programing  Date F199
-send 2E F199 1E 0C 07 E9 00 00
+# Programing  Date F199   101224 1E 0C 07 E9 00 00
+send 2E F199 "101224"
 send 22 F199
 
-#ECU Installation Date F19D
-send 2E F19D 1E 0C 07 E9 00 00
+#ECU Installation Date F19D 1E 0C 07 E9 00 00
+send 2E F19D "101224"
 send 22 F19D
 
 #System Supplier ECU Hardware Version Number F193
@@ -73,6 +73,13 @@ send 2E 0102 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 sleep 1000
 send 22 0102
 
+#Access Timing Parameters
+send 83 04 04 D2 11 D7 0C 22 56
+send 83 03
+
+#focSensorAngleOffset
+send 2E 1500 00 00 11 60
+send 22 1500
 
 
 

@@ -1,5 +1,6 @@
 import re
-from id_conditions import ID_CONDITIONS
+
+from Condition import id_conditions_F1D2, id_conditions_F1D3, id_conditions_Fault_Configuration
 from logger import setup_logger
 import os
 import glob
@@ -51,12 +52,25 @@ def get_tx_position(tx_values):
             return i
     return -1
 
-def get_condition_from_position(position):
-    for key, value in ID_CONDITIONS.items():
-        value_parts = value.split()
-        for i, part in enumerate(value_parts):
-            if part != "00" and i == position:
-                return key
+def get_condition_from_position(position, script_name):
+    if script_name == "Network_TimeOut_F1D2":
+        for key, value in id_conditions_F1D2.ID_CONDITIONS.items():
+            value_parts = value.split()
+            for i, part in enumerate(value_parts):
+                if part != "00" and i == position:
+                    return key
+    elif script_name == "Network_Missmatch_F1D3":
+        for key, value in id_conditions_F1D3.ID_CONDITIONS.items():
+            value_parts = value.split()
+            for i, part in enumerate(value_parts):
+                if part != "00" and i == position:
+                    return key
+    elif script_name == "Faults_Configuration":
+        for key, value in id_conditions_Fault_Configuration.ID_CONDITIONS.items():
+            value_parts = value.split()
+            for i, part in enumerate(value_parts):
+                if part != "00" and i == position:
+                    return key
     return "Unknown Condition"
 
 def process_uds_file(file_path):
@@ -73,7 +87,7 @@ def process_uds_file(file_path):
     return tx_lines, rx_lines
 
 def process_tx_rx_lines(tx_lines, rx_lines):
-    global logger
+    global logger, script_name  # Added script_name as global to access it
     seen_identifiers = set()
     passed_identifiers = set()
     result_folder = None
@@ -96,9 +110,8 @@ def process_tx_rx_lines(tx_lines, rx_lines):
             #logger.debug(f"Skipping TX identifier: {tx_identifier}")
             continue
 
-
         tx_position = get_tx_position(tx_values)
-        expected_condition = get_condition_from_position(tx_position) if tx_position >= 0 else "Unknown Condition"
+        expected_condition = get_condition_from_position(tx_position, script_name) if tx_position >= 0 else "Unknown Condition"
 
         matched_rx_line = None
 
@@ -140,19 +153,17 @@ def process_tx_rx_lines(tx_lines, rx_lines):
 
             if rx_normalized == tx_normalized:
                 result = convert(tx_values[2:])
-               # logger.debug(f"Conversion result: {result}") # debug F1D2
+                logger.debug(f"Conversion result: {result}")  #f1d2
                 if result != "0" and result != "wrong output":
                     if script_name == "Standard_Identifiers":
                          logger.info(f"Matching Tx and Rx {tx_identifier}, Converted: \033[93m{result}\033[0m Pass")
                          passed_identifiers.add(tx_identifier)
                     else:
                         continue
-                        logger.info(f"Matching Tx and Rx {tx_identifier},  Pass")
+                        #logger.info(f"Matching Tx and Rx {tx_identifier},  Pass")
                 else:
                     logger.error(f"Mismatch Tx and Rx {tx_identifier}, Converted: wrong output Fail")
             else:
-                rx_raw = " ".join(byte.replace("0x", "").upper() for byte in rx_values[2:])
-                #logger.debug(f"rx_raw for {tx_identifier}: {rx_raw}")
                 if script_name == "Standard_Identifiers":
                     logger.error(f"Mismatch Tx and Rx {tx_identifier}, Converted: wrong output Fail")
                 else:
@@ -211,7 +222,7 @@ def process_tx_rx_lines(tx_lines, rx_lines):
         else:
             logger.info(f"{rx_identifier} Read Data By Identifier: Converted result: \033[93m{result}\033[0m")
 
-    # Close the FileHandler before moving the log file
+
     for handler in logger.handlers[:]:
         if isinstance(handler, logging.FileHandler):
             handler.close()

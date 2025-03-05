@@ -1,0 +1,30 @@
+2025-03-05 15:16:39 INFO - Processing file: C:\\temp3\ABCD-202503051514.uds.txt
+2025-03-05 15:16:39 DEBUG - Conversion result: 0 100
+2025-03-05 15:16:39 ERROR - Mismatch Tx and Rx 078F, LowTemperatureFaultsHealingHysteresisUdsOnly Fail
+2025-03-05 15:16:39 DEBUG - Conversion result: 0 0 0 0 100
+2025-03-05 15:16:39 DEBUG - Conversion result: 0 0 0 0 0 0 100
+2025-03-05 15:16:39 DEBUG - Conversion result: 0 0 0 0 0 0 0 0 100
+2025-03-05 15:16:39 DEBUG - Conversion result: 0 0 0 0 0 0 0 0 0 0 100
+2025-03-05 15:16:39 DEBUG - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 100
+2025-03-05 15:16:39 DEBUG - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 100
+2025-03-05 15:16:39 DEBUG - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 100
+2025-03-05 15:16:39 DEBUG - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 50
+2025-03-05 15:16:39 DEBUG - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 100
+2025-03-05 15:16:39 DEBUG - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 100
+2025-03-05 15:16:39 DEBUG - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 100
+2025-03-05 15:16:39 DEBUG - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 100
+2025-03-05 15:16:39 ERROR - Mismatch Tx and Rx 078F, Unknown Condition Fail
+2025-03-05 15:16:39 DEBUG - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 230
+2025-03-05 15:16:39 ERROR - Mismatch Tx and Rx 078F, Unknown Condition Fail
+2025-03-05 15:16:39 DEBUG - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 100
+2025-03-05 15:16:39 DEBUG - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 100
+2025-03-05 15:16:39 DEBUG - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 100
+2025-03-05 15:16:39 DEBUG - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 100
+2025-03-05 15:16:39 DEBUG - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 100
+2025-03-05 15:16:39 DEBUG - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 100
+2025-03-05 15:16:39 DEBUG - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 100
+2025-03-05 15:16:39 DEBUG - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 100
+2025-03-05 15:16:39 ERROR - Mismatch Tx and Rx 078F, Unknown Condition Fail
+2025-03-05 15:16:39 ERROR - Mismatch Tx and Rx 078F, Unknown Condition Fail
+2025-03-05 15:16:39 DEBUG - Creating folder at: Logs\P212MCUIRAHD018
+2025-03-05 15:16:39 INFO - F181 Read Data By Identifier: Converted result: [93mP212MCUIRAHD018[0m
