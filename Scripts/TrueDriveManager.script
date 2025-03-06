@@ -1,0 +1,11 @@
+
+
+#Application Software  Identification F181
+send 22 F181
+
+#AngleOffset (Default 1.5, 0.0054945) scaled
+send 2E 0790 30 39 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+send 22 0790
+
+AngleOffsetDelay
+

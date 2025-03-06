@@ -1,6 +1,6 @@
 import re
 
-from Condition import id_conditions_F1D2, id_conditions_F1D3, id_conditions_Fault_Configuration
+from Condition import id_conditions_F1D2, id_conditions_F1D3, id_conditions_Fault_Config
 from logger import setup_logger
 import os
 import glob
@@ -30,6 +30,7 @@ def extract_values_from_line(line):
     return re.findall(r'0x[0-9A-Fa-f]{2}', data_part)
 
 def normalize_values(values):
+    #print("x=",[x for x in values if x != "0x00"])
     return [x for x in values if x != "0x00"]
 
 def convert(values):
@@ -66,7 +67,7 @@ def get_condition_from_position(position, script_name):
                 if part != "00" and i == position:
                     return key
     elif script_name == "Faults_Configuration":
-        for key, value in id_conditions_Fault_Configuration.ID_CONDITIONS.items():
+        for key, value in id_conditions_Fault_Config.ID_CONDITIONS.items():
             value_parts = value.split()
             for i, part in enumerate(value_parts):
                 if part != "00" and i == position:
@@ -138,16 +139,13 @@ def process_tx_rx_lines(tx_lines, rx_lines):
 
         if matched_rx_line:
             rx_values = extract_values_from_line(matched_rx_line)
-
-            #logger.debug(f"Matched RX line: {matched_rx_line}")
-            #logger.debug(f"Remaining RX lines after removal: {rx_lines}")
-
-            #logger.debug(f"Raw TX values: {tx_values[2:]}")
-            #logger.debug(f"Raw RX values: {rx_values[2:]}")
-
             tx_normalized = normalize_values(tx_values[2:])
             rx_normalized = normalize_values(rx_values[2:])
 
+            #logger.debug(f"Matched RX line: {matched_rx_line}")
+            #logger.debug(f"Remaining RX lines after removal: {rx_lines}")
+            #logger.debug(f"Raw TX values: {tx_values[2:]}")
+            #logger.debug(f"Raw RX values: {rx_values[2:]}")
             #logger.debug(f"Normalized TX values: {tx_normalized}")
             #logger.debug(f"Normalized RX values: {rx_normalized}")
 
@@ -217,10 +215,11 @@ def process_tx_rx_lines(tx_lines, rx_lines):
             continue
 
         result = convert(rx_values[2:])
+        raw_values = " ".join(val.replace("0x", "") for val in rx_values[2:])
         if result == "0" or result == "wrong output":
             logger.error(f"{rx_identifier} Read Data By Identifier: Converted result: wrong output")
         else:
-            logger.info(f"{rx_identifier} Read Data By Identifier: Converted result: \033[93m{result}\033[0m")
+            logger.info(f"{rx_identifier} Read Data By Identifier: Converted result: \033[93m{result}\033[0m, Raw Values:  \033[93m{raw_values}")
 
 
     for handler in logger.handlers[:]:

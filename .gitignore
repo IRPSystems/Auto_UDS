@@ -1,4 +1,4 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
 Condition/__pycache__/
-Log/
+Log/*
