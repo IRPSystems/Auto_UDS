@@ -1,6 +1,6 @@
 import re
 
-from Condition import id_conditions_F1D2, id_conditions_F1D3, id_conditions_Fault_Config
+from Condition import id_conditions_F1D2, id_conditions_F1D3, id_conditions_Fault_Config, id_conditions_TrueDrive
 from logger import setup_logger
 import os
 import glob
@@ -68,6 +68,12 @@ def get_condition_from_position(position, script_name):
                     return key
     elif script_name == "Faults_Configuration":
         for key, value in id_conditions_Fault_Config.ID_CONDITIONS.items():
+            value_parts = value.split()
+            for i, part in enumerate(value_parts):
+                if part != "00" and i == position:
+                    return key
+    elif script_name == "TrueDriveManager":
+        for key, value in id_conditions_TrueDrive.ID_CONDITIONS.items():
             value_parts = value.split()
             for i, part in enumerate(value_parts):
                 if part != "00" and i == position:
