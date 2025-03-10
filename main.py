@@ -1,5 +1,4 @@
 import re
-
 from Condition import id_conditions_F1D2, id_conditions_F1D3, id_conditions_Fault_Config, id_conditions_TrueDrive
 from logger import setup_logger
 import os
@@ -30,7 +29,6 @@ def extract_values_from_line(line):
     return re.findall(r'0x[0-9A-Fa-f]{2}', data_part)
 
 def normalize_values(values):
-    #print("x=",[x for x in values if x != "0x00"])
     return [x for x in values if x != "0x00"]
 
 def convert(values):
@@ -54,6 +52,8 @@ def get_tx_position(tx_values):
     return -1
 
 def get_condition_from_position(position, script_name):
+    if isinstance(script_name, tuple):
+        script_name = script_name[0]
     if script_name == "Network_TimeOut_F1D2":
         for key, value in id_conditions_F1D2.ID_CONDITIONS.items():
             value_parts = value.split()
@@ -93,8 +93,16 @@ def process_uds_file(file_path):
                 logger.info("\033[94mTester Present: ON \033[0m")
     return tx_lines, rx_lines
 
+def strip_ansi_codes(file_path):
+    ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+    with open(file_path, 'r', encoding='utf-8') as f:
+        content = f.read()
+    cleaned_content = ansi_escape.sub('', content)
+    with open(file_path, 'w', encoding='utf-8') as f:
+        f.write(cleaned_content)
+
 def process_tx_rx_lines(tx_lines, rx_lines):
-    global logger, script_name  # Added script_name as global to access it
+    global logger, script_name
     seen_identifiers = set()
     passed_identifiers = set()
     result_folder = None
@@ -157,7 +165,8 @@ def process_tx_rx_lines(tx_lines, rx_lines):
 
             if rx_normalized == tx_normalized:
                 result = convert(tx_values[2:])
-                logger.debug(f"Conversion result: {result}")  #f1d2
+                if script_name != "Standard_Identifiers":
+                     logger.debug(f"Conversion result: {result}")  #f1d2
                 if result != "0" and result != "wrong output":
                     if script_name == "Standard_Identifiers":
                          logger.info(f"Matching Tx and Rx {tx_identifier}, Converted: \033[93m{result}\033[0m Pass")
@@ -225,23 +234,29 @@ def process_tx_rx_lines(tx_lines, rx_lines):
         if result == "0" or result == "wrong output":
             logger.error(f"{rx_identifier} Read Data By Identifier: Converted result: wrong output")
         else:
-            logger.info(f"{rx_identifier} Read Data By Identifier: Converted result: \033[93m{result}\033[0m, Raw Values:  \033[93m{raw_values}")
+           ######## logger.info(f"{rx_identifier} Read Data By Identifier: Converted result: \033[93m{result}\033[0m, Raw Values:  \033[93m{raw_values}")
+           logger.info(
+               f"\033[93m{rx_identifier}\033[0m Read Data By Identifier: Converted result: \033[93m{result}\033[0m, Raw Values: \033[93m{raw_values}\033[0m")
 
 
     for handler in logger.handlers[:]:
         if isinstance(handler, logging.FileHandler):
             handler.close()
             logger.removeHandler(handler)
+    if isinstance(script_name, tuple):
+        script_name = script_name[0]
 
     original_log_file = os.path.join(Logs_folder, f"{script_name}.log")
     if result_folder and os.path.exists(original_log_file):
         new_log_file = os.path.join(result_folder, f"{script_name}.log")
         try:
             shutil.move(original_log_file, new_log_file)
-            #logger.debug(f"Moved log file from {original_log_file} to {new_log_file}")
-            logger.debug(f"Created log file in {new_log_file}")
+            strip_ansi_codes(new_log_file)
+            logger.debug(f"Created and cleaned log file in {new_log_file}")
         except Exception as e:
-            logger.error(f"Failed to move log file: {e}")
+            logger.error(f"Failed to move or clean log file: {e}")
+    elif os.path.exists(original_log_file):
+        strip_ansi_codes(original_log_file)
 
 if __name__ == "__main__":
     folder_path = r"C:\\temp3"
@@ -258,9 +273,7 @@ if __name__ == "__main__":
 
         logger = setup_logger(script_name, Logs_folder)
         logger.setLevel(logging.DEBUG)
-
         tx_lines, rx_lines = process_uds_file(newest_file)
-        #print(f"The newest file is: {newest_file}")
 
         if tx_lines or rx_lines:
             process_tx_rx_lines(tx_lines, rx_lines)
