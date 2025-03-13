@@ -1,12 +1,13 @@
 import re
-from Condition import id_conditions_F1D2, id_conditions_F1D3, id_conditions_Fault_Config, id_conditions_TrueDrive
+from Condition import id_conditions_F1D2, id_conditions_F1D3, id_conditions_Fault_Config, id_conditions_TrueDrive, id_conditions_Routine
 from logger import setup_logger
 import os
 import glob
 import shutil
 import logging
 
-SKIP_IDENTIFIERS = {"0100", "02", "F186"}
+#SKIP_IDENTIFIERS = {"0100", "02", "F186"}
+SKIP_IDENTIFIERS = {"0100"}
 
 Logs_folder = os.path.join("Logs")
 if not os.path.exists(Logs_folder):
@@ -32,8 +33,8 @@ def normalize_values(values):
     return [x for x in values if x != "0x00"]
 
 def convert(values):
-    if len(values) < 3:
-        return "wrong output"
+    # if len(values) < 3:
+    #     return "wrong output"
     try:
         data = [int(x, 16) for x in values]
         while data and data[-1] == 0:
@@ -74,6 +75,12 @@ def get_condition_from_position(position, script_name):
                     return key
     elif script_name == "TrueDriveManager":
         for key, value in id_conditions_TrueDrive.ID_CONDITIONS.items():
+            value_parts = value.split()
+            for i, part in enumerate(value_parts):
+                if part != "00" and i == position:
+                    return key
+    elif script_name == "Routine_Control":
+       for key, value in id_conditions_Routine.ID_CONDITIONS.items():
             value_parts = value.split()
             for i, part in enumerate(value_parts):
                 if part != "00" and i == position:
@@ -145,11 +152,18 @@ def process_tx_rx_lines(tx_lines, rx_lines):
                     #logger.debug(f"Skipping RX identifier: {rx_identifier}")
                     rx_lines.remove(rx_line)
                     continue
+                if script_name == "Routine_Control":
+                    # Match both identifier and DID
+                    if tx_identifier == rx_identifier and tx_did == rx_did:
+                        matched_rx_line = rx_line
+                        rx_lines.remove(rx_line)
+                        break
+                else:
 
-                if tx_identifier == rx_identifier:
-                    matched_rx_line = rx_line
-                    rx_lines.remove(rx_line)
-                    break
+                  if tx_identifier == rx_identifier:
+                        matched_rx_line = rx_line
+                        rx_lines.remove(rx_line)
+                        break
 
         if matched_rx_line:
             rx_values = extract_values_from_line(matched_rx_line)
@@ -213,9 +227,10 @@ def process_tx_rx_lines(tx_lines, rx_lines):
             #logger.debug(f"Skipping already matched RX identifier: {rx_identifier}")
             continue
 
-        if rx_identifier in seen_identifiers:
-            #logger.debug(f"Skipping already processed RX identifier: {rx_identifier}")
-            continue
+        #disabled for F186, should read if the session has been changed
+        # if rx_identifier in seen_identifiers:
+        #     #logger.debug(f"Skipping already processed RX identifier: {rx_identifier}")
+        #     continue
 
         seen_identifiers.add(rx_identifier)
         if "Negative Response" in rx_line or "NRC=Sub Function Not Supported" in rx_line:
@@ -228,6 +243,7 @@ def process_tx_rx_lines(tx_lines, rx_lines):
         if "Security Access " in rx_line:
             logger.warning(f"{tx_identifier}\033[94m Security Access \033[0m")
             continue
+
 
         result = convert(rx_values[2:])
         raw_values = " ".join(val.replace("0x", "") for val in rx_values[2:])

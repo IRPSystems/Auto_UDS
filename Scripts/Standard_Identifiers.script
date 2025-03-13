@@ -65,12 +65,12 @@ send 22 F1F0
 
 #Variant Code 0101
 send 2E 0101 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-sleep 1000
+sleep 500
 send 22 0101
 
 #Feature Code 0102
 send 2E 0102 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-sleep 1000
+sleep 500
 send 22 0102
 
 #Access Timing Parameters
@@ -80,6 +80,11 @@ send 83 03
 #focSensorAngleOffset
 send 2E 1500 00 00 11 60
 send 22 1500
+
+sleep 500
+# Read Active Diagnostic Session F186
+send 22 F186
+
 
 
 
