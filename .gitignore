@@ -6,7 +6,7 @@ __pycache__/
 *.pyo
 *.pyd
 Condition/__pycache__/
-Log/
+Log/*
 
 venv/
 .venv/
