@@ -1,4 +1,6 @@
 import re
+
+import fix_routine_log
 from Condition import id_conditions_F1D2, id_conditions_F1D3, id_conditions_Fault_Config, id_conditions_TrueDrive, id_conditions_Routine
 from logger import setup_logger
 import os
@@ -20,6 +22,7 @@ def extract_script_name(file_path):
                 match = re.search(r">>> Script Start:(.*\\Scripts\\([^\\]+)\.script)", line)
                 if match:
                     return match.group(2)
+
     return None
 
 def extract_values_from_line(line):
@@ -80,12 +83,14 @@ def get_condition_from_position(position, script_name):
                 if part != "00" and i == position:
                     return key
     elif script_name == "Routine_Control":
+
        for key, value in id_conditions_Routine.ID_CONDITIONS.items():
             value_parts = value.split()
             for i, part in enumerate(value_parts):
                 if part != "00" and i == position:
                     return key
     return "Unknown Condition"
+
 
 def process_uds_file(file_path):
     logger.info(f"Processing file: {file_path}")
@@ -123,7 +128,7 @@ def process_tx_rx_lines(tx_lines, rx_lines):
             #logger.debug(f"Skipping TX line with only two bytes: {tx_line}")
             continue
 
-        if len(tx_values) < 3:
+        if len(tx_values) < 2:
             continue
 
         tx_identifier = "".join(byte.replace("0x", "").upper() for byte in tx_values[:2])
@@ -134,6 +139,8 @@ def process_tx_rx_lines(tx_lines, rx_lines):
 
         tx_position = get_tx_position(tx_values)
         expected_condition = get_condition_from_position(tx_position, script_name) if tx_position >= 0 else "Unknown Condition"
+
+
 
         matched_rx_line = None
 
@@ -152,18 +159,11 @@ def process_tx_rx_lines(tx_lines, rx_lines):
                     #logger.debug(f"Skipping RX identifier: {rx_identifier}")
                     rx_lines.remove(rx_line)
                     continue
-                if script_name == "Routine_Control":
-                    # Match both identifier and DID
-                    if tx_identifier == rx_identifier and tx_did == rx_did:
-                        matched_rx_line = rx_line
-                        rx_lines.remove(rx_line)
-                        break
-                else:
 
-                  if tx_identifier == rx_identifier:
-                        matched_rx_line = rx_line
-                        rx_lines.remove(rx_line)
-                        break
+                if tx_identifier == rx_identifier:
+                    matched_rx_line = rx_line
+                    rx_lines.remove(rx_line)
+                    break
 
         if matched_rx_line:
             rx_values = extract_values_from_line(matched_rx_line)
@@ -181,6 +181,7 @@ def process_tx_rx_lines(tx_lines, rx_lines):
                 result = convert(tx_values[2:])
                 if script_name != "Standard_Identifiers":
                      logger.debug(f"Conversion result: {result}")  #f1d2
+                     #continue
                 if result != "0" and result != "wrong output":
                     if script_name == "Standard_Identifiers":
                          logger.info(f"Matching Tx and Rx {tx_identifier}, Converted: \033[93m{result}\033[0m Pass")
@@ -250,9 +251,9 @@ def process_tx_rx_lines(tx_lines, rx_lines):
         if result == "0" or result == "wrong output":
             logger.error(f"{rx_identifier} Read Data By Identifier: Converted result: wrong output")
         else:
-           ######## logger.info(f"{rx_identifier} Read Data By Identifier: Converted result: \033[93m{result}\033[0m, Raw Values:  \033[93m{raw_values}")
-           logger.info(
-               f"\033[93m{rx_identifier}\033[0m Read Data By Identifier: Converted result: \033[93m{result}\033[0m, Raw Values: \033[93m{raw_values}\033[0m")
+           if script_name=="Standard_Identifiers":   #### full print
+               logger.info(
+                   f"\033[93m{rx_identifier}\033[0m Read Data By Identifier: Converted result: \033[93m{result}\033[0m, Raw Values: \033[93m{raw_values}\033[0m")
 
 
     for handler in logger.handlers[:]:
@@ -286,6 +287,12 @@ if __name__ == "__main__":
         script_name = extract_script_name(newest_file)
         if script_name is None:
             script_name = "default_log"
+
+        if script_name == "Routine_Control":
+            fixed_file = newest_file.replace(".uds.txt", "_fixed.uds.txt")
+            fix_routine_log.fix_log_file(newest_file, fixed_file)
+            newest_file = fixed_file
+            print(f"Fixed Routine_Control log file: {fixed_file}")
 
         logger = setup_logger(script_name, Logs_folder)
         logger.setLevel(logging.DEBUG)

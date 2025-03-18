@@ -1,0 +1,41 @@
+2025-03-18 09:33:47 [INFO] - Processing file: C:\\temp3\ABCD-202503180930.uds.txt
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 5
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 5
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 0 10
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 0 0 10
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 0 0 0 5
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 0 0 0 0 10
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 0 0 0 0 0 10
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 0 0 0 0 0 0 10
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 0 0 0 0 0 0 0 10
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 0 0 0 0 0 0 0 0 10
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 0 0 0 0 0 0 0 0 0 5
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 5
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 10
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 10
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 10
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 10
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 10
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 10
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 10
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 10
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 10
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 10
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 10
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5
+2025-03-18 09:33:47 [DEBUG] - Conversion result: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 10
+2025-03-18 09:33:47 [DEBUG] - Creating folder at: Logs\P212MCUIRAHD019

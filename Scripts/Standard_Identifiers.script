@@ -32,7 +32,7 @@ send 2E 0100 49 52 50 4D 6F 64 65 6C 4E 75 6D 62 65 72 30 30 30 31
 send 22 0100
 
 # Write&Read VIN identifier number F190
-send 2E F190 31 32 33 41 42 43 34 35 36 44 45 46 37 38 39 47 46
+send 2E F190 31 32 33 41 42 43 34 35 36 44 45 46 37 38 39 47 47
 send 22 F190
 
 # Write&Read SystemNameorEnginetype F197
