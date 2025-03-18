@@ -45,7 +45,6 @@ def convert(values):
         result = "".join(chr(x) for x in data)
         if result.strip() == "0" or not all(32 <= ord(c) <= 126 for c in result):
             return " ".join(str(x) for x in data)
-
         return result
     except ValueError:
         return "wrong output"
@@ -59,29 +58,38 @@ def get_tx_position(tx_values):
 def get_condition_from_position(position, script_name):
     if isinstance(script_name, tuple):
         script_name = script_name[0]
-    conditions=[]
     if script_name == "Network_TimeOut_F1D2":
-        condition_dict=id_conditions_F1D2.ID_CONDITIONS
-
+        for key, value in id_conditions_F1D2.ID_CONDITIONS.items():
+            value_parts = value.split()
+            for i, part in enumerate(value_parts):
+                if part != "00" and i == position:
+                    return key
     elif script_name == "Network_Missmatch_F1D3":
-        condition_dict = id_conditions_F1D3.ID_CONDITIONS
-
+        for key, value in id_conditions_F1D3.ID_CONDITIONS.items():
+            value_parts = value.split()
+            for i, part in enumerate(value_parts):
+                if part != "00" and i == position:
+                    return key
     elif script_name == "Faults_Configuration":
-        condition_dict= id_conditions_Fault_Config.ID_CONDITIONS
-
+        for key, value in id_conditions_Fault_Config.ID_CONDITIONS.items():
+            value_parts = value.split()
+            for i, part in enumerate(value_parts):
+                if part != "00" and i == position:
+                    return key
     elif script_name == "TrueDriveManager":
-        condition_dict = id_conditions_TrueDrive.ID_CONDITIONS
-
+        for key, value in id_conditions_TrueDrive.ID_CONDITIONS.items():
+            value_parts = value.split()
+            for i, part in enumerate(value_parts):
+                if part != "00" and i == position:
+                    return key
     elif script_name == "Routine_Control":
-       condition_dict = id_conditions_Routine.ID_CONDITIONS
-    else: condition_dict={}
 
-    for key, value in condition_dict.items():
-        value_parts = value.split()
-        for i, part in enumerate(value_parts):
-            if part != "00" and i == position:
-                conditions.append(key)
-    return conditions if conditions else ["Unknown Condition"]
+       for key, value in id_conditions_Routine.ID_CONDITIONS.items():
+            value_parts = value.split()
+            for i, part in enumerate(value_parts):
+                if part != "00" and i == position:
+                    return key
+    return "Unknown Condition"
 
 
 def process_uds_file(file_path):
@@ -130,9 +138,9 @@ def process_tx_rx_lines(tx_lines, rx_lines):
             continue
 
         tx_position = get_tx_position(tx_values)
-        if tx_position == -1:
-            continue
-        expected_condition = get_condition_from_position(tx_position, script_name)
+        expected_condition = get_condition_from_position(tx_position, script_name) if tx_position >= 0 else "Unknown Condition"
+
+
 
         matched_rx_line = None
 
@@ -161,7 +169,7 @@ def process_tx_rx_lines(tx_lines, rx_lines):
             rx_values = extract_values_from_line(matched_rx_line)
             tx_normalized = normalize_values(tx_values[2:])
             rx_normalized = normalize_values(rx_values[2:])
-            result = convert(tx_values[2:])
+
             #logger.debug(f"Matched RX line: {matched_rx_line}")
             #logger.debug(f"Remaining RX lines after removal: {rx_lines}")
             #logger.debug(f"Raw TX values: {tx_values[2:]}")
@@ -169,30 +177,25 @@ def process_tx_rx_lines(tx_lines, rx_lines):
             #logger.debug(f"Normalized TX values: {tx_normalized}")
             #logger.debug(f"Normalized RX values: {rx_normalized}")
 
-#Green: \033[32m (regular green) or \033[92m (bright green).
-#Red: \033[31m (regular red) or \033[91m (bright red).
-#Red appears via \033[91m in error messages
-            for condition in expected_condition:
-                if rx_normalized == tx_normalized:
-
-                    if script_name != "Standard_Identifiers":
-                         logger.info(f"\033[34m{condition}\033[0m,Conversion result: \033[93m{result}\033[0m")  #f1d2
-                         continue
-                    if result != "0" and result != "wrong output":
-                        if script_name == "Standard_Identifiers":
-                             logger.info(f"Matching Tx and Rx \033[93m{tx_identifier}\033[0m, Converted: \033[93m{result}\033[0m Pass")
-                             passed_identifiers.add(tx_identifier)
-                        else:
-                            continue
-                            #logger.info(f"Matching Tx and Rx {tx_identifier},  Pass")
-                    else:
-                        logger.error(f"Mismatch Tx and Rx {tx_identifier},Condition: \033[93m{condition}\033[0m, Converted: wrong output Fail")
-                else:
+            if rx_normalized == tx_normalized:
+                result = convert(tx_values[2:])
+                if script_name != "Standard_Identifiers":
+                     logger.debug(f"Conversion result: {result}")  #f1d2
+                     #continue
+                if result != "0" and result != "wrong output":
                     if script_name == "Standard_Identifiers":
-                        logger.error(f"Mismatch Tx and Rx {tx_identifier},Condition: \033[93m{condition}\033[0m, Converted: wrong output Fail")
+                         logger.info(f"Matching Tx and Rx {tx_identifier}, Converted: \033[93m{result}\033[0m Pass")
+                         passed_identifiers.add(tx_identifier)
                     else:
-                        # logger.error(f"Mismatch Tx and Rx {tx_identifier}, {result} Fail")
-                        logger.error(f"{condition} Mismatch Tx and Rx {tx_identifier},  Fail")
+                        continue
+                        #logger.info(f"Matching Tx and Rx {tx_identifier},  Pass")
+                else:
+                    logger.error(f"Mismatch Tx and Rx {tx_identifier}, Converted: wrong output Fail")
+            else:
+                if script_name == "Standard_Identifiers":
+                    logger.error(f"Mismatch Tx and Rx {tx_identifier}, Converted: wrong output Fail")
+                else:
+                    logger.error(f"Mismatch Tx and Rx {tx_identifier}, {expected_condition} Fail")
 
     #logger.debug(f"Remaining RX lines before standalone processing: {rx_lines}")
 
@@ -205,9 +208,7 @@ def process_tx_rx_lines(tx_lines, rx_lines):
 
         if len(rx_values) < 3:
             if "Negative Response" in rx_line or "NRC=Sub Function Not Supported" in rx_line:
-               # logger.error(f"{tx_identifier}\033[91m Negative Response detected \033[0m")
-              # logger.error(f"{rx_line.split(':')[0]}\033[91m Negative Response detected \033[0m")
-               logger.error(f"{rx_line.split(':')[0]}\033[91m")
+                logger.error(f"{tx_identifier}\033[91m Negative Response detected \033[0m")
             continue
 
         rx_identifier = "".join(byte.replace("0x", "").upper() for byte in rx_values[:2])
@@ -235,29 +236,25 @@ def process_tx_rx_lines(tx_lines, rx_lines):
         seen_identifiers.add(rx_identifier)
         if "Negative Response" in rx_line or "NRC=Sub Function Not Supported" in rx_line:
             tx_identifier = "".join(byte.replace("0x", "").upper() for byte in tx_values[:2])
-            logger.error(f"{rx_identifier}\033[91m Negative Response detected \033[0m")
+            logger.error(f"{tx_identifier}\033[91m Negative Response detected \033[0m")
             continue
         if "Diagnostic Session Control " in rx_line:
-            logger.warning(f"{rx_identifier}\033[94m Diagnostic Session Control \033[0m")
+            logger.warning(f"{tx_identifier}\033[94m Diagnostic Session Control \033[0m")
             continue
         if "Security Access " in rx_line:
-            logger.warning(f"{rx_identifier}\033[94m Security Access \033[0m")
+            logger.warning(f"{tx_identifier}\033[94m Security Access \033[0m")
             continue
 
 
         result = convert(rx_values[2:])
         raw_values = " ".join(val.replace("0x", "") for val in rx_values[2:])
-        rx_position = get_tx_position(rx_values)
-        rx_conditions = get_condition_from_position(rx_position, script_name) if rx_position >= 0 else [
-            "Unknown Condition"]
-        for condition in rx_conditions:
-            if result == "0" or result == "wrong output":
-                logger.error(
-                    f"{rx_identifier} Read Data By Identifier, Condition: \033[91m{condition}\033[0m, Converted result: wrong output")
-            else:
-               if script_name=="Standard_Identifiers":   #### full print
-                   logger.info(
-                       f"\033[93m{rx_identifier}\033[0m Read Data By Identifier: Converted result: \033[93m{result}\033[0m, Raw Values: \033[93m{raw_values}\033[0m")
+        if result == "0" or result == "wrong output":
+            logger.error(f"{rx_identifier} Read Data By Identifier: Converted result: wrong output")
+        else:
+           if script_name=="Standard_Identifiers":   #### full print
+               logger.info(
+                   f"\033[93m{rx_identifier}\033[0m Read Data By Identifier: Converted result: \033[93m{result}\033[0m, Raw Values: \033[93m{raw_values}\033[0m")
+
 
     for handler in logger.handlers[:]:
         if isinstance(handler, logging.FileHandler):
