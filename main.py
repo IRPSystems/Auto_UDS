@@ -1,12 +1,7 @@
-import re
-
 import fix_routine_log
 from Condition import id_conditions_F1D2, id_conditions_F1D3, id_conditions_Fault_Config, id_conditions_TrueDrive, id_conditions_Routine
 from logger import setup_logger
-import os
-import glob
-import shutil
-import logging
+import os, re, glob, shutil, logging
 
 #SKIP_IDENTIFIERS = {"0100", "02", "F186"}
 SKIP_IDENTIFIERS = {"0100"}
@@ -36,22 +31,47 @@ def normalize_values(values):
     return [x for x in values if x != "0x00"]
 
 def convert(values):
-    # if len(values) < 3:
-    #     return "wrong output"
     try:
+        hex_str = " ".join(values).replace("0x00", "").strip()
+        if not hex_str:
+            return "0"
+        values = hex_str.split()
         data = [int(x, 16) for x in values]
-        while data and data[-1] == 0:
-            data.pop()
-        result = "".join(chr(x) for x in data)
-        if result.strip() == "0" or not all(32 <= ord(c) <= 126 for c in result):
+        if len(values) > 3:
+            result = "".join(chr(x) for x in data)
+            if all(32 <= ord(c) <= 126 for c in result):
+                return result
             return " ".join(str(x) for x in data)
+        else:  # 1-3 bytes
+            combined_hex = "".join(x[2:] for x in values)
+            unsigned_int = int(combined_hex, 16)
+            if len(values) == 1:
+                return str(unsigned_int)
+            elif len(values) == 2:  #
+                if unsigned_int >= 0x8000:
+                    unsigned_int -= 0x10000
+                return str(unsigned_int)
+            elif len(values) == 3:  # 24-bit signed
+                if unsigned_int >= 0x800000:
+                    unsigned_int -= 0x1000000
+                return str(unsigned_int)
 
-        return result
     except ValueError:
         return "wrong output"
+    # try:
+    #     data = [int(x, 16) for x in values]
+    #     while data and data[-1] == 0:
+    #         data.pop()
+    #     result = "".join(chr(x) for x in data)
+    #     if result.strip() == "0" or not all(32 <= ord(c) <= 126 for c in result):
+    #         return " ".join(str(x) for x in data)
+    #     return result
+    # except ValueError:
+    #     return "wrong output"
 
 def get_tx_position(tx_values):
     for i, value in enumerate(tx_values[2:], start=0):
+
         if value != "0x00":
             return i
     return -1
@@ -176,11 +196,14 @@ def process_tx_rx_lines(tx_lines, rx_lines):
                 if rx_normalized == tx_normalized:
 
                     if script_name != "Standard_Identifiers":
-                         logger.info(f"\033[34m{condition}\033[0m,Conversion result: \033[93m{result}\033[0m")  #f1d2
-                         continue
+                        new_result = " ".join(result.replace("0", "").replace(" ","").split())
+                        # xx=int(new_result,16)
+                        # print(xx)
+                        logger.info(f"\033[34m{condition},\033[0m Converted result: \033[93m{result}\033[0m \033[32m Pass\033[0m ")  #f1d2
+                        continue
                     if result != "0" and result != "wrong output":
                         if script_name == "Standard_Identifiers":
-                             logger.info(f"Matching Tx and Rx \033[93m{tx_identifier}\033[0m, Converted: \033[93m{result}\033[0m Pass")
+                             logger.info(f"Matching Tx and Rx \033[93m{tx_identifier},\033[0m Converted: \033[93m{result}\033[0m Pass")
                              passed_identifiers.add(tx_identifier)
                         else:
                             continue

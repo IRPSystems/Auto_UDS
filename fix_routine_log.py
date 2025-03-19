@@ -33,12 +33,22 @@ def fix_log_file(input_path, output_path):
             if (line.startswith("Tx)") and "Routine Control" in line and
                 script_name == "Routine_Control" and len(values) >= 3 and
                 values[:3] == ["0x01", "0x02", "0x01"]):
-                payload = " ".join(values[3:]) if len(values) > 3 else ""  # Keep the payload
+                # Extract payload after the first 3 values, limit to 25 more (total 28)
+                payload_values = values[3:] if len(values) > 3 else []
+                if len(payload_values) >= 27:  # 3 prefix + 25 payload = 28 total
+                    payload_values = payload_values[:27]  # Truncate to 25
+                payload = " ".join(payload_values) if payload_values else ""
                 fixed_tx = f"Tx) Routine Control               : 0x02 0x01 {payload}"
                 fixed_lines.append(fixed_tx)
                 continue
 
-            fixed_lines.append(line)
+            # For other lines, truncate to 28 values if necessary
+            if values and len(values) > 27:
+                truncated_values = " ".join(values[:27])
+                fixed_line = f"{line.split(':', 1)[0]}: {truncated_values}"
+                fixed_lines.append(fixed_line)
+            else:
+                fixed_lines.append(line)
 
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write("# Fixed by fix_log.py\n")
