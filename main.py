@@ -203,16 +203,18 @@ def process_tx_rx_lines(tx_lines, rx_lines):
                         continue
                     if result != "0" and result != "wrong output":
                         if script_name == "Standard_Identifiers":
-                             logger.info(f"Matching Tx and Rx \033[93m{tx_identifier},\033[0m Converted: \033[93m{result}\033[0m Pass")
+                             logger.info(f"Matching Tx and Rx \033[93m{tx_identifier},\033[0m Converted: \033[93m{result}\033[0m \033[32m Pass\033[0m")
                              passed_identifiers.add(tx_identifier)
                         else:
                             continue
                             #logger.info(f"Matching Tx and Rx {tx_identifier},  Pass")
                     else:
                         logger.error(f"Mismatch Tx and Rx {tx_identifier},Condition: \033[93m{condition}\033[0m, Converted: wrong output Fail")
+
                 else:
                     if script_name == "Standard_Identifiers":
-                        logger.error(f"Mismatch Tx and Rx {tx_identifier},Condition: \033[93m{condition}\033[0m, Converted: wrong output Fail")
+                        #logger.error(f"Mismatch Tx and Rx {tx_identifier},Condition: \033[93m{condition}\033[0m, Converted: wrong output Fail")
+                        logger.error(f"Mismatch Tx and Rx {tx_identifier} wrong output Fail")
                     else:
                         # logger.error(f"Mismatch Tx and Rx {tx_identifier}, {result} Fail")
                         logger.error(f"{condition} Mismatch Tx and Rx {tx_identifier},  Fail")

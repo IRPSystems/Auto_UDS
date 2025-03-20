@@ -42,7 +42,6 @@ def fix_log_file(input_path, output_path):
                 fixed_lines.append(fixed_tx)
                 continue
 
-            # For other lines, truncate to 28 values if necessary
             if values and len(values) > 27:
                 truncated_values = " ".join(values[:27])
                 fixed_line = f"{line.split(':', 1)[0]}: {truncated_values}"
