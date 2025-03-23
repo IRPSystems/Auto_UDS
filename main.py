@@ -1,5 +1,6 @@
 import fix_routine_log
-from Condition import id_conditions_F1D2, id_conditions_F1D3, id_conditions_Fault_Config, id_conditions_TrueDrive, id_conditions_Routine
+from Condition import (id_conditions_F1D2, id_conditions_F1D3, id_conditions_Fault_Config,
+                       id_conditions_TrueDrive, id_conditions_Routine, id_conditions_F1D5, id_conditions_CanConfig_103)
 from logger import setup_logger
 import os, re, glob, shutil, logging
 
@@ -94,6 +95,12 @@ def get_condition_from_position(position, script_name):
 
     elif script_name == "Routine_Control":
        condition_dict = id_conditions_Routine.ID_CONDITIONS
+
+    elif script_name == "Network_F1D5":
+       condition_dict = id_conditions_F1D5.ID_CONDITIONS
+
+    elif script_name == "CanConfig_103":
+        condition_dict = id_conditions_CanConfig_103.ID_CONDITIONS
     else: condition_dict={}
 
     for key, value in condition_dict.items():
@@ -214,7 +221,7 @@ def process_tx_rx_lines(tx_lines, rx_lines):
                 else:
                     if script_name == "Standard_Identifiers":
                         #logger.error(f"Mismatch Tx and Rx {tx_identifier},Condition: \033[93m{condition}\033[0m, Converted: wrong output Fail")
-                        logger.error(f"Mismatch Tx and Rx {tx_identifier} wrong output Fail")
+                        logger.c(f"Mismatch Tx and Rx {tx_identifier} wrong output Fail")
                     else:
                         # logger.error(f"Mismatch Tx and Rx {tx_identifier}, {result} Fail")
                         logger.error(f"{condition} Mismatch Tx and Rx {tx_identifier},  Fail")
