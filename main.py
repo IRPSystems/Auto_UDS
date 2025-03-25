@@ -5,7 +5,7 @@ from logger import setup_logger
 import os, re, glob, shutil, logging
 
 #SKIP_IDENTIFIERS = {"0100", "02", "F186"}
-SKIP_IDENTIFIERS = {"0100"}
+SKIP_IDENTIFIERS = {"0100", "0102"}
 
 Logs_folder = os.path.join("Logs")
 if not os.path.exists(Logs_folder):
@@ -59,16 +59,6 @@ def convert(values):
 
     except ValueError:
         return "wrong output"
-    # try:
-    #     data = [int(x, 16) for x in values]
-    #     while data and data[-1] == 0:
-    #         data.pop()
-    #     result = "".join(chr(x) for x in data)
-    #     if result.strip() == "0" or not all(32 <= ord(c) <= 126 for c in result):
-    #         return " ".join(str(x) for x in data)
-    #     return result
-    # except ValueError:
-    #     return "wrong output"
 
 def get_tx_position(tx_values):
     for i, value in enumerate(tx_values[2:], start=0):
@@ -201,30 +191,23 @@ def process_tx_rx_lines(tx_lines, rx_lines):
 #Red appears via \033[91m in error messages
             for condition in expected_condition:
                 if rx_normalized == tx_normalized:
-
-                    if script_name != "Standard_Identifiers":
-                        new_result = " ".join(result.replace("0", "").replace(" ","").split())
-                        # xx=int(new_result,16)
-                        # print(xx)
-                        logger.info(f"\033[34m{condition},\033[0m Converted result: \033[93m{result}\033[0m \033[32m Pass\033[0m ")  #f1d2
+                    if script_name not in ["Standard_Identifiers", "Generetic_ECU_Read"]:
+                        logger.info(
+                            f"\033[34m{condition},\033[0m Converted result: \033[93m{result}\033[0m \033[32m Pass\033[0m ")
                         continue
-                    if result != "0" and result != "wrong output":
-                        if script_name == "Standard_Identifiers":
-                             logger.info(f"Matching Tx and Rx \033[93m{tx_identifier},\033[0m Converted: \033[93m{result}\033[0m \033[32m Pass\033[0m")
-                             passed_identifiers.add(tx_identifier)
+                    if script_name in ["Standard_Identifiers", "Generetic_ECU_Read"]:
+                        if result != "wrong output":  # Include "0" as a Pass
+                            logger.info(
+                                f"Matching Tx and Rx \033[93m{tx_identifier},\033[0m Converted: \033[93m{result}\033[0m \033[32m Pass\033[0m")
+                            passed_identifiers.add(tx_identifier)
                         else:
-                            continue
-                            #logger.info(f"Matching Tx and Rx {tx_identifier},  Pass")
-                    else:
-                        logger.error(f"Mismatch Tx and Rx {tx_identifier},Condition: \033[93m{condition}\033[0m, Converted: wrong output Fail")
-
+                            logger.error(
+                                f"Mismatch Tx and Rx {tx_identifier}, Condition: \033[93m{condition}\033[0m, Converted: wrong output Fail")
                 else:
-                    if script_name == "Standard_Identifiers":
-                        #logger.error(f"Mismatch Tx and Rx {tx_identifier},Condition: \033[93m{condition}\033[0m, Converted: wrong output Fail")
-                        logger.c(f"Mismatch Tx and Rx {tx_identifier} wrong output Fail")
+                    if script_name in ["Standard_Identifiers", "Generetic_ECU_Read"]:
+                        logger.error(f"Mismatch Tx and Rx {tx_identifier} wrong output Fail")
                     else:
-                        # logger.error(f"Mismatch Tx and Rx {tx_identifier}, {result} Fail")
-                        logger.error(f"{condition} Mismatch Tx and Rx {tx_identifier},  Fail")
+                        logger.error(f"{condition} Mismatch Tx and Rx {tx_identifier}, Fail")
 
     #logger.debug(f"Remaining RX lines before standalone processing: {rx_lines}")
 
@@ -237,8 +220,7 @@ def process_tx_rx_lines(tx_lines, rx_lines):
 
         if len(rx_values) < 3:
             if "Negative Response" in rx_line or "NRC=Sub Function Not Supported" in rx_line:
-               # logger.error(f"{tx_identifier}\033[91m Negative Response detected \033[0m")
-              # logger.error(f"{rx_line.split(':')[0]}\033[91m Negative Response detected \033[0m")
+
                logger.error(f"{rx_line.split(':')[0]}\033[91m")
             continue
 
@@ -266,8 +248,9 @@ def process_tx_rx_lines(tx_lines, rx_lines):
 
         seen_identifiers.add(rx_identifier)
         if "Negative Response" in rx_line or "NRC=Sub Function Not Supported" in rx_line:
-            tx_identifier = "".join(byte.replace("0x", "").upper() for byte in tx_values[:2])
+            #tx_identifier = "".join(byte.replace("0x", "").upper() for byte in tx_values[:2])
             logger.error(f"{rx_identifier}\033[91m Negative Response detected \033[0m")
+
             continue
         if "Diagnostic Session Control " in rx_line:
             logger.warning(f"{rx_identifier}\033[94m Diagnostic Session Control \033[0m")
@@ -283,11 +266,14 @@ def process_tx_rx_lines(tx_lines, rx_lines):
         rx_conditions = get_condition_from_position(rx_position, script_name) if rx_position >= 0 else [
             "Unknown Condition"]
         for condition in rx_conditions:
-            if result == "0" or result == "wrong output":
+            if  result == "wrong output":
                 logger.error(
                     f"{rx_identifier} Read Data By Identifier, Condition: \033[91m{condition}\033[0m, Converted result: wrong output")
+            elif result == "0":
+                logger.info(
+                    f"{rx_identifier} Read Data By Identifier, Converted result: \033[93m0\033[0m, Raw Values: \033[93m{raw_values}\033[0m")
             else:
-               if script_name=="Standard_Identifiers":   #### full print
+               if script_name in ["Standard_Identifiers", "Generetic_ECU_Read"]:   #### full print
                    logger.info(
                        f"\033[93m{rx_identifier}\033[0m Read Data By Identifier: Converted result: \033[93m{result}\033[0m, Raw Values: \033[93m{raw_values}\033[0m")
 
@@ -317,7 +303,7 @@ if __name__ == "__main__":
         print("No matching files found.")
     else:
         newest_file = max(files, key=os.path.getmtime)
-        print(f"The newest file is: {newest_file}")
+        #print(f"The newest file is: {newest_file}")
 
         script_name = extract_script_name(newest_file)
         if script_name is None:

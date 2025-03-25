@@ -155,6 +155,7 @@ def process_tx_rx_lines(tx_lines, rx_lines):
             if len(rx_values) >= 4:
                 rx_identifier = "".join(byte.replace("0x", "").upper() for byte in rx_values[:2])
 
+
                 if rx_identifier in SKIP_IDENTIFIERS:
                     #logger.debug(f"Skipping RX identifier: {rx_identifier}")
                     rx_lines.remove(rx_line)
