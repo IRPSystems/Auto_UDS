@@ -1,6 +1,6 @@
 import fix_routine_log
 from Condition import (id_conditions_F1D2, id_conditions_F1D3, id_conditions_Fault_Config,
-                       id_conditions_TrueDrive, id_conditions_Routine, id_conditions_F1D5, id_conditions_CanConfig_103)
+                       id_conditions_TrueDrive, id_conditions_Routine, id_conditions_F1D5, id_conditions_CanConfig_103, id_Standart_Generetic)
 from logger import setup_logger
 import os, re, glob, shutil, logging
 
@@ -133,6 +133,7 @@ def process_tx_rx_lines(tx_lines, rx_lines):
     for tx_line in tx_lines:
         tx_values = extract_values_from_line(tx_line)
 
+
         if len(tx_values) == 2:
             #logger.debug(f"Skipping TX line with only two bytes: {tx_line}")
             continue
@@ -142,13 +143,14 @@ def process_tx_rx_lines(tx_lines, rx_lines):
 
         tx_identifier = "".join(byte.replace("0x", "").upper() for byte in tx_values[:2])
 
-        if tx_identifier in SKIP_IDENTIFIERS:
-            #logger.debug(f"Skipping TX identifier: {tx_identifier}")
-            continue
-
         tx_position = get_tx_position(tx_values)
         if tx_position == -1:
             continue
+        if script_name in ["Standard_Identifiers", "Generetic_ECU_Read"]:
+            Standart_Generetic_condition = id_Standart_Generetic.ID_CONDITIONS.get(tx_identifier, "Unknown DID")
+        else:
+            Standart_Generetic_condition = get_condition_from_position(tx_position, script_name)[0]  # Take first condition
+
         expected_condition = get_condition_from_position(tx_position, script_name)
 
         matched_rx_line = None
@@ -198,11 +200,11 @@ def process_tx_rx_lines(tx_lines, rx_lines):
                     if script_name in ["Standard_Identifiers", "Generetic_ECU_Read"]:
                         if result != "wrong output":  # Include "0" as a Pass
                             logger.info(
-                                f"Matching Tx and Rx \033[93m{tx_identifier},\033[0m Converted: \033[93m{result}\033[0m \033[32m Pass\033[0m")
+                                f"\033[93m{tx_identifier} {Standart_Generetic_condition}\033[0m Matching Tx and Rx, Converted: \033[93m{result}\033[0m \033[32m Pass\033[0m")
                             passed_identifiers.add(tx_identifier)
                         else:
                             logger.error(
-                                f"Mismatch Tx and Rx {tx_identifier}, Condition: \033[93m{condition}\033[0m, Converted: wrong output Fail")
+                                f"{tx_identifier} {Standart_Generetic_condition} Mismatch Tx and Rx, Condition: \033[93m{condition}\033[0m, Converted: wrong output Fail")
                 else:
                     if script_name in ["Standard_Identifiers", "Generetic_ECU_Read"]:
                         logger.error(f"Mismatch Tx and Rx {tx_identifier} wrong output Fail")
@@ -214,17 +216,17 @@ def process_tx_rx_lines(tx_lines, rx_lines):
     for rx_line in rx_lines:
         rx_values = extract_values_from_line(rx_line)
 
-        if len(rx_values) == 2:
-            #logger.debug(f"Skipping RX line with only two bytes: {rx_line}")
-            continue
+        # if len(rx_values) == 2:
+        #     #logger.debug(f"Skipping RX line with only two bytes: {rx_line}")
+        #     continue
 
         if len(rx_values) < 3:
             if "Negative Response" in rx_line or "NRC=Sub Function Not Supported" in rx_line:
-
                logger.error(f"{rx_line.split(':')[0]}\033[91m")
             continue
 
         rx_identifier = "".join(byte.replace("0x", "").upper() for byte in rx_values[:2])
+
 
         if rx_identifier == "F181":
             result = convert(rx_values[2:])
@@ -248,17 +250,17 @@ def process_tx_rx_lines(tx_lines, rx_lines):
 
         seen_identifiers.add(rx_identifier)
         if "Negative Response" in rx_line or "NRC=Sub Function Not Supported" in rx_line:
-            #tx_identifier = "".join(byte.replace("0x", "").upper() for byte in tx_values[:2])
+            #rx_identifier = "".join(byte.replace("0x", "").upper() for byte in tx_values[:2])
             logger.error(f"{rx_identifier}\033[91m Negative Response detected \033[0m")
-
             continue
+
         if "Diagnostic Session Control " in rx_line:
             logger.warning(f"{rx_identifier}\033[94m Diagnostic Session Control \033[0m")
             continue
         if "Security Access " in rx_line:
             logger.warning(f"{rx_identifier}\033[94m Security Access \033[0m")
             continue
-
+        Standart_Generetic_condition = id_Standart_Generetic.ID_CONDITIONS.get(rx_identifier, "Unknown DID")
 
         result = convert(rx_values[2:])
         raw_values = " ".join(val.replace("0x", "") for val in rx_values[2:])
@@ -271,11 +273,15 @@ def process_tx_rx_lines(tx_lines, rx_lines):
                     f"{rx_identifier} Read Data By Identifier, Condition: \033[91m{condition}\033[0m, Converted result: wrong output")
             elif result == "0":
                 logger.info(
-                    f"{rx_identifier} Read Data By Identifier, Converted result: \033[93m0\033[0m, Raw Values: \033[93m{raw_values}\033[0m")
+                    f"\033[93m{rx_identifier} {Standart_Generetic_condition} \033[0m Read Data By Identifier, Converted result: \033[93m0\033[0m, Raw Values: \033[93m{raw_values}\033[0m")
             else:
-               if script_name in ["Standard_Identifiers", "Generetic_ECU_Read"]:   #### full print
+               if script_name in ["Standard_Identifiers"]:   #### full print
                    logger.info(
-                       f"\033[93m{rx_identifier}\033[0m Read Data By Identifier: Converted result: \033[93m{result}\033[0m, Raw Values: \033[93m{raw_values}\033[0m")
+                       f"\033[93m{rx_identifier} {Standart_Generetic_condition}\033[0m Read Data By Identifier: Converted result: \033[93m{result}\033[0m, Raw Values: \033[93m{raw_values}\033[0m")
+
+               elif script_name in ["Generetic_ECU_Read"]:   #### full print
+                   logger.info(
+                       f"\033[93m{rx_identifier} {Standart_Generetic_condition} \033[0m Read Data By Identifier: Converted result: \033[93m{result}\033[0m, Raw Values: \033[93m{raw_values}\033[0m")
 
     for handler in logger.handlers[:]:
         if isinstance(handler, logging.FileHandler):
