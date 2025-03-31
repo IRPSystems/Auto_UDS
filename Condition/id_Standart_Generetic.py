@@ -1,0 +1,33 @@
+
+
+ID_CONDITIONS = {"F18B":"ECUManufacturingDate",
+                 "F18C":"ECUSerialNumber",
+                 "F190":"VIN",
+                 "F197":"systemNameOrEngineType",
+                 "F198":"repairShopCodeOrTesterSerialNumber",
+                 "F180":"Software Identification",
+                 "F181":"Application Software Identification",
+                 "F182":"Application Data Identification",
+                 "F187":"Vehicle Manufacturer spare part number",
+                 "F18A":"System Supplier Identifier",
+                 "0100":"Model number 0100",
+                 "F199":"Programing Date",
+                 "F19D":"ECU Installation Date",
+                 "F193":"System Supplier ECU Hardware Version Number",
+                 "F194":"System Supplier ECU Software Number",
+                 "F195":"System Supplier ECU Software Version Number",
+                 "F1F0":"System Supplier part number",
+                 "0101":"Variant Code",
+                 "0102":"Feature Code",
+                 "F186":"Read Active Diagnostic Session",
+                 "1500":"focSensorAngleOffset",
+                  "0304":"Access Timing Parameters",
+                 "F1B1":"Battery Voltage",
+                  "F1B2":"Vehicle Speed",
+                 "F1B3":"Motor speed",
+                 "F1B4":"Reset Reason",
+                 "F1B5":"Reset Counter",
+                 "F1B6":"Ignition Counter",
+
+                 }
+

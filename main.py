@@ -207,9 +207,9 @@ def process_tx_rx_lines(tx_lines, rx_lines):
                                 f"{tx_identifier} {Standart_Generetic_condition} Mismatch Tx and Rx, Condition: \033[93m{condition}\033[0m, Converted: wrong output Fail")
                 else:
                     if script_name in ["Standard_Identifiers", "Generetic_ECU_Read"]:
-                        logger.error(f"Mismatch Tx and Rx {tx_identifier} wrong output Fail")
+                        logger.error(f"Mismatch Tx and Rx {tx_identifier} {Standart_Generetic_condition} wrong output Fail")
                     else:
-                        logger.error(f"{condition} Mismatch Tx and Rx {tx_identifier}, Fail")
+                        logger.error(f"{condition}  Mismatch Tx and Rx {tx_identifier}, Fail")
 
     #logger.debug(f"Remaining RX lines before standalone processing: {rx_lines}")
 
