@@ -228,7 +228,8 @@ def process_tx_rx_lines(tx_lines, rx_lines):
         rx_identifier = "".join(byte.replace("0x", "").upper() for byte in rx_values[:2])
 
 
-        if rx_identifier == "F181":
+        if rx_identifier == "F195":
+
             result = convert(rx_values[2:])
             if result and result != "0" and result != "wrong output":
                 result_folder = os.path.join("Logs", result)

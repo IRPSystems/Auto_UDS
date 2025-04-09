@@ -1,25 +1,25 @@
-#Application Software  Identification F181
-send 22 F181
+#System Supplier ECU Software Version Number F195
+send 22 F195
 
 #Network Manager Missmatch
 
-#VCU_100DLC Missmatch Threshold (Default 5, Scale 1)
+#VCU_100 DLC Mismatch Threshold (Default 5, Scale 1)
 send 2E F1D3 05 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 send 22 F1D3
 
-#VCU_100DLC Parity Missmatch Threshold (Default 5, Scale 1)
+#VCU_100 DLC Parity Mismatch Threshold (Default 5, Scale 1)
 send 2E F1D3 00 05 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 send 22 F1D3
 
-#VCU_100DLC Mismatch Healing Threshold  (Default 10 Scale 1)
+#VCU_100 DLC Mismatch Healing Threshold  (Default 10 Scale 1)
 send 2E F1D3 00 00 0A 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 send 22 F1D3
 
-#VCU_100DLC Parity Mismatch Healing Threshold  (Default 10 Scale 1)
+#VCU_100 DLC Parity Mismatch Healing Threshold  (Default 10 Scale 1)
 send 2E F1D3 00 00 00 0A 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 send 22 F1D3
 
-#VCU3_100DLC Missmatch Threshold (Default 5, Scale 1)
+#VCU3_100 DLC Mismatch Threshold (Default 5, Scale 1)
 send 2E F1D3 00 00 00 00 05 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 send 22 F1D3
 

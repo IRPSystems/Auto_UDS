@@ -1,5 +1,5 @@
-#Application Software  Identification F181
-send 22 F181
+#System Supplier ECU Software Version Number F195
+send 22 F195
 
 #Network Management Enable
 #send 2E F1D4 01

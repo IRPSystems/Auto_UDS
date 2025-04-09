@@ -1,7 +1,5 @@
-
-
-#Application Software  Identification F181
-send 22 F181
+#System Supplier ECU Software Version Number F195
+send 22 F195
 
 #Odometer F1B0
 send 22 F1B0
