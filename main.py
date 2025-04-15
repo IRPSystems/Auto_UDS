@@ -4,7 +4,7 @@ from Condition import (id_conditions_F1D2, id_conditions_F1D3, id_conditions_Fau
 from logger import setup_logger
 import os, re, glob, shutil, logging
 
-#SKIP_IDENTIFIERS = {"0100", "02", "0102", "F186"}
+
 SKIP_IDENTIFIERS = {""}
 
 Logs_folder = os.path.join("Logs")
