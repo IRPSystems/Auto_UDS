@@ -78,10 +78,6 @@ send 2E 0101 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 sleep 500
 send 22 0101
 
-#Feature Code 0102
-send 2E 0102 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-sleep 500
-send 22 0102
 
 #Access Timing Parameters
 send 83 04 04 D2 11 D7 0C 22 56
@@ -94,6 +90,11 @@ send 22 1500
 sleep 500
 # Read Active Diagnostic Session F186
 send 22 F186
+
+#Feature Code 0102
+send 2E 0102 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+sleep 500
+send 22 0102
 
 
 
