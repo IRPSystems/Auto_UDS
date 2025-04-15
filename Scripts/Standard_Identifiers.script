@@ -17,13 +17,17 @@ send 22 F187
 
 #System Supplier Identifier F18A
 send 22 F18A
+sleep 500
 
 #ECU Manufacturing Date F18B
-send 2E F18B 1E 0C 07E9 00 00
+send 2E F18B 1E 0C 08 E9 00 00
+sleep 500
 send 22 F18B
 
+
 #ECU Serial Number F18C
-send 2E F18C 49 52 50 53 59 53 54 45 4D 53 31 32 36
+send 2E F18C 49 52 50 53 59 53 54 45 4D 53 31 32 37
+sleep 500
 send 22 F18C
 
 #Access Timing Parameter 0x83
@@ -34,11 +38,11 @@ security 1
 sleep 500
 
 #Model number 0100
-send 2E 0100 49 52 50 4D 6F 64 65 6C 4E 75 6D 62 65 72 30 30 30 31
+send 2E 0100 49 52 50 4D 6F 64 65 6C 4E 75 6D 62 65 72 30 30 30 33
 send 22 0100
 
 # Write&Read VIN identifier number F190
-send 2E F190 31 32 33 41 42 43 34 35 36 44 45 46 37 38 39 47 47
+send 2E F190 31 32 33 41 42 43 34 35 36 44 45 46 37 38 39 47 46
 send 22 F190
 
 # Write&Read SystemNameorEnginetype F197
@@ -50,11 +54,11 @@ send 2E F198 69 20 61 6D 20 61 20 74 65 73 74 65 74 00 00 00
 send 22 F198
 
 # Programing  Date F199   101224 1E 0C 07 E9 00 00
-send 2E F199 "101224"
+send 2E F199 "150325"
 send 22 F199
 
 #ECU Installation Date F19D 1E 0C 07 E9 00 00
-send 2E F19D "101224"
+send 2E F19D "150325"
 send 22 F19D
 
 #System Supplier ECU Hardware Version Number F193

@@ -101,17 +101,22 @@ def get_condition_from_position(position, script_name):
     return conditions if conditions else ["Unknown Condition"]
 
 
-def process_uds_file(file_path):
+def process_uds_file(file_path, logger):
     logger.info(f"Processing file: {file_path}")
     tx_lines, rx_lines = [], []
     with open(file_path, "r", encoding="utf-8") as f:
         for line in f:
+            line = line.strip()
             if line.startswith("Tx)"):
-                tx_lines.append(line.strip())
+                tx_lines.append(line)
             elif line.startswith("Rx)"):
-                rx_lines.append(line.strip())
+                rx_lines.append(line)
             elif "Tester Present:ON" in line:
                 logger.info("\033[94mTester Present: ON \033[0m")
+            elif re.search(r"\d{2}/\d{2}/\d{4}\s+\d{2}:\d{2}:\d{2}\s+ERROR:.*No response from ECU", line, re.IGNORECASE):
+                timestamp = line[:21] if len(line) >= 19 else "Unknown timestamp"
+                logger.error(f"No response from ECU detected at {timestamp}")
+                #logger.error(f"No response from ECU detected ")
     return tx_lines, rx_lines
 
 def strip_ansi_codes(file_path):
@@ -221,8 +226,9 @@ def process_tx_rx_lines(tx_lines, rx_lines):
         #     continue
 
         if len(rx_values) < 3:
-            if "Negative Response" in rx_line or "NRC=Sub Function Not Supported" in rx_line:
+            if "Negative Response" in rx_line or "NRC=Sub Function Not Supported"  in rx_line:
                logger.error(f"{rx_line.split(':')[0]}\033[91m")
+
             continue
 
         rx_identifier = "".join(byte.replace("0x", "").upper() for byte in rx_values[:2])
@@ -310,8 +316,6 @@ if __name__ == "__main__":
         print("No matching files found.")
     else:
         newest_file = max(files, key=os.path.getmtime)
-        #print(f"The newest file is: {newest_file}")
-
         script_name = extract_script_name(newest_file)
         if script_name is None:
             script_name = "default_log"
@@ -324,7 +328,7 @@ if __name__ == "__main__":
 
         logger = setup_logger(script_name, Logs_folder)
         logger.setLevel(logging.DEBUG)
-        tx_lines, rx_lines = process_uds_file(newest_file)
+        tx_lines, rx_lines = process_uds_file(newest_file, logger)  # Pass logger
 
         if tx_lines or rx_lines:
             process_tx_rx_lines(tx_lines, rx_lines)
