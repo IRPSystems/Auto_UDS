@@ -4,7 +4,7 @@ from Condition import (id_conditions_F1D2, id_conditions_F1D3, id_conditions_Fau
 from logger import setup_logger
 import os, re, glob, shutil, logging
 
-#SKIP_IDENTIFIERS = {"0100", "02", "0102", "F186"}
+
 SKIP_IDENTIFIERS = {""}
 
 Logs_folder = os.path.join("Logs")
@@ -46,7 +46,9 @@ def convert(values):
             combined_hex = "".join(x[2:] for x in values)
             unsigned_int = int(combined_hex, 16)
             if len(values) == 1:
-                return str(unsigned_int)
+               # if unsigned_int >= 800:
+               #   unsigned_int -= 0x100
+               return str(unsigned_int)
             elif len(values) == 2:  #
                 if unsigned_int >= 0x8000:
                     unsigned_int -= 0x10000
@@ -197,7 +199,7 @@ def process_tx_rx_lines(tx_lines, rx_lines, all_lines):
                     if script_name in ["Standard_Identifiers", "Generetic_ECU_Read"]:
                         logger.error(f"Mismatch Tx and Rx {tx_identifier} {Standart_Generetic_condition} wrong output Fail")
                     else:
-                        logger.error(f"{condition}  Mismatch Tx and Rx {tx_identifier}, Fail")
+                        logger.error(f"{condition},  Mismatch Tx and Rx {tx_identifier}, Fail")
 
     #logger.debug(f"Remaining RX lines before standalone processing: {rx_lines}")
 

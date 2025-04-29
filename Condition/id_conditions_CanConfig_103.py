@@ -8,6 +8,5 @@ ID_CONDITIONS = {
   "BusoffSlowRecoveryTime":"00 00 00 00 32 00 00 00 00 00",
   "NMRestartDlyTimeAfterUnderVolRecovery":"00 00 00 00 00 00 32 00 00 00",
   "NMRestartDlyTimeAfterOverVolRecovery":" 00 00 00 00 00 00 00 32 00 00",
-  "NMRestartDlyTimeAfterCranking":"00 00 00 00 00 00 00 00 00 0A",
 
 }
