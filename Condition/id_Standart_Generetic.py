@@ -29,6 +29,7 @@ ID_CONDITIONS = {"F18B":"ECUManufacturingDate",
                  "F1B4":"Reset Reason",
                  "F1B5":"Reset Counter",
                  "F1B6":"Ignition Counter",
+                 "0303":"Security level",
 
                  }
 

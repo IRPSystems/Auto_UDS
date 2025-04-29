@@ -96,6 +96,8 @@ send 2E 0102 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 sleep 500
 send 22 0102
 
+#get security level status
+send 22 0303
 
 
 

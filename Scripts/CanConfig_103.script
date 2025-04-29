@@ -2,6 +2,11 @@
 #System Supplier ECU Software Version Number F195
 send 22 F195
 
+tester on
+send 10 03
+security 1
+sleep 500
+
 #CANWakeupFeatureEnable (Default 0 or 1, Scale 1)
 send 2E 01 03 01 00 00 00 00 00 00 00 00 00
 send 22 01 03
@@ -30,6 +35,6 @@ send 22 01 03
 send 2E 01 03 00 00 00 00 00 00 00 32 00 00
 send 22 01 03
 
-#NMRestartDlyTimeAfterCranking (Default 100, Scale 10)
-send 2E 01 03 00 00 00 00 00 00 00 00 00 0A
-send 22 01 03
+#NMRestartDlyTimeAfterCranking (Default 100, Scale 10)  Not in use
+#send 2E 01 03 00 00 00 00 00 00 00 00 00 0A
+#send 22 01 03

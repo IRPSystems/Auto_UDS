@@ -1,10 +1,17 @@
 #System Supplier ECU Software Version Number F195
 send 22 F195
 
+tester on
+send 10 03
+security 1
+sleep 500
+
 #Network Manager
 
 #VCU_100 TimeOut (Default 1000, Scale 20)
 send 2E F1D2 32 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+2E F1 D2     0B 0A 0B 04 04 05 07 08 09 12 10 11 04 05 FF AB CD EF 12 18 19
+    62 F1 D2 E8 64 88 64 64 0A 32 0A C8 14 88 64 00 00 00 00 00 64 0A
 send 22 F1D2
 
 #VCU_100  TimeOut Healing Time (Default 1000, Scale 20)
