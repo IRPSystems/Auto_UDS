@@ -286,10 +286,10 @@ def process_tx_rx_lines(tx_lines, rx_lines, all_lines):
             else:
                 if script_name in ["Standard_Identifiers"]:   #### full print
                     logger.info(
-                        f"\033[93m{rx_identifier} {Standart_Generetic_condition}\033[0m Read Data By Identifier: Converted result: \033[93m{result}\033[0m, Raw Values: \033[93m{raw_values}\033[0m")
+                        f"\033[93m{rx_identifier} {Standart_Generetic_condition}\033[0m Read Data By Identifier, Converted result: \033[93m{result}\033[0m, Raw Values: \033[93m{raw_values}\033[0m")
                 elif script_name in ["Generetic_ECU_Read"]:   #### full print
                     logger.info(
-                        f"\033[93m{rx_identifier} {Standart_Generetic_condition} \033[0m Read Data By Identifier: Converted result: \033[93m{result}\033[0m, Raw Values: \033[93m{raw_values}\033[0m")
+                        f"\033[93m{rx_identifier} {Standart_Generetic_condition} \033[0m Read Data By Identifier, Converted result: \033[93m{result}\033[0m, Raw Values: \033[93m{raw_values}\033[0m")
     for handler in logger.handlers[:]:
         if isinstance(handler, logging.FileHandler):
             handler.close()

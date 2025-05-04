@@ -3,6 +3,7 @@ import glob
 import re
 from openpyxl import Workbook
 from openpyxl.styles import PatternFill, Font, Alignment, colors
+import sys
 
 def get_latest_log_folder(logs_base_path="Logs"):
     """Find the latest folder in Logs directory."""
@@ -33,15 +34,22 @@ def parse_log_line(line, seen_keys=None):
     info_match = re.search(r"\[INFO\] - (.+?)(?:(?:[:,] (?:Converted result|Converted): (.+?))(?:, Raw Values: [0-9A-F\s]+)?)?(?:\s+(Pass|Fail))?$", line)
     if info_match:
         did = re.sub(r"\s*Matching Tx and Rx", "", info_match.group(1)).strip()
+        did = re.sub(r"\s*Read Data By Identifier\s*$", "", did, flags=re.IGNORECASE).strip()  # Remove Read Data By Identifier
         result = info_match.group(2).strip() if info_match.group(2) else ""
         status = info_match.group(3).strip() if info_match.group(3) else "Pass"
         if status != "Pass":
             return None
+
         try:
             if result.replace(".", "").isdigit():
                 result = int(result)
             elif result.replace(".", "").replace("-", "").isdigit():
-                result = float(result)
+                float_val = float(result)
+                if float_val.is_integer():
+                    result = int(float_val)
+                else:
+                    result = float_val
+
         except:
             pass
         if did in seen_keys:
@@ -103,9 +111,6 @@ def parse_log_line(line, seen_keys=None):
 
     return None
 
-
-
-
 def generate_excel_report(log_folder):
     folder_name = os.path.basename(log_folder)
     output_excel = os.path.join(log_folder, f"{folder_name}_report.xlsx")
@@ -128,9 +133,9 @@ def generate_excel_report(log_folder):
     # Set column widths
     column_widths = {
         'A': 30,  # File Name
-        'B': 80,  # DID / Sub-service
-        'C': 40,  # Result
-        'D': 15  # Status
+        'B': 50,  # DID / Sub-service
+        'C': 30,  # Result
+        'D': 10  # Status
     }
     for col, width in column_widths.items():
         ws.column_dimensions[col].width = width
@@ -164,15 +169,21 @@ def generate_excel_report(log_folder):
             if col == 4:  # Status column
                 if status == "Pass":
                     cell.font = Font(size=12, bold=False, color="008000")  # Green
+                    cell.alignment = Alignment(horizontal="center")
                 elif status == "Fail":
                     cell.font = Font(size=12, bold=True, color="FF0000")  # Red
+                    cell.alignment = Alignment(horizontal="center")
                 else:
                     cell.font = Font(size=12, bold=False)
+                    cell.alignment = Alignment(horizontal="lef")
+
             else:
                 cell.font = Font(size=12, bold=False)
+                cell.alignment = Alignment(horizontal="left")
 
         # Set cell format for Result column
         result_cell = ws.cell(row=row_num, column=3)
+        result_cell.alignment = Alignment(horizontal="left")
         if isinstance(row[2], int):
             result_cell.number_format = '0'
         elif isinstance(row[2], float):
@@ -192,6 +203,7 @@ def main():
         print(f"Generated Excel report: {excel_file}")
     except Exception as e:
         print(f"Error: {str(e)}")
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
