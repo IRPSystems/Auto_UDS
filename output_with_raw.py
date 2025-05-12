@@ -234,7 +234,7 @@ def generate_excel_report(log_folder):
         explode = (0.05, 0)  # No explosion of slices
 
         plt.figure(figsize=(6, 6))
-        plt.pie(sizes, explode=explode, labels=labels, colors=colors, autopct=None, startangle=90)
+        plt.pie(sizes, explode=explode, labels=labels, colors=colors, autopct=None, startangle=120)
         plt.title(f"Test Results for '{folder_name}'")
         plt.axis('equal')  # Equal aspect ratio ensures pie is circular
 
