@@ -1,12 +1,15 @@
 
 
 ID_CONDITIONS = {
-  "CANWakeupFeatureEnable":"01 00 00 00 00 00 00 00 00 00",
-  "NMDriveCnttoClearDTC":"00 28 00 00 00 00 00 00 00 00",
-  "BusoffFastRecoveryTime":"00 00 05 00 00 00 00 00 00 00",
-  "FastBusoffRecoveryCount":"00 00 00 05 00 00 00 00 00 00",
-  "BusoffSlowRecoveryTime":"00 00 00 00 32 00 00 00 00 00",
-  "NMRestartDlyTimeAfterUnderVolRecovery":"00 00 00 00 00 00 32 00 00 00",
-  "NMRestartDlyTimeAfterOverVolRecovery":" 00 00 00 00 00 00 00 32 00 00",
+  "CAN Wakeup Feature Enable":"01 00 00 00 00 00 00 00 00 00",
+  "NM Drive Cnt to Clear DTC":"00 28 00 00 00 00 00 00 00 00",
+  "Busoff Fast Recovery Time":"00 00 05 00 00 00 00 00 00 00",
+  "Fast Bus off Recovery Count":"00 00 00 05 00 00 00 00 00 00",
+  "Busoff Slow Recovery Time":"00 00 00 00 32 00 00 00 00 00",
+  "NM IGN On Startup Delay":"00 00 00 00 00 64 00 00 00 00",
+  "NM Restart Dly Time After Under Vol Recovery":"00 00 00 00 00 00 32 00 00 00",
+  "NM Restart Dly Time After Over Vol Recovery":" 00 00 00 00 00 00 00 32 00 00",
+  "NM Restart Dly Time After Bus Off recovery":"00 00 00 00 00 00 00 00 64 00",
 
 }
+

@@ -1,0 +1,60 @@
+Motor Over Temp Fault Detection Time
+Low Temperature Faults Healing Hysteresis
+Motor Low Temp Fault Detection Time
+Motor Low Temp Fault Healing Time
+MCU Over Temp Fault Detection Time
+MCU Low Temp Fault Detection Time
+MCU Low Temp Fault Healing Time
+Cooling Plate Over Temp Fault Detection Time
+Cooling Plate Temp Sensor Fault Detection Time
+uC High Temp Fault Declaration Threshold
+uC Over Temp Fault Detection Time
+MCU Temp Sensors Plausibility Failed Fault Detection Time
+Phases Overcurrent Peak Faults Absolute Declaration Threshold
+Phases Overcurrent Peak Faults Deviation Declaration Threshold
+Phase Overcurrent Peak Faults Detection Time
+Phase Sensor Invalid Faults Detection Time
+Phase Disconnected Fault Detection Time
+Active Short Circuit Fault Detection Time
+Active Short Circuit Fault Healing Time
+Gate Drivers Output Feedback Active CBIT Fault Detection Time
+Gate Drivers Output Feedback Active CBIT Fault Healing Time
+Gate Drivers Output Feedback Inactive CBIT Fault Detection Time
+Gate Drivers Output Feedback Inactive CBIT Fault Healing Time
+BAT OverCurrent Fault Absolute Declaration Threshold
+BAT OverCurrent Fault Discharge Current Declaration Settling Time
+BAT OverCurrent Fault Charge Current Declaration Settling Time
+BAT OverCurrent Fault Detection Time
+BAT Current Sensor Invalid Fault Detection Time
+BAT Low Voltage Fault Detection Time
+BAT High Voltage Detection Time
+BAT Under Voltage Fault Declaration Threshold
+BAT Under Voltage Detection Time
+Battery_Overvoltage
+BAT Over Voltage Detection Time
+BAT Voltage Sensing Plausibility Failed Detection Time
+Active Discharge Feedback CBIT Detection Time
+Active Discharge Feedback CBIT Healing Time
+Active Discharge Timeout Detection Time
+Active Discharge Timeout Healing Time
+Gate Drivers Under Voltage Detection Time
+Gate Drivers Fault Detection Time
+KL30 Under Voltage Detection Time
+KL30 Under Voltage Healing Time
+KL30 Over Voltage Detection Time
+KL30 Over Voltage Healing Time"
+KL30 LoS Detection Time
+Motor Position Sensor Fault Detection Time
+Motor Speed Fault Detection Time
+Overspeed Threshold
+Speed_upper_limit_Positive
+Overspeed_Positive_Margin
+Speed_lower_limit_Negative
+Overspeed_Negative_Margin.
+Motor Overspeed Detection Time
+Motor Stall Timeout
+IO Expander Configuration Detection Time
+IO Expander Configuration Healing Time
+CAN Transceiver Mode Detection Time
+CAN Transceiver Mode Healing Time
+Sensors 5V Fault  Detection Time

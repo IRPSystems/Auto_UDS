@@ -27,6 +27,10 @@ send 22 01 03
 send 2E 01 03 00 00 00 00 32 00 00 00 00 00
 send 22 01 03
 
+#NM IGN On Startup Delay (Default 2000, Scale 10)
+send 2E 01 03 00 00 00 00 00 64 00 00 00 00
+send 22 01 03
+
 #NMRestartDlyTimeAfterUnderVolRecovery (Default 500, Scale 10)
 send 2E 01 03 00 00 00 00 00 00 32 00 00 00
 send 22 01 03
@@ -35,6 +39,6 @@ send 22 01 03
 send 2E 01 03 00 00 00 00 00 00 00 32 00 00
 send 22 01 03
 
-#NMRestartDlyTimeAfterCranking (Default 100, Scale 10)  Not in use
-#send 2E 01 03 00 00 00 00 00 00 00 00 00 0A
-#send 22 01 03
+#NM Restart Dly Time After Bus Off recovery (Default 1000, Scale 10)
+send 2E 01 03 00 00 00 00 00 00 00 00 64 00
+send 22 01 03

@@ -1,9 +1,9 @@
 
 
 ID_CONDITIONS = {
-  "CriticalCANSignalInvalidTime":"00 05 00 00 00 00",
-  "MainCANBusOffHealingTime":"00 00 00 64 00 00",
-  "CANTimeoutSincePowerup":"00 00 00 00 00 64",
+  "Critical CAN Signal Invalid Time  (SCF Maturation)":"00 05 00 00 00 00",
+  "Main CAN Bus Off Healing Time":"00 00 00 64 00 00",
+  "CAN Timeout Since Powerup":"00 00 00 00 00 64",
 
 
 }

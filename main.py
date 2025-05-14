@@ -1,6 +1,6 @@
 import fix_routine_log
 from Condition import (id_conditions_F1D2, id_conditions_F1D3, id_conditions_Fault_Config,
-                       id_conditions_TrueDrive, id_conditions_Routine, id_conditions_F1D5, id_conditions_CanConfig_103, id_Standart_Generetic)
+                       id_conditions_TrueDrive, id_conditions_Routine, id_conditions_F1D5, id_conditions_CanConfig_103, id_Standart_Generetic,id_conditions_CanWakeUp_104)
 from logger import setup_logger
 import os, re, glob, shutil, logging
 
@@ -84,6 +84,8 @@ def get_condition_from_position(position, script_name):
        condition_dict = id_conditions_F1D5.ID_CONDITIONS
     elif script_name == "CanConfig_103":
         condition_dict = id_conditions_CanConfig_103.ID_CONDITIONS
+    elif script_name == "CanWakeUp_104":
+        condition_dict = id_conditions_CanWakeUp_104.ID_CONDITIONS
     else: condition_dict={}
     for key, value in condition_dict.items():
         value_parts = value.split()
