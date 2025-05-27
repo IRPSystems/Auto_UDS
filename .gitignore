@@ -9,3 +9,5 @@ Condition/__pycache__/
 Logs/
 venv/
 .venv/
+/Scripts/Upgrade_Downgrade.script
+t_ouput.py

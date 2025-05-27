@@ -14,7 +14,7 @@ send 22 F1B2
 send 22 F1B3
 
 #Reset Reason 1-5 F1B4
-#send 22 F1B4
+send 22 F1B4
 
 #Reset Counter F1B5
 #send 22 F1B5

@@ -27,9 +27,9 @@ send 22 01 03
 send 2E 01 03 00 00 00 00 32 00 00 00 00 00
 send 22 01 03
 
-#NM IGN On Startup Delay (Default 2000, Scale 10)
-send 2E 01 03 00 00 00 00 00 64 00 00 00 00
-send 22 01 03
+#Not in use NM IGN On Startup Delay (Default 2000, Scale 10)
+#send 2E 01 03 00 00 00 00 00 64 00 00 00 00
+#send 22 01 03
 
 #NMRestartDlyTimeAfterUnderVolRecovery (Default 500, Scale 10)
 send 2E 01 03 00 00 00 00 00 00 32 00 00 00

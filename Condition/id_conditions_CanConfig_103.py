@@ -6,7 +6,6 @@ ID_CONDITIONS = {
   "Busoff Fast Recovery Time":"00 00 05 00 00 00 00 00 00 00",
   "Fast Bus off Recovery Count":"00 00 00 05 00 00 00 00 00 00",
   "Busoff Slow Recovery Time":"00 00 00 00 32 00 00 00 00 00",
-  "NM IGN On Startup Delay":"00 00 00 00 00 64 00 00 00 00",
   "NM Restart Dly Time After Under Vol Recovery":"00 00 00 00 00 00 32 00 00 00",
   "NM Restart Dly Time After Over Vol Recovery":" 00 00 00 00 00 00 00 32 00 00",
   "NM Restart Dly Time After Bus Off recovery":"00 00 00 00 00 00 00 00 64 00",
