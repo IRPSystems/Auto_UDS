@@ -29,7 +29,11 @@ send 22 02 01
 send 31 01 02 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 0F 1E
 send 22 02 01
 
+#Resolver Autocalibration
+send 31 01 02 95
 
+#ActiveDischarge
+send 31 01 02 96
 
 
 
