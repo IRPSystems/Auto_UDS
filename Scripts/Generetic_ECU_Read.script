@@ -17,7 +17,7 @@ send 22 F1B3
 send 22 F1B4
 
 #Reset Counter F1B5
-#send 22 F1B5
+send 22 F1B5
 
 #Ignition Counter F1B6
 send 22 F1B6
