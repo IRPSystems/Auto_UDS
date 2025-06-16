@@ -10,4 +10,4 @@ Logs/
 venv/
 .venv/
 /Scripts/Upgrade_Downgrade.script
-compare_srd_test.py
+complaince_test.py

@@ -6,4 +6,5 @@ ID_CONDITIONS = {
   "CAN Timeout Since Powerup":"00 00 00 00 00 64",
 
 
+
 }

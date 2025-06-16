@@ -31,6 +31,9 @@ ID_CONDITIONS = {"F18B":"ECU Manufacturing Date",
                  "F1B6":"Ignition Counter",
                  "0303":"Security level",
                  "0201":"HISTORY ZONE",
+                 "F1B9":"Snapshot Data",
+                 "078E":"Freeze Frame Data",
+                 "F1D4":"Network Management Enable",
 
 
                  }
