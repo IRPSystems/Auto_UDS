@@ -1,9 +1,7 @@
 #System Supplier ECU Software Version Number F195
 send 22 F195
 
-#Set boot Flag
-#send 31 01 02 00 AA
-#send 22 02 00
+
 
 #NumberInFlash  unit 8
 send 31 01 02 01 0A 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00

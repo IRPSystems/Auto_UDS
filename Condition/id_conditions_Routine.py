@@ -9,5 +9,6 @@ ID_CONDITIONS = {
     "Time": "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 0F 1E",
     "Resolver Autocalibration":"02 95",
     "Active Discharge":"02 96",
+
 }
 

@@ -21,7 +21,7 @@ ID_CONDITIONS = {"F18B":"ECU Manufacturing Date",
                  "0102":"Feature Code",
                  "F186":"Active Diagnostic Session",
                  "1500":"MCU EOL Calibration / Resolver Offset Calibration information",
-                  "0304":"Access Timing Parameters",
+                 "0304":"Access Timing Parameters",
                  "F1B0":"Odometer",
                  "F1B1":"Battery Voltage",
                  "F1B2":"Vehicle Speed",
@@ -34,6 +34,7 @@ ID_CONDITIONS = {"F18B":"ECU Manufacturing Date",
                  "F1B9":"Snapshot Data",
                  "078E":"Freeze Frame Data",
                  "F1D4":"Network Management Enable",
+                 "0200":"BOOT FLAG"
 
 
                  }

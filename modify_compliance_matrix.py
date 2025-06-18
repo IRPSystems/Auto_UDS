@@ -4,15 +4,16 @@ from openpyxl.styles import PatternFill, Font
 import os
 import sys
 import re
+import  output_with_raw
 
 # Define file paths
 SRD_path = r"C:\Users\ilyar\Downloads\HD-UP-ICD-242601-UDID.xlsx"
-UDS_path = r"C:\Users\ilyar\PycharmProjects\UDS\Logs\03.00.00\03.00.00_report.xlsx"
-OUTPUT_path = os.path.join(os.path.dirname(UDS_path), "UDS_Compliance_matrix_UPP_v3.00.00.xlsx")
+UDS_path = r"C:\Users\ilyar\PycharmProjects\UDS\Logs\03.01.00\03.01.00_report.xlsx"
+OUTPUT_path = os.path.join(os.path.dirname(UDS_path), "UDS_Compliance_matrix_UPP_v3.01.00.xlsx")
 EXTRACTED_SRD_path = os.path.join(os.path.dirname(UDS_path), "extracted_srd_data.xlsx")
 
 # Define non-implemented DIDs
-NON_IMPLEMENTED_DIDS = {"F1BE", "F192", "F194", "0200"}
+NON_IMPLEMENTED_DIDS = {"F1BE", "F192", "F194"}
 
 # Expected output order for first 10 rows
 EXPECTED_ORDER = [
@@ -41,7 +42,7 @@ REQ_ID_MAPPING = {
         "ECU Serial Number": ("MCU_STD_DID_List_7", "F18C"),
         "VIN-Vehicle Identification Number": ("MCU_STD_DID_List_8", "F190"),
         "System Supplier ECU Hardware Version Number": ("MCU_STD_DID_List_10", "F193"),
-        " System Supplier ECU Software Version Number": ("MCU_STD_DID_List_12", "F195"),
+        "System Supplier ECU Software Version Number": ("MCU_STD_DID_List_12", "F195"),
         "System Name/Engine Type": ("MCU_STD_DID_List_13", "F197"),
         "Repair Shop Code/Tester Serial Number": ("MCU_STD_DID_List_14", "F198"),
        # "Repair Shop Code/Tester Serial Number": ("MCU_STD_DID_List_13", "F197"),
@@ -53,12 +54,13 @@ REQ_ID_MAPPING = {
         "Feature Code": ("MCU_STD_DID_List_20", "0102"),
         "Active Diagnostic Session": ("MCU_STD_DID_List_21", "F186"),
         "HISTORY ZONE": ("MCU_STD_DID_List_23", "0201"),
-        "Boot Flag": ("MCU_STD_DID_List_22", "0200"),
+        #"BOOT FLAG": ("MCU_STD_DID_List_22", "0200"),
         "Engine State": ("MCU_NM_ID_LIST_4", "F1BE"),
          #"ECU Calibration Data": ("Unknown", "F1BE"),
         "ECU Hardware Number": ("MCU_NM_ID_LIST_9", "F192"),
         "ECU Software Number": ("MCU_NM_ID_LIST_11", "F194"),
         "Access Timing Parameters": ("Unknown", "0304"),
+
     },
     "Generic ECU Read": {
         "Odometer": ("MCU_GenECU_Read_list_1", "F1B0"),
@@ -173,16 +175,16 @@ REQ_ID_MAPPING = {
         "Critical CAN Signal Invalid Time": ("MCU_NM_ID_LIST_4", "F1D5"),
         "Main CAN Bus Off Healing Time": ("MCU_NM_ID_LIST_4", "F1D5"),
         "CAN Timeout Since Powerup": ("MCU_NM_ID_LIST_4", "F1D5"),
-        "CAN Wakeup Feature Enable": ("MCU_NM_ID_LIST_4", "F1D5"),
-        "NM Drive Cnt to Clear DTC": ("MCU_NM_ID_LIST_4", "F1D5"),
-        "Busoff Fast Recovery Time": ("MCU_NM_ID_LIST_4", "F1D5"),
-        "Fast Bus off Recovery Count": ("MCU_NM_ID_LIST_4", "F1D5"),
-        "Busoff Slow Recovery Time": ("MCU_NM_ID_LIST_4", "F1D5"),
-        "NM IGN On Startup Delay": ("MCU_NM_ID_LIST_4", "F1D5"),
-        "NM Restart Dly Time After Under Vol Recovery": ("MCU_NM_ID_LIST_4", "F1D5"),
-        "NM Restart Dly Time After Over Vol Recovery": ("MCU_NM_ID_LIST_4", "F1D5"),
-        "NM Restart Dly Time After Bus Off recovery": ("MCU_NM_ID_LIST_4", "F1D5"),
-        "NM Restart Dly Time After Cranking": ("MCU_NM_ID_LIST_4", "F1D5"),
+        "CAN Wakeup Feature Enable": ("MCU_NM_ID_LIST_4", "0103"),
+        "NM Drive Cnt to Clear DTC": ("MCU_NM_ID_LIST_4", "0103"),
+        "Busoff Fast Recovery Time": ("MCU_NM_ID_LIST_4", "0103"),
+        "Fast Bus off Recovery Count": ("MCU_NM_ID_LIST_4", "0103"),
+        "Busoff Slow Recovery Time": ("MCU_NM_ID_LIST_4", "0103"),
+        "NM IGN On Startup Delay": ("MCU_NM_ID_LIST_4", "0103"),
+        "NM Restart Dly Time After Under Vol Recovery": ("MCU_NM_ID_LIST_4", "0103"),
+        "NM Restart Dly Time After Over Vol Recovery": ("MCU_NM_ID_LIST_4", "0103"),
+        "NM Restart Dly Time After Bus Off recovery": ("MCU_NM_ID_LIST_4", "0103"),
+        "NM Restart Dly Time After Cranking": ("MCU_NM_ID_LIST_4", "0103"),
     },
     "Faults Configuration": {
         # All use MCU_Fun_ID_List_1
@@ -285,8 +287,9 @@ REQ_ID_MAPPING = {
         "Snapshot Data": ("MCU_FF_ID_List_2", "F1B9"),
     },
     "Routine Control": {
-        "Active Discharge": ("Unknown", "0x31"),
-        "Resolver Autocalibration": ("Unknown", "0x31"),
+        "Active Discharge": ("Unknown", "0296"),
+        "Resolver Autocalibration": ("Unknown", "0295"),
+
     }
 }
 
@@ -301,8 +304,11 @@ def ensure_output_directory(output_file):
         os.makedirs(output_dir)
         print(f"Created directory: {output_dir}")
 
+# def normalize_service_name(service):
+#     return str(service).strip() if service else ""
 def normalize_service_name(service):
-    return str(service).strip() if service else ""
+    service = str(service).strip().upper() if service else ""  # Convert to uppercase for consistency
+    return service
 
 def normalize_group_name(group):
     if not group:
@@ -314,7 +320,7 @@ def normalize_group_name(group):
         "Network_Mismatch_F1D3": "Network Mismatch",
         "Network_Timeout_F1D2": "Network Mgmnt",
         "Network_F1D5": "Can Configuration",
-        "CanConfig_C": "Can Configuration",
+        "Network_103": "Can Configuration",
         "TrueDrive_M": "True Drive Parameters",
         "Faults_C": "Faults Configuration",
         "Standard_I": "Standard Identifiers",
@@ -594,6 +600,8 @@ def compare_and_generate_report(srd_services, srd_original_names, srd_details, l
         raise
 
 def main():
+
+    os.system('python output_with_raw.py')
     parser = argparse.ArgumentParser(description="Generate UDS compliance report")
     parser.add_argument("--srd-file", default=SRD_path, help="SRD Excel file path")
     parser.add_argument("--log-file", default=UDS_path, help="Log Excel file path")
