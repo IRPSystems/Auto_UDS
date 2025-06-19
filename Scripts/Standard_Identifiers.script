@@ -116,15 +116,15 @@ send 22 078E
 send 31 01 02 00 01
 send 22 02 00
 
-#Wakeup wait timer
+#Wakeup Wait Timer
 send 2E 23F9 01 90
 send 22 23F9
 
-#Wakeup Sync timer
+#Wakeup Sync Timer
 send 2E 23FA 00 3C
 send 22 23FA
 
-#Normal min Timeout Timer
+#Normal Min Timeout Timer
 send 2E 23FC 00 32
 send 22 23FC
 

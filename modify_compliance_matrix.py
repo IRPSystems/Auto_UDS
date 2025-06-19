@@ -4,7 +4,7 @@ from openpyxl.styles import PatternFill, Font
 import os
 import sys
 import re
-import  output_with_raw
+import output_with_raw
 
 # Define file paths
 SRD_path = r"C:\Users\ilyar\Downloads\HD-UP-ICD-242601-UDID.xlsx"
@@ -22,8 +22,7 @@ EXPECTED_ORDER = [
     ("MCU_NM_ID_LIST_1", "Network Mgmnt", "F1D2", "VCU3_100 Timeout"),
     ("MCU_NM_ID_LIST_4", "Can Configuration", "F1D5", "Critical CAN Signal Invalid Time"),
     ("MCU_Fun_ID_List_1", "Faults Configuration", "078F", "Motor Over Temp Fault Detection"),
-    ("Unknown", "Routine Control", "0x31", "Active Discharge"),
-    #("Unknown", "Standard Identifiers", "F1BE", "ECU Calibration Data"),
+    ("Unknown", "Routine Control", "0296", "Active Discharge"),
     ("MCU_NM_ID_LIST_4", "Standard Identifiers", "F1BE", "Engine State"),
     ("MCU_NM_ID_LIST_9", "Standard Identifiers", "F192", "ECU Hardware Number"),
     ("MCU_NM_ID_LIST_11", "Standard Identifiers", "F194", "ECU Software Number"),
@@ -60,7 +59,10 @@ REQ_ID_MAPPING = {
         "ECU Hardware Number": ("MCU_NM_ID_LIST_9", "F192"),
         "ECU Software Number": ("MCU_NM_ID_LIST_11", "F194"),
         "Access Timing Parameters": ("Unknown", "0304"),
-
+        "Wakeup Wait Timer": ("Unknown", "23F9"),
+        "Wakeup Sync Timer": ("Unknown", "23FA"),
+        "Normal Min Timeout Timer": ("Unknown", "23FC"),
+        "Sleep Wait Timer": ("Unknown", "23FB"),
     },
     "Generic ECU Read": {
         "Odometer": ("MCU_GenECU_Read_list_1", "F1B0"),
@@ -289,7 +291,7 @@ REQ_ID_MAPPING = {
     "Routine Control": {
         "Active Discharge": ("Unknown", "0296"),
         "Resolver Autocalibration": ("Unknown", "0295"),
-
+        "History Zone Update": ("Unknown", "0201"),
     }
 }
 
@@ -304,34 +306,38 @@ def ensure_output_directory(output_file):
         os.makedirs(output_dir)
         print(f"Created directory: {output_dir}")
 
-# def normalize_service_name(service):
-#     return str(service).strip() if service else ""
 def normalize_service_name(service):
-    service = str(service).strip().upper() if service else ""  # Convert to uppercase for consistency
-    return service
-
-def normalize_group_name(group):
-    if not group:
-        return None
-    group = str(group).strip()
-    # Map inconsistent group names from log report to standard names
-    group_mapping = {
-        "Generoid_ECU_F": "Generic ECU Read",
-        "Network_Mismatch_F1D3": "Network Mismatch",
-        "Network_Timeout_F1D2": "Network Mgmnt",
-        "Network_F1D5": "Can Configuration",
-        "Network_103": "Can Configuration",
-        "TrueDrive_M": "True Drive Parameters",
-        "Faults_C": "Faults Configuration",
-        "Standard_I": "Standard Identifiers",
-        "Routine_C": "Routine Control",
+    if not service:
+        return ""
+    service = str(service).strip()
+    # Remove common prefixes and suffixes
+    prefixes = [
+        r'^MISMATCH TX AND RX\s+',  # Remove "Mismatch Tx and Rx"
+        r'^\s*[0-9A-F]{3,4}\s+'    # Remove leading DID
+    ]
+    suffixes = [
+        r'\s+WRONG OUTPUT FAIL$',   # Remove "wrong output Fail"
+        r'\s+FAIL$'                 # Remove trailing "Fail"
+    ]
+    for prefix in prefixes:
+        service = re.sub(prefix, '', service, flags=re.IGNORECASE)
+    for suffix in suffixes:
+        service = re.sub(suffix, '', service, flags=re.IGNORECASE)
+    service = service.strip().upper()
+    # Map known service name variations to standard names
+    service_mapping = {
+        "NORMAL MIN TIMEOUT TIMER": "NORMAL MIN TIMEOUT TIMER",
+        "SLEEP WAIT TIMER": "SLEEP WAIT TIMER"
     }
-    return group_mapping.get(group, group)
+    return service_mapping.get(service, service)
 
 def strip_prefix(service):
     service = str(service).strip()
-    match = re.match(r'^([0-9A-Fa-f]{3,4})\s+(.+)$', service)
-    return (match.group(1).upper(), match.group(2).strip()) if match else (None, service)
+    # Match DID followed by service name, considering possible prefixes
+    match = re.match(r'^(?:MISMATCH TX AND RX\s+)?([0-9A-Fa-f]{3,4})\s+(.+)$', service, re.IGNORECASE)
+    if match:
+        return (match.group(1).upper(), match.group(2).strip())
+    return (None, service)
 
 def is_valid_did(did):
     did = str(did).strip().upper()
@@ -497,6 +503,24 @@ def extract_log_data(log_file_path, sheet_name=None):
     print(f"Processed {row_count} row(s) in log sheet '{sheet_name}'")
     return log_data, log_original_names, log_dids, log_groups
 
+def normalize_group_name(group):
+    if not group:
+        return None
+    group = str(group).strip()
+    # Map inconsistent group names from log report to standard names
+    group_mapping = {
+        "Generoid_ECU_F": "Generic ECU Read",
+        "Network_Mismatch_F1D3": "Network Mismatch",
+        "Network_Timeout_F1D2": "Network Mgmnt",
+        "Network_F1D5": "Can Configuration",
+        "Network_103": "Can Configuration",
+        "TrueDrive_M": "True Drive Parameters",
+        "Faults_C": "Faults Configuration",
+        "Standard_I": "Standard Identifiers",
+        "Routine_C": "Routine Control",
+    }
+    return group_mapping.get(group, group)
+
 def compare_and_generate_report(srd_services, srd_original_names, srd_details, log_data, log_original_names, log_dids, log_groups, output_file):
     try:
         workbook = openpyxl.Workbook()
@@ -522,15 +546,17 @@ def compare_and_generate_report(srd_services, srd_original_names, srd_details, l
             status = log_data.get(normalized_service, "Not Tested")
             if did.upper() in NON_IMPLEMENTED_DIDS or did.upper() == "0104":
                 status = "Not Tested"
+            # Map 'Fail' to 'Failed' for output
+            display_status = "Failed" if status.lower() == "fail" else status
 
             sheet.cell(row=row_idx, column=1).value = req_id
             sheet.cell(row=row_idx, column=2).value = group_name
             sheet.cell(row=row_idx, column=3).value = did
             sheet.cell(row=row_idx, column=4).value = service_name
-            sheet.cell(row=row_idx, column=5).value = status
-            sheet.cell(row=row_idx, column=5).fill = pass_fill if status.lower() == "pass" else fail_fill if status.lower() == "failed" else not_impl_fill
+            sheet.cell(row=row_idx, column=5).value = display_status
+            sheet.cell(row=row_idx, column=5).fill = pass_fill if status.lower() == "pass" else fail_fill if status.lower() == "fail" else not_impl_fill
 
-            print(f"Output row {row_idx}: Req. ID={req_id}, Group={group_name}, LID/DID={did}, Service={service_name}, Status={status}")
+            print(f"Output row {row_idx}: Req. ID={req_id}, Group={group_name}, LID/DID={did}, Service={service_name}, Status={display_status}")
             row_idx += 1
 
         # Process REQ_ID_MAPPING entries
@@ -544,15 +570,17 @@ def compare_and_generate_report(srd_services, srd_original_names, srd_details, l
                 status = log_data.get(normalized_service, "Not Tested")
                 if did.upper() in NON_IMPLEMENTED_DIDS or did.upper() == "0104":
                     status = "Not Tested"
+                # Map 'Fail' to 'Failed' for output
+                display_status = "Failed" if status.lower() == "fail" else status
 
                 sheet.cell(row=row_idx, column=1).value = req_id
                 sheet.cell(row=row_idx, column=2).value = group_name
                 sheet.cell(row=row_idx, column=3).value = did
                 sheet.cell(row=row_idx, column=4).value = service_name
-                sheet.cell(row=row_idx, column=5).value = status
-                sheet.cell(row=row_idx, column=5).fill = pass_fill if status.lower() == "pass" else fail_fill if status.lower() == "failed" else not_impl_fill
+                sheet.cell(row=row_idx, column=5).value = display_status
+                sheet.cell(row=row_idx, column=5).fill = pass_fill if status.lower() == "pass" else fail_fill if status.lower() == "fail" else not_impl_fill
 
-                print(f"Output row {row_idx}: Req. ID={req_id}, Group={group_name}, LID/DID={did}, Service={service_name}, Status={status}")
+                print(f"Output row {row_idx}: Req. ID={req_id}, Group={group_name}, LID/DID={did}, Service={service_name}, Status={display_status}")
                 processed_services.add(normalized_service)
                 row_idx += 1
 
@@ -572,19 +600,22 @@ def compare_and_generate_report(srd_services, srd_original_names, srd_details, l
             status = log_data.get(normalized_service, "Not Tested")
             if identifier in NON_IMPLEMENTED_DIDS or identifier == "0104":
                 status = "Not Tested"
+            # Map 'Fail' to 'Failed' for output
+            display_status = "Failed" if status.lower() == "fail" else status
 
-            unmatched_services.append((req_id or "", group or "Unknown", identifier or lid, service_name, status))
-            print(f"Unmatched SRD in {s_name}: Service={service_name}, DID={identifier or lid}, Status={status}")
+            unmatched_services.append((req_id or "", group or "Unknown", identifier or lid, service_name, display_status))
+            print(f"Unmatched SRD in {s_name}: Service={service_name}, DID={identifier or lid}, Status={display_status}")
 
         # Add unmatched SRD services
-        for req_id, group, did, service_name, status in sorted(unmatched_services, key=lambda x: x[2]):
+        for req_id, group, did, service_name, display_status in sorted(unmatched_services, key=lambda x: x[2]):
+            status = "Fail" if display_status.lower() == "failed" else display_status  # Convert back for fill logic
             sheet.cell(row=row_idx, column=1).value = req_id
             sheet.cell(row=row_idx, column=2).value = group
             sheet.cell(row=row_idx, column=3).value = did
             sheet.cell(row=row_idx, column=4).value = service_name
-            sheet.cell(row=row_idx, column=5).value = status
-            sheet.cell(row=row_idx, column=5).fill = pass_fill if status.lower() == "pass" else fail_fill if status.lower() == "failed" else not_impl_fill
-            print(f"SRD Row {row_idx}: Req. ID={req_id}, Group={group}, LID/DID={did}, Service={service_name}, Status={status}")
+            sheet.cell(row=row_idx, column=5).value = display_status
+            sheet.cell(row=row_idx, column=5).fill = pass_fill if status.lower() == "pass" else fail_fill if status.lower() == "fail" else not_impl_fill
+            print(f"SRD Row {row_idx}: Req. ID={req_id}, Group={group}, LID/DID={did}, Service={service_name}, Status={display_status}")
             row_idx += 1
 
         for col_idx in range(1, len(headers) + 1):
@@ -600,7 +631,6 @@ def compare_and_generate_report(srd_services, srd_original_names, srd_details, l
         raise
 
 def main():
-
     os.system('python output_with_raw.py')
     parser = argparse.ArgumentParser(description="Generate UDS compliance report")
     parser.add_argument("--srd-file", default=SRD_path, help="SRD Excel file path")

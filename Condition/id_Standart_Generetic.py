@@ -34,8 +34,11 @@ ID_CONDITIONS = {"F18B":"ECU Manufacturing Date",
                  "F1B9":"Snapshot Data",
                  "078E":"Freeze Frame Data",
                  "F1D4":"Network Management Enable",
-                 "0200":"BOOT FLAG"
-
+                 "0200":"BOOT FLAG",
+                 "23F9":"Wakeup Wait Timer",
+                 "23FA":"Wakeup Sync Timer",
+                 "23FC":"Normal Min Timeout Timer",
+                 "23FB":"Sleep Wait Timer",
 
                  }
 
