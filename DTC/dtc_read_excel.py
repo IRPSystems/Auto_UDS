@@ -23,13 +23,7 @@ except ImportError as e:
 
 # Function to normalize repair action numbering
 def normalize_repair_actions(text: str) -> str:
-    """
-    Reformat repair actions to ensure sequential numbering (1, 2, 3, ...).
-    Args:
-        text: Input repair actions string (e.g., "1. Step A\n2. Step B\n4. Step C\n6. Step D")
-    Returns:
-        str: Reformatted string with corrected numbering (e.g., "1. Step A\n2. Step B\n3. Step C\n4. Step D")
-    """
+
     if not text or pd.isna(text):
         return "Refer to diagnostic manual."
 
