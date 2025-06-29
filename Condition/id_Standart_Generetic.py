@@ -39,6 +39,7 @@ ID_CONDITIONS = {"F18B":"ECU Manufacturing Date",
                  "23FA":"Wakeup Sync Timer",
                  "23FC":"Normal Min Timeout Timer",
                  "23FB":"Sleep Wait Timer",
+                 "249C":"DTC Enable/Disable",
 
                  }
 

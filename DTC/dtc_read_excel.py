@@ -23,7 +23,13 @@ except ImportError as e:
 
 # Function to normalize repair action numbering
 def normalize_repair_actions(text: str) -> str:
-
+    """
+    Reformat repair actions to ensure sequential numbering (1, 2, 3, ...).
+    Args:
+        text: Input repair actions string (e.g., "1. Step A\n2. Step B\n4. Step C\n6. Step D")
+    Returns:
+        str: Reformatted string with corrected numbering (e.g., "1. Step A\n2. Step B\n3. Step C\n4. Step D")
+    """
     if not text or pd.isna(text):
         return "Refer to diagnostic manual."
 
@@ -147,13 +153,19 @@ def parse_uds_log(log_content: str) -> List[Tuple[str, str]]:
     print(f"Debug: Parsed DTCs: {dtcs[:5]}...")  # Show first 5 DTCs
     return dtcs
 
-def generate_dtc_report(dtcs: List[Tuple[str, str]], output_excel: str = None) -> None:
+def generate_dtc_report(dtcs: List[Tuple[str, str]], output_excel: str = None, only_faults: bool = False) -> None:
     """
     Generate a report mapping DTCs to their details using FAULT_DETAILS.
     Save to an Excel file with headers in row 1 and all cells aligned to top.
+    Args:
+        dtcs: List of tuples (DTC Hex Code, Status Byte).
+        output_excel: Path to save the Excel file.
+        only_faults: If True, only include DTCs with status byte '0x27'.
     """
-    print("\n=== DTC Diagnostic Report ===")
+    print("\n=== DTC Report ===")
     print(f"Generated on: {datetime.now(pytz.timezone('Israel')).strftime('%Y-%m-%d %I:%M %p %Z')}")
+    if only_faults:
+        print("Filter Applied: Showing only DTCs with status byte 0x27 (faults)")
     print("=============================")
 
     active_faults = 0
@@ -165,14 +177,18 @@ def generate_dtc_report(dtcs: List[Tuple[str, str]], output_excel: str = None) -
         if dtc_hex == "0x000000":
             continue
 
+        # Filter for status byte 0x27 if only_faults is True
+        if only_faults and status_byte != "0x27":
+            continue
+
         # Get DTC name from dtc_dict
-        dtc_name = dtc_dict.get(dtc_hex, "Unknown DTC")
+        dtc_name = dtc_dict.get(dtc_hex.lower(), "Unknown DTC")
         # Debug: Check if DTC was found
         if dtc_name == "Unknown DTC":
             print(f"Debug: DTC {dtc_hex} not found in dtc_dict.")
 
         # Get fault details from FAULT_DETAILS
-        details = FAULT_DETAILS.get(dtc_hex, {
+        details = FAULT_DETAILS.get(dtc_hex.lower(), {
             "Severity": "Unknown",
             "Actions": "Unknown",
             "Repair": "Refer to diagnostic manual."
@@ -220,7 +236,7 @@ def generate_dtc_report(dtcs: List[Tuple[str, str]], output_excel: str = None) -
             print(f"Repair Actions:\n{formatted_repair}\n{'-' * wrap_width}")
 
     print(
-        f"\nSummary: {active_faults} active/pending faults detected out of {len([d for d in dtcs if d[0] != '0x000000'])} valid DTCs.")
+        f"\nSummary: {active_faults} active/pending faults detected out of {len([d for d in dtcs if d[0] != '0x000000' and (not only_faults or d[1] == '0x27')])} valid DTCs.")
 
     # Save to Excel
     try:
@@ -262,7 +278,12 @@ def generate_dtc_report(dtcs: List[Tuple[str, str]], output_excel: str = None) -
     except Exception as e:
         print(f"Error saving Excel: {e}")
 
-def main():
+def main(only_faults: bool = False):
+    """
+    Main function to process UDS log files and generate DTC report.
+    Args:
+        only_faults: If True, only include DTCs with status byte '0x27' in the report.
+    """
     # Path to temp3 folder (not user-specific, kept as is unless specified)
     folder_path = r"C:\temp3"
     files = glob.glob(os.path.join(folder_path, "*.uds.txt"))
@@ -287,7 +308,7 @@ def main():
     dtcs = parse_uds_log(uds_log)
 
     # Generate report and save to Excel
-    generate_dtc_report(dtcs, output_excel="dtc_report.xlsx")
+    generate_dtc_report(dtcs, output_excel="dtc_report.xlsx", only_faults=only_faults)
 
 if __name__ == "__main__":
-    main()
+    main(only_faults=True)  # Set to True to filter for 0x27 faults only

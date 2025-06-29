@@ -8,8 +8,8 @@ import output_with_raw
 
 # Define file paths
 SRD_path = r"C:\Users\ilyar\Downloads\HD-UP-ICD-242601-UDID.xlsx"
-UDS_path = r"C:\Users\ilyar\PycharmProjects\UDS\Logs\03.01.00\03.01.00_report.xlsx"
-OUTPUT_path = os.path.join(os.path.dirname(UDS_path), "UDS_Compliance_matrix_UPP_v3.01.00.xlsx")
+UDS_path = r"C:\Users\ilyar\PycharmProjects\UDS\Logs\03.01.02\03.01.02_report.xlsx"
+OUTPUT_path = os.path.join(os.path.dirname(UDS_path), "UDS_Compliance_matrix_UPP_v3.01.02.xlsx")
 EXTRACTED_SRD_path = os.path.join(os.path.dirname(UDS_path), "extracted_srd_data.xlsx")
 
 # Define non-implemented DIDs
@@ -63,6 +63,7 @@ REQ_ID_MAPPING = {
         "Wakeup Sync Timer": ("Unknown", "23FA"),
         "Normal Min Timeout Timer": ("Unknown", "23FC"),
         "Sleep Wait Timer": ("Unknown", "23FB"),
+        "DTC Enable/Disable": ("Unknown", "249C"),
     },
     "Generic ECU Read": {
         "Odometer": ("MCU_GenECU_Read_list_1", "F1B0"),
@@ -289,9 +290,16 @@ REQ_ID_MAPPING = {
         "Snapshot Data": ("MCU_FF_ID_List_2", "F1B9"),
     },
     "Routine Control": {
-        "Active Discharge": ("Unknown", "0296"),
-        "Resolver Autocalibration": ("Unknown", "0295"),
-        "History Zone Update": ("Unknown", "0201"),
+        "Start Active Discharge": ("Unknown", "0296"),
+        "Start Resolver Autocalibration": ("Unknown", "0295"),
+        "Start History Zone Update": ("Unknown", "0201"),
+        "Start Compare CS": ("Unknown", "FF01"),
+        "Stop Active Discharge": ("Unknown", "0296"),
+        "Stop Resolver Autocalibration": ("Unknown", "0295"),
+        "Result Active Discharge": ("Unknown", "0296"),
+        "Result Resolver Autocalibration": ("Unknown", "0295"),
+        "Result History Zone Update": ("Unknown", "0201"),
+        "Result Compare CS": ("Unknown", "FF01"),
     }
 }
 
