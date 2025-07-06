@@ -12,3 +12,4 @@ venv/
 /Scripts/Upgrade_Downgrade.script
 complaince_test.py
 compliance_matrix_test2.py
+DTC/dtc_report.xlsx

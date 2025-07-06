@@ -42,7 +42,7 @@ send 2E 0100 49 52 50 4D 6F 64 65 6C 4E 75 6D 62 65 72 30 30 30 33
 send 22 0100
 
 # Write&Read VIN identifier number F190
-send 2E F190 31 32 33 41 42 43 34 35 36 44 45 46 37 38 39 47 49
+send 2E F190 31 32 33 41 42 43 34 35 36 44 45 46 37 38 39 47 46
 send 22 F190
 
 # Write&Read SystemNameorEnginetype F197  #10 20 30 40 50 60 70 80 90 10 20 30 40 50 60 70
@@ -84,7 +84,8 @@ send 83 04 04 D2 11 D7 0C 22 56
 send 83 03
 
 #focSensorAngleOffset
-send 2E 1500 00 00 11 60
+#send 2E 1500 00 00 11 60
+send 2E 1500 11 60
 send 22 1500
 
 sleep 500
