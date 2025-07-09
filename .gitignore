@@ -10,6 +10,6 @@ Logs/
 venv/
 .venv/
 /Scripts/Upgrade_Downgrade.script
-complaince_test.py
-compliance_matrix_test2.py
+Archive/complaince_test.py
+Archive/compliance_matrix_test2.py
 DTC/dtc_report.xlsx

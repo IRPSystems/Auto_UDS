@@ -8,8 +8,8 @@ import output_with_raw
 
 # Define file paths
 SRD_path = r"C:\Users\ilyar\Downloads\HD-UP-ICD-242601-UDID.xlsx"
-UDS_path = r"C:\Users\ilyar\PycharmProjects\UDS\Logs\03.01.02\03.01.02_report.xlsx"
-OUTPUT_path = os.path.join(os.path.dirname(UDS_path), "UDS_Compliance_matrix_UPP_v3.01.02.xlsx")
+UDS_path = r"C:\Users\ilyar\PycharmProjects\UDS\Logs\03.01.04\03.01.04_report.xlsx"
+OUTPUT_path = os.path.join(os.path.dirname(UDS_path), "UDS_Compliance_matrix_UPP_v3.01.04.xlsx")
 EXTRACTED_SRD_path = os.path.join(os.path.dirname(UDS_path), "extracted_srd_data.xlsx")
 
 # Define non-implemented DIDs
@@ -22,7 +22,7 @@ EXPECTED_ORDER = [
     ("MCU_NM_ID_LIST_1", "Network Mgmnt", "F1D2", "VCU3_100 Timeout"),
     ("MCU_NM_ID_LIST_4", "Can Configuration", "F1D5", "Critical CAN Signal Invalid Time"),
     ("MCU_Fun_ID_List_1", "Faults Configuration", "078F", "Motor Over Temp Fault Detection"),
-    ("Unknown", "Routine Control", "0296", "Active Discharge"),
+#    ("Unknown", "Routine Control", "0296", "Active Discharge"),
     ("MCU_NM_ID_LIST_4", "Standard Identifiers", "F1BE", "Engine State"),
     ("MCU_NM_ID_LIST_9", "Standard Identifiers", "F192", "ECU Hardware Number"),
     ("MCU_NM_ID_LIST_11", "Standard Identifiers", "F194", "ECU Software Number"),

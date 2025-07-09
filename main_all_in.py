@@ -4,20 +4,16 @@ from Condition import (id_conditions_F1D2, id_conditions_F1D3, id_conditions_Fau
 from logger import setup_logger
 import os, re, glob, shutil, logging
 
-
 SKIP_IDENTIFIERS = {""}
 
 Logs_folder = os.path.join("Logs")
 if not os.path.exists(Logs_folder):
     os.mkdir(Logs_folder)
 
-def extract_script_name(file_path):
-    with open(file_path, "r", encoding="utf-8") as f:
-        for line in f:
-            if ">>> Script Start" in line:
-                match = re.search(r">>> Script Start:(.*\\Scripts\\([^\\]+)\.script)", line)
-                if match:
-                    return match.group(2)
+def extract_script_name(line):
+    match = re.search(r">>> Script Start:(.*\\Scripts\\([^\\]+)\.script)", line)
+    if match:
+        return match.group(2)
     return None
 
 def extract_values_from_line(line):
@@ -46,10 +42,8 @@ def convert(values):
             combined_hex = "".join(x[2:] for x in values)
             unsigned_int = int(combined_hex, 16)
             if len(values) == 1:
-               # if unsigned_int >= 800:
-               #   unsigned_int -= 0x100
-               return str(unsigned_int)
-            elif len(values) == 2:  #
+                return str(unsigned_int)
+            elif len(values) == 2:
                 if unsigned_int >= 0x8000:
                     unsigned_int -= 0x10000
                 return str(unsigned_int)
@@ -69,24 +63,23 @@ def get_tx_position(tx_values):
 def get_condition_from_position(position, script_name):
     if isinstance(script_name, tuple):
         script_name = script_name[0]
-    conditions=[]
+    conditions = []
     if script_name == "Network_TimeOut_F1D2":
-        condition_dict=id_conditions_F1D2.ID_CONDITIONS
+        condition_dict = id_conditions_F1D2.ID_CONDITIONS
     elif script_name == "Network_Missmatch_F1D3":
         condition_dict = id_conditions_F1D3.ID_CONDITIONS
     elif script_name == "Faults_Configuration":
-        condition_dict= id_conditions_Fault_Config.ID_CONDITIONS
+        condition_dict = id_conditions_Fault_Config.ID_CONDITIONS
     elif script_name == "TrueDriveManager":
         condition_dict = id_conditions_TrueDrive.ID_CONDITIONS
     elif script_name == "Routine_Control":
-       condition_dict = id_conditions_Routine.ID_CONDITIONS
+        condition_dict = id_conditions_Routine.ID_CONDITIONS
     elif script_name == "Network_F1D5":
-       condition_dict = id_conditions_F1D5.ID_CONDITIONS
+        condition_dict = id_conditions_F1D5.ID_CONDITIONS
     elif script_name == "CanConfig_103":
         condition_dict = id_conditions_CanConfig_103.ID_CONDITIONS
-
-
-    else: condition_dict={}
+    else:
+        condition_dict = {}
     for key, value in condition_dict.items():
         value_parts = value.split()
         for i, part in enumerate(value_parts):
@@ -96,44 +89,68 @@ def get_condition_from_position(position, script_name):
 
 def process_uds_file(file_path, logger):
     logger.info(f"Processing file: {file_path}")
-    tx_lines, rx_lines = [], []
-    all_lines = []  # Store all lines with type for error handling
-    script_started = False  # Flag to track if script start marker is found
+    script_sections = []  # List to store (script_name, tx_lines, rx_lines, all_lines) for each script
+    current_tx_lines, current_rx_lines, current_all_lines = [], [], []
+    current_script_name = None
+    script_started = False
+
     with open(file_path, "r", encoding="utf-8") as f:
         for line in f:
             line = line.strip()
 
-            # Check for script start marker
-            if "# WARNING: >>> Script Start" in line:
+            # Check for script start marker using regex
+            if re.search(r">>>\s*Script Start", line):
+                if script_started and current_script_name:
+                    # Save the previous script section
+                    script_sections.append((current_script_name, current_tx_lines, current_rx_lines, current_all_lines))
+                    logger.debug(f"Saved script section: {current_script_name} with {len(current_tx_lines)} Tx lines and {len(current_rx_lines)} Rx lines")
+                # Start a new script section
+                current_script_name = extract_script_name(line)
+                if not current_script_name:
+                    current_script_name = f"unknown_script_{len(script_sections) + 1}"
                 script_started = True
-                logger.debug("Script start marker found: %s", line)
-                all_lines.append((line, "Other"))
+                current_tx_lines, current_rx_lines, current_all_lines = [], [], []
+                current_all_lines.append((line, "Other"))
+                logger.debug(f"Script start marker found: {line}, Script name: {current_script_name}")
                 continue
 
-            # Only process lines after script start marker
-            if not script_started:
-                continue  # Skip lines before script start marker
+            # Check for script end marker using regex
+            if re.search(r"<<< Script End", line):
+                if script_started and current_script_name:
+                    # Save the current script section
+                    script_sections.append((current_script_name, current_tx_lines, current_rx_lines, current_all_lines))
+                    logger.debug(f"Saved script section: {current_script_name} with {len(current_tx_lines)} Tx lines and {len(current_rx_lines)} Rx lines")
+                    script_started = False
+                    current_script_name = None
+                    current_tx_lines, current_rx_lines, current_all_lines = [], [], []
+                current_all_lines.append((line, "Other"))
+                continue
 
-            if line.startswith("Tx)"):
-                tx_lines.append(line)
-                all_lines.append((line, "Tx"))
-            elif line.startswith("Rx)"):
-                rx_lines.append(line)
-                all_lines.append((line, "Rx"))
-            elif "Tester Present:ON" in line:
-                logger.info("\033[94mTester Present: ON \033[0m")
-                all_lines.append((line, "Other"))
-            elif re.search(r"\d{2}/\d{2}/\d{4}\s+\d{2}:\d{2}:\d{2}\s+ERROR:.*No response from ECU", line, re.IGNORECASE):
-                all_lines.append((line, "Error"))
-            else:
-                all_lines.append((line, "Other"))
+            # Only process lines if within a script section
+            if script_started:
+                if line.startswith("Tx)"):
+                    current_tx_lines.append(line)
+                    current_all_lines.append((line, "Tx"))
+                elif line.startswith("Rx)"):
+                    current_rx_lines.append(line)
+                    current_all_lines.append((line, "Rx"))
+                elif "Tester Present:ON" in line:
+                    logger.info("\033[94mTester Present: ON \033[0m")
+                    current_all_lines.append((line, "Other"))
+                elif re.search(r"\d{2}/\d{2}/\d{4}\s+\d{2}:\d{2}:\d{2}\s+ERROR:.*No response from ECU", line, re.IGNORECASE):
+                    current_all_lines.append((line, "Error"))
+                else:
+                    current_all_lines.append((line, "Other"))
 
-    if not script_started:
-        logger.warning("No script start marker found in file: %s. Processed no Tx/Rx lines.", file_path)
-    else:
-        logger.debug("Processed %d Tx lines and %d Rx lines after script start marker.", len(tx_lines), len(rx_lines))
+    # Save the last script section if it hasn't been closed
+    if script_started and current_script_name:
+        script_sections.append((current_script_name, current_tx_lines, current_rx_lines, current_all_lines))
+        logger.debug(f"Saved final script section: {current_script_name} with {len(current_tx_lines)} Tx lines and {len(current_rx_lines)} Rx lines")
 
-    return tx_lines, rx_lines, all_lines
+    if not script_sections:
+        logger.warning("No script sections found in file: %s", file_path)
+
+    return script_sections
 
 def strip_ansi_codes(file_path):
     ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
@@ -143,18 +160,14 @@ def strip_ansi_codes(file_path):
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(cleaned_content)
 
-def process_tx_rx_lines(tx_lines, rx_lines, all_lines):
-    global logger, script_name
+def process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, logger):
     seen_identifiers = set()
     passed_identifiers = set()
     result_folder = None
 
-    #logger.debug(f"Initial RX lines: {rx_lines}")
-
     for tx_line in tx_lines:
         tx_values = extract_values_from_line(tx_line)
         if len(tx_values) == 2:
-            #logger.debug(f"Skipping TX line with only two bytes: {tx_line}")
             continue
         if len(tx_values) < 2:
             continue
@@ -164,21 +177,18 @@ def process_tx_rx_lines(tx_lines, rx_lines, all_lines):
             continue
         if script_name in ["Standard_Identifiers", "Generetic_ECU_Read"]:
             Standart_Generetic_condition = id_Standart_Generetic.ID_CONDITIONS.get(tx_identifier, "Unknown DID")
-
         else:
-            Standart_Generetic_condition = get_condition_from_position(tx_position, script_name)[0]  # Take first condition
+            Standart_Generetic_condition = get_condition_from_position(tx_position, script_name)[0]
         expected_condition = get_condition_from_position(tx_position, script_name)
         matched_rx_line = None
         for rx_line in rx_lines[:]:
             rx_values = extract_values_from_line(rx_line)
             if len(rx_values) == 2:
-                #logger.debug(f"Skipping RX line with only two bytes: {rx_line}")
                 rx_lines.remove(rx_line)
                 continue
             if len(rx_values) >= 4:
                 rx_identifier = "".join(byte.replace("0x", "").upper() for byte in rx_values[:2])
                 if rx_identifier in SKIP_IDENTIFIERS:
-                    #logger.debug(f"Skipping RX identifier: {rx_identifier}")
                     rx_lines.remove(rx_line)
                     continue
                 if tx_identifier == rx_identifier:
@@ -190,16 +200,6 @@ def process_tx_rx_lines(tx_lines, rx_lines, all_lines):
             tx_normalized = normalize_values(tx_values[2:])
             rx_normalized = normalize_values(rx_values[2:])
             result = convert(tx_values[2:])
-            #logger.debug(f"Matched RX line: {matched_rx_line}")
-            #logger.debug(f"Remaining RX lines after removal: {rx_lines}")
-            #logger.debug(f"Raw TX values: {tx_values[2:]}")
-            #logger.debug(f"Raw RX values: {rx_values[2:]}")
-            #logger.debug(f"Normalized TX values: {tx_normalized}")
-            #logger.debug(f"Normalized RX values: {rx_normalized}")
-
-        #Green: \033[32m (regular green) or \033[92m (bright green).
-        #Red: \033[31m (regular red) or \033[91m (bright red).
-        #Red appears via \033[91m in error messages
             for condition in expected_condition:
                 if rx_normalized == tx_normalized:
                     if script_name not in ["Standard_Identifiers", "Generetic_ECU_Read"]:
@@ -207,7 +207,7 @@ def process_tx_rx_lines(tx_lines, rx_lines, all_lines):
                             f"\033[34m{condition},\033[0m Converted result: \033[93m{result}\033[0m \033[32m Pass\033[0m ")
                         continue
                     if script_name in ["Standard_Identifiers", "Generetic_ECU_Read"]:
-                        if result != "wrong output":  # Include "0" as a Pass
+                        if result != "wrong output":
                             logger.info(
                                 f"\033[93m{tx_identifier} \033[93m{Standart_Generetic_condition}\033[0m Matching Tx and Rx, Converted: \033[93m{result}\033[0m \033[32m Pass\033[0m")
                             passed_identifiers.add(tx_identifier)
@@ -218,11 +218,8 @@ def process_tx_rx_lines(tx_lines, rx_lines, all_lines):
                     if script_name in ["Standard_Identifiers", "Generetic_ECU_Read"]:
                         logger.error(f"Mismatch Tx and Rx {tx_identifier} {Standart_Generetic_condition} wrong output Fail")
                     else:
-                        logger.error(f"{condition},  Mismatch Tx and Rx {tx_identifier}, Fail")
+                        logger.error(f"{condition}, Mismatch Tx and Rx {tx_identifier}, Fail")
 
-    #logger.debug(f"Remaining RX lines before standalone processing: {rx_lines}")
-
-    # Process negative responses and ECU errors using all_lines
     for i, (line, line_type) in enumerate(all_lines):
         if line_type == "Rx" and ("Negative Response" in line or "NRC=Sub Function Not Supported" in line):
             for j in range(i - 1, -1, -1):
@@ -232,14 +229,11 @@ def process_tx_rx_lines(tx_lines, rx_lines, all_lines):
                     if len(prev_values) >= 2:
                         prev_identifier = "".join(byte.replace("0x", "").upper() for byte in prev_values[:2])
                         logger.error(f"{prev_identifier} Negative Response: {line.split(':', 1)[1].strip()}")
-
                     else:
                         logger.error(f"Unknown Negative Response: {line.split(':', 1)[1].strip()} (previous Tx invalid)")
-                        logger.debug(f"Invalid previous Tx: {prev_line}")
                     break
             else:
                 logger.error(f"Unknown Negative Response: {line.split(':', 1)[1].strip()} (no previous Tx found)")
-                logger.debug(f"No previous Tx for negative response: {line}")
         elif line_type == "Error":
             for j in range(i - 1, -1, -1):
                 prev_line, prev_type = all_lines[j]
@@ -249,21 +243,18 @@ def process_tx_rx_lines(tx_lines, rx_lines, all_lines):
                         prev_identifier = "".join(byte.replace("0x", "").upper() for byte in prev_values[:2])
                         timestamp = line[:21] if len(line) >= 19 else "Unknown timestamp"
                         logger.error(f"{prev_identifier} No response from ECU detected at {timestamp}")
-
                     else:
                         timestamp = line[:21] if len(line) >= 19 else "Unknown timestamp"
                         logger.error(f"Unknown No response from ECU detected at {timestamp} (previous Tx invalid)")
-                        logger.debug(f"Invalid previous Tx: {prev_line}")
                     break
             else:
                 timestamp = line[:21] if len(line) >= 19 else "Unknown timestamp"
                 logger.error(f"Unknown No response from ECU detected at {timestamp} (no previous Tx found)")
-                logger.debug(f"No previous Tx for ECU error: {line}")
 
     for rx_line in rx_lines:
         rx_values = extract_values_from_line(rx_line)
         if len(rx_values) < 3:
-            continue  # Skip negative responses, handled above
+            continue
         rx_identifier = "".join(byte.replace("0x", "").upper() for byte in rx_values[:2])
         if rx_identifier == "F195":
             result = convert(rx_values[2:])
@@ -272,15 +263,11 @@ def process_tx_rx_lines(tx_lines, rx_lines, all_lines):
                 os.makedirs(result_folder, exist_ok=True)
                 logger.debug(f"Creating folder at: {result_folder}")
         if rx_identifier in SKIP_IDENTIFIERS:
-            #logger.debug(f"Skipping RX identifier: {rx_identifier}")
             continue
         if rx_identifier in passed_identifiers:
-            #logger.debug(f"Skipping already matched RX identifier: {rx_identifier}")
             continue
-
         seen_identifiers.add(rx_identifier)
         if "Negative Response" in rx_line or "NRC=Sub Function Not Supported" in rx_line:
-            #rx_identifier = "".join(byte.replace("0x", "").upper() for byte in tx_values[:2])
             logger.error(f"{rx_identifier}\033[91m Negative Response detected \033[0m")
             continue
         if "Diagnostic Session Control " in rx_line:
@@ -293,8 +280,7 @@ def process_tx_rx_lines(tx_lines, rx_lines, all_lines):
         result = convert(rx_values[2:])
         raw_values = " ".join(val.replace("0x", "") for val in rx_values[2:])
         rx_position = get_tx_position(rx_values)
-        rx_conditions = get_condition_from_position(rx_position, script_name) if rx_position >= 0 else [
-            "Unknown Condition"]
+        rx_conditions = get_condition_from_position(rx_position, script_name) if rx_position >= 0 else ["Unknown Condition"]
         for condition in rx_conditions:
             if result == "wrong output":
                 logger.error(
@@ -303,16 +289,19 @@ def process_tx_rx_lines(tx_lines, rx_lines, all_lines):
                 logger.info(
                     f"\033[93m{rx_identifier} {Standart_Generetic_condition} \033[0m Read Data By Identifier, Converted result: \033[93m0\033[0m, Raw Values: \033[93m{raw_values}\033[0m")
             else:
-                if script_name in ["Standard_Identifiers"]:   #### full print
+                if script_name in ["Standard_Identifiers"]:
                     logger.info(
                         f"\033[93m{rx_identifier} {Standart_Generetic_condition}\033[0m Read Data By Identifier, Converted result: \033[93m{result}\033[0m, Raw Values: \033[93m{raw_values}\033[0m")
-                elif script_name in ["Generetic_ECU_Read"]:   #### full print
+                elif script_name in ["Generetic_ECU_Read"]:
                     logger.info(
                         f"\033[93m{rx_identifier} {Standart_Generetic_condition} \033[0m Read Data By Identifier, Converted result: \033[93m{result}\033[0m, Raw Values: \033[93m{raw_values}\033[0m")
+
+    # Close and remove logger handlers
     for handler in logger.handlers[:]:
         if isinstance(handler, logging.FileHandler):
             handler.close()
             logger.removeHandler(handler)
+
     if isinstance(script_name, tuple):
         script_name = script_name[0]
     original_log_file = os.path.join(Logs_folder, f"{script_name}.log")
@@ -334,17 +323,29 @@ if __name__ == "__main__":
         print("No matching files found.")
     else:
         newest_file = max(files, key=os.path.getmtime)
-        #print(f"The newest file is: {newest_file}")
-        script_name = extract_script_name(newest_file)
-        if script_name is None:
-            script_name = "default_log"
-        if script_name == "Routine_Control":
+        logger = setup_logger("main", Logs_folder)
+        logger.setLevel(logging.DEBUG)
+        # Handle Routine_Control script fixing
+        first_script_name = None
+        with open(newest_file, "r", encoding="utf-8") as f:
+            for line in f:
+                if ">>> Script Start" in line:
+                    first_script_name = extract_script_name(line)
+                    break
+        if first_script_name == "Routine_Control":
             fixed_file = newest_file.replace(".uds.txt", "_fixed.uds.txt")
             fix_routine_log.fix_log_file(newest_file, fixed_file)
             newest_file = fixed_file
-            print(f"Fixed Routine_Control log file: {fixed_file}")
-        logger = setup_logger(script_name, Logs_folder)
-        logger.setLevel(logging.DEBUG)
-        tx_lines, rx_lines, all_lines = process_uds_file(newest_file, logger)
-        if tx_lines or rx_lines:
-            process_tx_rx_lines(tx_lines, rx_lines, all_lines)
+            logger.info(f"Fixed Routine_Control log file: {fixed_file}")
+
+        # Process all script sections
+        script_sections = process_uds_file(newest_file, logger)
+        if not script_sections:
+            logger.warning("No script sections to process in %s", newest_file)
+        else:
+            for script_name, tx_lines, rx_lines, all_lines in script_sections:
+                logger.info(f"Processing script section: {script_name}")
+                script_logger = setup_logger(script_name, Logs_folder)
+                script_logger.setLevel(logging.DEBUG)
+                if tx_lines or rx_lines:
+                    process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, script_logger)
