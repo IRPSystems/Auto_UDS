@@ -1,3 +1,4 @@
+linedelay 500
 tester on
 send 10 03
 security 1
@@ -32,10 +33,10 @@ send 22 F18C
 
 #Access Timing Parameter 0x83
 
-tester on
-send 10 03
-security 1
-sleep 500
+#tester on
+#send 10 03
+#security 1
+#sleep 500
 
 #Model number 0100
 send 2E 0100 49 52 50 4D 6F 64 65 6C 4E 75 6D 62 65 72 30 30 30 33

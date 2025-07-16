@@ -1,5 +1,6 @@
 #System Supplier ECU Software Version Number F195
 send 22 F195
+#linedelay 500
 
 tester on
 send 10 03

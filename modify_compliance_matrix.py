@@ -8,8 +8,8 @@ import output_with_raw
 
 # Define file paths
 SRD_path = r"C:\Users\ilyar\Downloads\HD-UP-ICD-242601-UDID.xlsx"
-UDS_path = r"C:\Users\ilyar\PycharmProjects\UDS\Logs\03.01.04\03.01.04_report.xlsx"
-OUTPUT_path = os.path.join(os.path.dirname(UDS_path), "UDS_Compliance_matrix_UPP_v3.01.04.xlsx")
+UDS_path = r"C:\Users\ilyar\PycharmProjects\UDS\Logs\03.01.06\03.01.06_report.xlsx"
+OUTPUT_path = os.path.join(os.path.dirname(UDS_path), "UDS_Compliance_matrix_UPP_v3.01.06.xlsx")
 EXTRACTED_SRD_path = os.path.join(os.path.dirname(UDS_path), "extracted_srd_data.xlsx")
 
 # Define non-implemented DIDs

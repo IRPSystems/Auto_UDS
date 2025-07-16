@@ -98,21 +98,10 @@ def process_uds_file(file_path, logger):
     logger.info(f"Processing file: {file_path}")
     tx_lines, rx_lines = [], []
     all_lines = []  # Store all lines with type for error handling
-    script_started = False  # Flag to track if script start marker is found
+
     with open(file_path, "r", encoding="utf-8") as f:
         for line in f:
             line = line.strip()
-
-            # Check for script start marker
-            if "# WARNING: >>> Script Start" in line:
-                script_started = True
-                logger.debug("Script start marker found: %s", line)
-                all_lines.append((line, "Other"))
-                continue
-
-            # Only process lines after script start marker
-            if not script_started:
-                continue  # Skip lines before script start marker
 
             if line.startswith("Tx)"):
                 tx_lines.append(line)
@@ -127,11 +116,6 @@ def process_uds_file(file_path, logger):
                 all_lines.append((line, "Error"))
             else:
                 all_lines.append((line, "Other"))
-
-    if not script_started:
-        logger.warning("No script start marker found in file: %s. Processed no Tx/Rx lines.", file_path)
-    else:
-        logger.debug("Processed %d Tx lines and %d Rx lines after script start marker.", len(tx_lines), len(rx_lines))
 
     return tx_lines, rx_lines, all_lines
 

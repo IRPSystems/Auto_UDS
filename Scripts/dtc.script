@@ -1,0 +1,15 @@
+linedelay 300
+
+send 19 02 27
+
+send 19 0A
+
+send 19 02 27
+
+send 19 0A
+
+send 19 02 27
+
+send 19 0A
+
+
