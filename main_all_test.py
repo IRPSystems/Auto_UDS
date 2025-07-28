@@ -107,47 +107,7 @@ def process_uds_file(file_path, logger):
             # Check for script start marker using regex
             if re.search(r">>>\s*Script Start", line):
                 if script_started and current_script_name:
-                    # Process Routine_Control lines before saving
-                    if current_script_name == "Routine_Control":
-                        fixed_lines = []
-                        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                        for line in current_lines:
-                            if re.search(r">>> Script Start", line):
-                                match = re.search(r">>> Script Start:(.*\\Scripts\\([^\\]+)\.script)", line)
-                                fixed_lines.append(f"{timestamp} >>> Script Start:{match.group(1)}")
-                                continue
-                            if re.search(r"<<< Script End", line, re.IGNORECASE):
-                                fixed_lines.append(f"{timestamp} <<< Script End")
-                                continue
-                            values = extract_values_from_line(line)
-                            if (line.startswith("Tx)") and "Routine Control" in line and
-                                    current_script_name == "Routine_Control" and len(values) >= 3 and
-                                    values[:3] == ["0x01", "0x02", "0x01"]):
-                                # Extract payload after the first 3 values, limit to 25 more (total 28)
-                                payload_values = values[3:] if len(values) > 3 else []
-                                if len(payload_values) >= 25:  # 2 prefix + 25 payload = 27 total
-                                    payload_values = payload_values[:25]  # Truncate to 25
-                                payload = " ".join(payload_values) if payload_values else ""
-                                fixed_tx = f"{timestamp} Tx) Routine Control               : 0x02 0x01 {payload}"
-                                fixed_lines.append(fixed_tx)
-                                continue
-                            if values and len(values) > 27:
-                                truncated_values = " ".join(values[:27])
-                                fixed_line = f"{timestamp} {line.split(':', 1)[0]}: {truncated_values}"
-                                fixed_lines.append(fixed_line)
-                            else:
-                                fixed_lines.append(f"{timestamp} {line}")
-                        # Reprocess fixed lines to update tx_lines, rx_lines, all_lines
-                        current_tx_lines, current_rx_lines, current_all_lines = [], [], []
-                        for fixed_line in fixed_lines:
-                            if fixed_line.startswith(f"{timestamp} Tx)"):
-                                current_tx_lines.append(fixed_line)
-                                current_all_lines.append((fixed_line, "Tx"))
-                            elif fixed_line.startswith(f"{timestamp} Rx)"):
-                                current_rx_lines.append(fixed_line)
-                                current_all_lines.append((fixed_line, "Rx"))
-                            else:
-                                current_all_lines.append((fixed_line, "Other"))
+                    # Save the previous script section
                     script_sections.append((current_script_name, current_tx_lines, current_rx_lines, current_all_lines))
                     logger.debug(f"Saved script section: {current_script_name} with {len(current_tx_lines)} Tx lines and {len(current_rx_lines)} Rx lines")
                 # Start a new script section
@@ -180,7 +140,7 @@ def process_uds_file(file_path, logger):
                             if (line.startswith("Tx)") and "Routine Control" in line and
                                     current_script_name == "Routine_Control" and len(values) >= 3 and
                                     values[:3] == ["0x01", "0x02", "0x01"]):
-                                # Extract payload after the first 3 values, limit to 25 more (total 28)
+                                # Extract payload after the first 3 values, limit to 25 more (total 27)
                                 payload_values = values[3:] if len(values) > 3 else []
                                 if len(payload_values) >= 25:  # 2 prefix + 25 payload = 27 total
                                     payload_values = payload_values[:25]  # Truncate to 25
@@ -248,7 +208,7 @@ def process_uds_file(file_path, logger):
                 if (line.startswith("Tx)") and "Routine Control" in line and
                         current_script_name == "Routine_Control" and len(values) >= 3 and
                         values[:3] == ["0x01", "0x02", "0x01"]):
-                    # Extract payload after the first 3 values, limit to 25 more (total 28)
+                    # Extract payload after the first 3 values, limit to 25 more (total 27)
                     payload_values = values[3:] if len(values) > 3 else []
                     if len(payload_values) >= 25:  # 2 prefix + 25 payload = 27 total
                         payload_values = payload_values[:25]  # Truncate to 25

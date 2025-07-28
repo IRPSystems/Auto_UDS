@@ -5,7 +5,7 @@ send 22 F195
 tester on
 send 10 03
 security 1
-
+linedelay 200
 
 #1 AngleOffset (Default 1.5, Scale 0.0054945) scaled
 send 2E 0790 01 11 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
