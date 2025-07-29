@@ -351,6 +351,7 @@ def process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, logger):
                 result_folder = os.path.join("Logs", result)
                 os.makedirs(result_folder, exist_ok=True)
                 logger.debug(f"Creating folder at: {result_folder}")
+
         if rx_identifier in SKIP_IDENTIFIERS:
             continue
         if rx_identifier in passed_identifiers:
@@ -404,7 +405,7 @@ def process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, logger):
             logger.error(f"Failed to move or clean log file: {e}")
     elif os.path.exists(original_log_file):
         strip_ansi_codes(original_log_file)
-
+    return result_folder
 if __name__ == "__main__":
     folder_path = r"C:\\temp3"
     files = glob.glob(os.path.join(folder_path, "*.uds.txt"))
@@ -419,10 +420,19 @@ if __name__ == "__main__":
         if not script_sections:
             logger.warning("No script sections to process in %s", newest_file)
         else:
+            result_folder = None
             for script_name, tx_lines, rx_lines, all_lines in script_sections:
                 logger.info(f"Processing script section: {script_name}")
                 script_logger = setup_logger(script_name, Logs_folder)
                 script_logger.setLevel(logging.DEBUG)
                 if tx_lines or rx_lines:
-                    process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, script_logger)
-        os.system('python modify_compliance_matrix.py')
+                    result=process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, script_logger)
+
+                    if result:  # only overwrite if we actually got a result
+                        result_folder = os.path.basename(result)
+
+            if result_folder:
+                 os.environ['RESULT_FOLDER'] = result_folder
+                 os.system('python modify_compliance_matrix.py')
+            else:
+                 logger.warning("No result folder was detected from logs. Compliance matrix not generated.")

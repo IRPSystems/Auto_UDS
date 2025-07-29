@@ -1,4 +1,6 @@
 import argparse
+import time
+
 import openpyxl
 from openpyxl.styles import PatternFill, Font
 import os
@@ -7,10 +9,33 @@ import re
 import output_with_raw
 import main_all_test
 # Define file paths
-SRD_path = r"C:\Users\ilyar\Downloads\HD-UP-ICD-242601-UDID.xlsx"
-UDS_path = r"C:\Users\ilyar\PycharmProjects\UDS\Logs\03.01.11\03.01.11_report.xlsx"
-OUTPUT_path = os.path.join(os.path.dirname(UDS_path), "UDS_Compliance_matrix_UPP_v3.01.11.xlsx")
-EXTRACTED_SRD_path = os.path.join(os.path.dirname(UDS_path), "extracted_srd_data.xlsx")
+# SRD_path = r"C:\Users\ilyar\Downloads\HD-UP-ICD-242601-UDID.xlsx"
+# UDS_path = r"C:\Users\ilyar\PycharmProjects\UDS\Logs\03.01.11\03.01.11_report.xlsx"
+# OUTPUT_path = os.path.join(os.path.dirname(UDS_path), "UDS_Compliance_matrix_UPP_v3.01.11.xlsx")
+# EXTRACTED_SRD_path = os.path.join(os.path.dirname(UDS_path), "extracted_srd_data.xlsx")
+
+
+username = os.environ.get('USERNAME', 'unknown')
+if username == 'unknown':
+    raise EnvironmentError("USERNAME environment variable not set.")
+
+base_log_dir = os.path.join('C:\\', 'Users', username, 'PycharmProjects', 'UDS')
+
+result_folder = os.environ.get("RESULT_FOLDER")
+
+if not result_folder:
+    # Define file paths
+    # SRD_path = r"C:\Users\ilyar\Downloads\HD-UP-ICD-242601-UDID.xlsx"
+    # UDS_path = r"C:\Users\ilyar\PycharmProjects\UDS\Logs\03.01.11\03.01.11_report.xlsx"
+    # OUTPUT_path = r"C:\Users\ilyar\PycharmProjects\UDS\Logs\03.01.11\UDS_Compliance_matrix_UPP_v3.01.11.xlsx"
+    # EXTRACTED_SRD_path = r"C:\Users\ilyar\PycharmProjects\UDS\Logs\03.01.11\"extracted_srd_data.xlsx"
+    raise ValueError("RESULT_FOLDER environment variable not set")
+
+UDS_path = os.path.join(base_log_dir,"Logs", result_folder,  f"{result_folder}_report.xlsx")
+OUTPUT_path = os.path.join(base_log_dir,"Logs", result_folder, f"UDS_Compliance_matrix_UPP_v{result_folder}.xlsx")
+EXTRACTED_SRD_path = os.path.join(base_log_dir,"Logs", result_folder,  "extracted_srd_data.xlsx")
+SRD_path = os.path.join(base_log_dir, "Documents", "HD-UP-ICD-242601-UDID.xlsx")
+
 
 # Define non-implemented DIDs
 NON_IMPLEMENTED_DIDS = {"F1BE", "F192", "F194"}

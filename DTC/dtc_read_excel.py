@@ -279,11 +279,7 @@ def generate_dtc_report(dtcs: List[Tuple[str, str]], output_excel: str = None, o
         print(f"Error saving Excel: {e}")
 
 def main(only_faults: bool = False):
-    """
-    Main function to process UDS log files and generate DTC report.
-    Args:
-        only_faults: If True, only include DTCs with status byte '0x27' in the report.
-    """
+
     # Path to temp3 folder (not user-specific, kept as is unless specified)
     folder_path = r"C:\temp3"
     files = glob.glob(os.path.join(folder_path, "*.uds.txt"))

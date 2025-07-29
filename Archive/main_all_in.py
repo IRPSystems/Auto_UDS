@@ -1,3 +1,10 @@
+
+
+
+##Version 1.0.2
+## This is the second main that should run all UDS logs, also it's using fix_routine and logger
+#Can go over all uds commands in one log except routine control script, this script needs to be run separately
+
 import fix_routine_log
 from Condition import (id_conditions_F1D2, id_conditions_F1D3, id_conditions_Fault_Config,
                        id_conditions_TrueDrive, id_conditions_Routine, id_conditions_F1D5, id_conditions_CanConfig_103, id_Standart_Generetic)
@@ -6,7 +13,7 @@ import os, re, glob, shutil, logging
 
 SKIP_IDENTIFIERS = {""}
 
-Logs_folder = os.path.join("Logs")
+Logs_folder = os.path.join("../Logs")
 if not os.path.exists(Logs_folder):
     os.mkdir(Logs_folder)
 
@@ -259,7 +266,7 @@ def process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, logger):
         if rx_identifier == "F195":
             result = convert(rx_values[2:])
             if result and result != "0" and result != "wrong output":
-                result_folder = os.path.join("Logs", result)
+                result_folder = os.path.join("../Logs", result)
                 os.makedirs(result_folder, exist_ok=True)
                 logger.debug(f"Creating folder at: {result_folder}")
         if rx_identifier in SKIP_IDENTIFIERS:
