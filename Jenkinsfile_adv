@@ -6,9 +6,9 @@ pipeline {
         stage ('Connect and find the latest UPP version'){
             steps{
             powershell """
-                    Connect-PnPOnline -Url 'https://irpsystems.sharepoint.com/sites/Software' -UseWebLogin
+                    Connect-PnPOnline -Url 'https://irpsystems.sharepoint.com/sites/Software/Shared Documents/General/releases/' -UseWebLogin
 
-                    \$folders = Get-PnPFolderItem -FolderSiteRelativeUrl 'Shared Documents/General/releases/HD_Gen2/upp' -ItemType Folder
+                    \$folders = Get-PnPFolderItem -FolderSiteRelativeUrl '/HD_Gen2/upp' -ItemType Folder
                     \$latest = \$folders | Sort-Object TimeCreated -Descending | Select-Object -First 1
                     Write-Host "Latest firmware folder: \$($latest.Name)"
                 """
