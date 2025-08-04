@@ -2,17 +2,22 @@
 pipeline {
     agent { label 'Slave_test' }
 
- stages {
+    stages {
         stage('Read and Print test') {
-         bat """
-         echo Hello from Windows agent
-         echo dir C:\
-         """
+            steps {
+                bat """
+                    echo Hello from Windows agent
+                    dir C:\\
+                """
+            }
         }
-         stage('End test') {
-         bat """
-         echo End test from Windows agent
-         """
-         }
- }
- }
+
+        stage('End test') {
+            steps {
+                bat """
+                    echo End test from Windows agent
+                """
+            }
+        }
+    }
+}
