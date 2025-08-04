@@ -24,12 +24,20 @@ base_log_dir = os.path.join('C:\\', 'Users', username, 'PycharmProjects', 'UDS')
 result_folder = os.environ.get("RESULT_FOLDER")
 
 if not result_folder:
-    # Define file paths
-    # SRD_path = r"C:\Users\ilyar\Downloads\HD-UP-ICD-242601-UDID.xlsx"
-    # UDS_path = r"C:\Users\ilyar\PycharmProjects\UDS\Logs\03.01.11\03.01.11_report.xlsx"
-    # OUTPUT_path = r"C:\Users\ilyar\PycharmProjects\UDS\Logs\03.01.11\UDS_Compliance_matrix_UPP_v3.01.11.xlsx"
-    # EXTRACTED_SRD_path = r"C:\Users\ilyar\PycharmProjects\UDS\Logs\03.01.11\"extracted_srd_data.xlsx"
-    raise ValueError("RESULT_FOLDER environment variable not set")
+    # Fallback: find the most recently created folder inside Logs
+    logs_base = os.path.join(base_log_dir, "Logs")
+    subfolders = [
+        os.path.join(logs_base, d) for d in os.listdir(logs_base)
+        if os.path.isdir(os.path.join(logs_base, d))
+    ]
+
+    if not subfolders:
+        raise ValueError("No subfolders found in Logs to infer RESULT_FOLDER")
+
+    latest_folder = max(subfolders, key=os.path.getctime)
+    result_folder = os.path.basename(latest_folder)
+    print(f"Fallback: Using latest created result folder → {result_folder}")
+####    raise ValueError("RESULT_FOLDER environment variable not set")
 
 UDS_path = os.path.join(base_log_dir,"Logs", result_folder,  f"{result_folder}_report.xlsx")
 OUTPUT_path = os.path.join(base_log_dir,"Logs", result_folder, f"UDS_Compliance_matrix_UPP_v{result_folder}.xlsx")
