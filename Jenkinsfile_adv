@@ -3,6 +3,19 @@ pipeline {
     agent { label 'Slave_test' }
 
     stages {
+        stage ('Connect and find the latest UPP version'){
+            steps{
+            powershell """
+                    Connect-PnPOnline -Url 'https://irpsystems.sharepoint.com/sites/Software' -UseWebLogin
+
+                    \$folders = Get-PnPFolderItem -FolderSiteRelativeUrl 'Shared Documents/General/releases/HD_Gen2/upp' -ItemType Folder
+                    \$latest = \$folders | Sort-Object TimeCreated -Descending | Select-Object -First 1
+                    Write-Host "Latest firmware folder: \$($latest.Name)"
+                """
+            }
+
+            }
+
         stage('Read and Print test') {
             steps {
                 bat """
