@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         RCLONE_BASE = 'irp:General/releases'
-        UPP_FOLDER  = 'HiDynamic/upp'
+        UPP_FOLDER  = 'HD_Gen2/upp'
         DEST_FOLDER = "${env.WORKSPACE}/NewVersion"
     }
 
