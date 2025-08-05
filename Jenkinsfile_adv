@@ -1,35 +1,47 @@
-
 pipeline {
-    agent { label 'Slave_test' }
+    agent { label 'master' }
+
+    environment {
+        RCLONE_REMOTE = 'irp:General/releases/HD_Gen2/upp'
+        DEST_FOLDER = "${env.WORKSPACE}/NewVersion"
+    }
 
     stages {
-        stage ('Connect and find the latest UPP version'){
-            steps{
-            powershell """
-                    Connect-PnPOnline -Url 'https://irpsystems.sharepoint.com/sites/Software/Shared Documents/General/releases/' -UseWebLogin
-
-                    \$folders = Get-PnPFolderItem -FolderSiteRelativeUrl '/HD_Gen2/upp' -ItemType Folder
-                    \$latest = \$folders | Sort-Object TimeCreated -Descending | Select-Object -First 1
-                    Write-Host "Latest firmware folder: \$($latest.Name)"
-                """
-            }
-
-            }
-
-        stage('Read and Print test') {
+        stage('Find Latest Firmware Folder') {
             steps {
-                bat """
-                    echo Hello from Windows agent
-                    dir C:\\
+                script {
+                    // Get latest folder name
+                    def latestFolder = sh(
+                        script: """
+                            rclone lsd "$RCLONE_REMOTE" | sort -k2,3 | tail -n1 | awk '{\$1=\$2=\$3=""; print \$0}' | sed 's/^ *//'
+                        """,
+                        returnStdout: true
+                    ).trim()
+
+                    echo "Latest firmware folder: ${latestFolder}"
+
+                    // Save to env for next stage
+                    env.LATEST_VERSION = latestFolder
+                }
+            }
+        }
+
+        stage('Copy Latest Firmware') {
+            steps {
+                sh """
+                    echo Cleaning up old version...
+                    rm -rf "${DEST_FOLDER}"
+                    mkdir -p "${DEST_FOLDER}"
+
+                    echo Copying from irp:General/releases/HD_Gen2/upp/${LATEST_VERSION}
+                    rclone copy "irp:General/releases/HD_Gen2/upp/${LATEST_VERSION}" "${DEST_FOLDER}"
                 """
             }
         }
 
-        stage('End test') {
+        stage('End Test') {
             steps {
-                bat """
-                    echo End test from Windows agent
-                """
+                sh 'echo End test from Windows agent'
             }
         }
     }
