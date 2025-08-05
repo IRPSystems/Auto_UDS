@@ -39,7 +39,7 @@ pipeline {
 
                     echo 📦 Copying from: ${RCLONE_BASE}/${UPP_FOLDER}/${LATEST_FOLDER}
                     rclone copy "${RCLONE_BASE}/${UPP_FOLDER}/${LATEST_FOLDER}" "${DEST_FOLDER}"
-                    rm -rf /home/user/Desktop/NewVersion/*
+                    sudo rm -rf /home/user/Desktop/NewVersion/*
                     cp -r ${DEST_FOLDER}/* /home/user/Desktop/NewVersion
                 """
             }
