@@ -40,7 +40,7 @@ pipeline {
                     echo 📦 Copying from: ${RCLONE_BASE}/${UPP_FOLDER}/${LATEST_FOLDER}
                     rclone copy "${RCLONE_BASE}/${UPP_FOLDER}/${LATEST_FOLDER}" "${DEST_FOLDER}"
                     rm -rf ~/Desktop/NewVersion/*
-                    cp ${DEST_FOLDER} ~/Desktop/NewVersion 
+                    cp -r ${DEST_FOLDER} ~/Desktop/NewVersion 
                 """
             }
         }
