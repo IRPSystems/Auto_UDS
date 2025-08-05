@@ -4,7 +4,8 @@ pipeline {
     environment {
         RCLONE_BASE = 'irp:General/releases'
         UPP_FOLDER  = 'HD_Gen2/upp'
-        DEST_FOLDER = "${env.WORKSPACE}/NewVersion"
+        DEST_FOLDER = "${env.HOME}/Desktop/NewVersion"
+
     }
 
     stages {
@@ -12,11 +13,12 @@ pipeline {
             steps {
                 script {
                     def latestFolder = sh(
-                        script: """
-                            rclone lsd "${RCLONE_BASE}/${UPP_FOLDER}" | sort -k2,3 | tail -n1 | awk '{\$1=\$2=\$3=""; print \$0}' | sed 's/^ *//'
+                    script: """
+                        rclone lsd "${RCLONE_BASE}/${UPP_FOLDER}" | sort -k2,3 | tail -n1 | awk '{\$1=\$2=\$3=\$4=""; print \$0}' | sed 's/^ *//'
                         """,
-                        returnStdout: true
+                    returnStdout: true
                     ).trim()
+
 
                     if (!latestFolder) {
                         error "❌ Could not find the latest folder in ${RCLONE_BASE}/${UPP_FOLDER}"
