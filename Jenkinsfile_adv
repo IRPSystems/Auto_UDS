@@ -2,7 +2,8 @@ pipeline {
     agent { label 'master' }
 
     environment {
-        RCLONE_REMOTE = 'irp:General/releases/HD_Gen2/upp'
+        RCLONE_BASE = 'irp:General/releases'
+        UPP_FOLDER  = 'HiDynamic/upp'
         DEST_FOLDER = "${env.WORKSPACE}/NewVersion"
     }
 
@@ -10,18 +11,19 @@ pipeline {
         stage('Find Latest Firmware Folder') {
             steps {
                 script {
-                    // Get latest folder name
                     def latestFolder = sh(
                         script: """
-                            rclone lsd "$RCLONE_REMOTE" | sort -k2,3 | tail -n1 | awk '{\$1=\$2=\$3=""; print \$0}' | sed 's/^ *//'
+                            rclone lsd "${RCLONE_BASE}/${UPP_FOLDER}" | sort -k2,3 | tail -n1 | awk '{\$1=\$2=\$3=""; print \$0}' | sed 's/^ *//'
                         """,
                         returnStdout: true
                     ).trim()
 
-                    echo "Latest firmware folder: ${latestFolder}"
+                    if (!latestFolder) {
+                        error "❌ Could not find the latest folder in ${RCLONE_BASE}/${UPP_FOLDER}"
+                    }
 
-                    // Save to env for next stage
-                    env.LATEST_VERSION = latestFolder
+                    echo "✅ Latest firmware folder: ${latestFolder}"
+                    env.LATEST_FOLDER = latestFolder
                 }
             }
         }
@@ -29,19 +31,19 @@ pipeline {
         stage('Copy Latest Firmware') {
             steps {
                 sh """
-                    echo Cleaning up old version...
+                    echo 🧹 Cleaning destination folder: ${DEST_FOLDER}
                     rm -rf "${DEST_FOLDER}"
                     mkdir -p "${DEST_FOLDER}"
 
-                    echo Copying from irp:General/releases/HD_Gen2/upp/${LATEST_VERSION}
-                    rclone copy "irp:General/releases/HD_Gen2/upp/${LATEST_VERSION}" "${DEST_FOLDER}"
+                    echo 📦 Copying from: ${RCLONE_BASE}/${UPP_FOLDER}/${LATEST_FOLDER}
+                    rclone copy "${RCLONE_BASE}/${UPP_FOLDER}/${LATEST_FOLDER}" "${DEST_FOLDER}"
                 """
             }
         }
 
-        stage('End Test') {
+        stage('Done') {
             steps {
-                sh 'echo End test from Windows agent'
+                echo "🎉 Firmware copied successfully to: ${DEST_FOLDER}"
             }
         }
     }
