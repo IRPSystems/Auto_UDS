@@ -8,7 +8,7 @@ pipeline {
         USER="ilyar"
         pass='Ii102030'
         REMOTE_IP='192.168.10.44'
-        REMOTE_TARGET="/C:\Jenkins" 
+        REMOTE_TARGET='/C:/Jenkins/NewVersion' 
 
     }
 
@@ -44,6 +44,8 @@ pipeline {
                     echo 📦 Copying from: ${RCLONE_BASE}/${UPP_FOLDER}/${LATEST_FOLDER}/
                     rclone copy "${RCLONE_BASE}/${UPP_FOLDER}/${LATEST_FOLDER}/" "${DEST_FOLDER}/${LATEST_FOLDER}"
                     echo 📦 Copying from:${LATEST_FOLDER} to ${REMOTE_IP_DEST_FOLDER}
+                    #rm -rf ${REMOTE_TARGET}/*
+                    ssh user@192.168.10.44 'cmd /c "rmdir /s /q C:\Jenkins\NewVersion" && mkdir C:\Jenkins\NewVersion'
                     scp -r "${LOCAL_COPY}/${LATEST_FOLDER}" ${USER}@${REMOTE_IP}:"${REMOTE_TARGET}"
 
                 """
@@ -52,7 +54,7 @@ pipeline {
 
         stage('Done') {
             steps {
-                echo "🎉 Firmware files copied to: ${DEST_FOLDER}"
+               echo "🎉 Firmware files copied successfully to: ${REMOTE_DEST} on ${REMOTE_IP}"
             }
         }
     }
