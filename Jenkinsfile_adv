@@ -47,7 +47,7 @@ pipeline {
     
                     echo 🖥️ Cleaning remote destination
                     ssh ${USER}@${REMOTE_IP} 'powershell -Command "Remove-Item -Path \\"${REMOTE_TARGET}\\\\*\\" -Recurse -Force"'
-                    scp -r "${LOCAL_COPY}/${LATEST_FOLDER}" ${USER}@${REMOTE_IP}:"${REMOTE_TARGET}"
+                    scp -r "${DEST_FOLDER}/${LATEST_FOLDER}" ${USER}@${REMOTE_IP}:"${REMOTE_TARGET}"
 
                 """
             }
