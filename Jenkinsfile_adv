@@ -4,7 +4,7 @@ pipeline {
     environment {
         RCLONE_BASE = 'irp:General/releases'
         UPP_FOLDER  = 'HD_Gen2/upp'
-        DEST_FOLDER = "${env.WORKSPACE}/NewVersion"
+        DEST_FOLDER = "/home/user/Desktop/NewVersion"
     }
 
     stages {
@@ -36,7 +36,7 @@ pipeline {
                     mkdir -p "${DEST_FOLDER}"
 
                     echo 📦 Copying from: ${RCLONE_BASE}/${UPP_FOLDER}/${LATEST_FOLDER}/
-                    rclone copy "${RCLONE_BASE}/${UPP_FOLDER}/${LATEST_FOLDER}/" "${DEST_FOLDER}/"
+                    rclone copy "${RCLONE_BASE}/${UPP_FOLDER}/${LATEST_FOLDER}/" "${DEST_FOLDER}/${LATEST_FOLDER}"
                 """
             }
         }
