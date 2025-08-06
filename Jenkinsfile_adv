@@ -8,7 +8,7 @@ pipeline {
         USER="ilyar"
         pass='Ii102030'
         REMOTE_IP='192.168.10.44'
-        REMOTE_TARGET='/C:/Jenkins/NewVersion' 
+        REMOTE_TARGET = 'C:\\Jenkins\\NewVersion'
 
     }
 
@@ -34,7 +34,7 @@ pipeline {
             }
         }
 
-        stage('Copy Latest Firmware') {
+                stage('Copy Latest Firmware') {
             steps {
                 sh """
                     echo 🧹 Cleaning destination folder: ${DEST_FOLDER}
@@ -43,15 +43,16 @@ pipeline {
 
                     echo 📦 Copying from: ${RCLONE_BASE}/${UPP_FOLDER}/${LATEST_FOLDER}/
                     rclone copy "${RCLONE_BASE}/${UPP_FOLDER}/${LATEST_FOLDER}/" "${DEST_FOLDER}/${LATEST_FOLDER}"
-                    echo 📦 Copying from:${LATEST_FOLDER} to ${REMOTE_TARGET}
-    
-                    echo 🖥️ Cleaning remote destination
-                    ssh ${USER}@${REMOTE_IP} 'powershell -Command "Remove-Item -Path \\"${REMOTE_TARGET}\\\\*\\" -Recurse -Force"'
-                    scp -r "${DEST_FOLDER}/${LATEST_FOLDER}" ${USER}@${REMOTE_IP}:"${REMOTE_TARGET}"
 
+                    echo 🖥️ Cleaning remote destination
+                    ssh ${USER}@${REMOTE_IP} "powershell -Command \\"Remove-Item -Path 'C:\\\\Jenkins\\\\NewVersion\\\\*' -Recurse -Force\\""
+
+                    echo 📤 Sending files to remote host
+                    scp -r "${DEST_FOLDER}/${LATEST_FOLDER}" ${USER}@${REMOTE_IP}:"C:/Jenkins/NewVersion"
                 """
             }
         }
+
 
         stage('Done') {
             steps {
