@@ -4,7 +4,7 @@ pipeline {
     environment {
         RCLONE_BASE = 'irp:General/releases'
         UPP_FOLDER  = 'HD_Gen2/upp'
-        DEST_FOLDER = "/opt/shared/NewVersion"
+        DEST_FOLDER = "${env.WORKSPACE}/NewVersion"
     }
 
     stages {
