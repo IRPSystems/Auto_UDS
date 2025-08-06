@@ -46,7 +46,7 @@ pipeline {
                     echo 📦 Copying from:${LATEST_FOLDER} to ${REMOTE_TARGET}
     
                     echo 🖥️ Cleaning remote destination
-                    ssh ${REMOTE_USER}@${REMOTE_IP} 'powershell -Command "Remove-Item -Path \\"${REMOTE_DEST}\\\\*\\" -Recurse -Force"'
+                    ssh ${USER}@${REMOTE_IP} 'powershell -Command "Remove-Item -Path \\"${REMOTE_TARGET}\\\\*\\" -Recurse -Force"'
                     scp -r "${LOCAL_COPY}/${LATEST_FOLDER}" ${USER}@${REMOTE_IP}:"${REMOTE_TARGET}"
 
                 """
@@ -55,7 +55,7 @@ pipeline {
 
         stage('Done') {
             steps {
-               echo "🎉 Firmware files copied successfully to: ${REMOTE_DEST} on ${REMOTE_IP}"
+               echo "🎉 Firmware files copied successfully to: ${REMOTE_TARGET} on ${REMOTE_IP}"
             }
         }
     }
