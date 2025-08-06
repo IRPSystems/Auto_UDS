@@ -44,8 +44,7 @@ pipeline {
                     echo 📦 Copying from: ${RCLONE_BASE}/${UPP_FOLDER}/${LATEST_FOLDER}/
                     rclone copy "${RCLONE_BASE}/${UPP_FOLDER}/${LATEST_FOLDER}/" "${DEST_FOLDER}/${LATEST_FOLDER}"
                     echo 📦 Copying from:${LATEST_FOLDER} to ${REMOTE_IP_DEST_FOLDER}
-                    #rm -rf ${REMOTE_TARGET}/*
-                    #ssh user@192.168.10.44 'cmd /c "rmdir /s /q C:\Jenkins\NewVersion" && mkdir C:\Jenkins\NewVersion'
+    
                     echo 🖥️ Cleaning remote destination
                     ssh ${REMOTE_USER}@${REMOTE_IP} 'powershell -Command "Remove-Item -Path \\"${REMOTE_DEST}\\\\*\\" -Recurse -Force"'
                     scp -r "${LOCAL_COPY}/${LATEST_FOLDER}" ${USER}@${REMOTE_IP}:"${REMOTE_TARGET}"
