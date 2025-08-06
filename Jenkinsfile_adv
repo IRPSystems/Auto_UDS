@@ -4,10 +4,16 @@ pipeline {
     environment {
         RCLONE_BASE = 'irp:General/releases'
         UPP_FOLDER  = 'HD_Gen2/upp'
-        DEST_FOLDER = "${env.HOME}/Desktop/NewVersion"
+        DEST_FOLDER = "${env.HOME}/workspace/NewVersion"
+        USER="ilyar"
+        pass='Ii102030'
+        REMOTE_IP='192.168.10.44'
+        REMOTE_TARGET="/C:\Jenkins" 
+
     }
 
     stages {
+        
         stage('Find Latest Firmware Folder') {
             steps {
                 script {
@@ -28,7 +34,7 @@ pipeline {
             }
         }
 
-        stage('Copy Latest Firmware Contents Only') {
+        stage('Copy Latest Firmware') {
             steps {
                 sh """
                     echo 🧹 Cleaning destination folder: ${DEST_FOLDER}
@@ -37,6 +43,9 @@ pipeline {
 
                     echo 📦 Copying from: ${RCLONE_BASE}/${UPP_FOLDER}/${LATEST_FOLDER}/
                     rclone copy "${RCLONE_BASE}/${UPP_FOLDER}/${LATEST_FOLDER}/" "${DEST_FOLDER}/${LATEST_FOLDER}"
+                    echo 📦 Copying from:${LATEST_FOLDER} to ${REMOTE_IP_DEST_FOLDER}
+                    scp -r "${LOCAL_COPY}/${LATEST_FOLDER}" ${USER}@${REMOTE_IP}:"${REMOTE_TARGET}"
+
                 """
             }
         }
