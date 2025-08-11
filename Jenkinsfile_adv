@@ -1,63 +1,113 @@
 pipeline {
-    agent { label 'master' }
+  agent { label 'master' }
 
-    environment {
-        RCLONE_BASE = 'irp:General/releases'
-        UPP_FOLDER  = 'HD_Gen2/upp'
-        DEST_FOLDER = "${env.HOME}/workspace/NewVersion"
-        USER="ilyar"
-        pass='Ii102030'
-        REMOTE_IP='192.168.10.44'
-        REMOTE_TARGET = 'C:\\Jenkins\\NewVersion'
+  environment {
+    RCLONE_BASE     = 'irp:General/releases'
+    DEST_FOLDER     = "${env.HOME}/workspace/NewVersion"
+    REMOTE_TARGET   = 'C:\\Jenkins\\NewVersion'
+    WORKSPACE_TARGET = "C:/Jenkins/workspace"
+    REMOTE_USER     = 'dyno'     // default; overridden in Environment stage
+    REQUIREMENTS    = 'requirements.txt'
+  }
 
+  stages {
+
+    stage('Environment') {
+      steps {
+        script {
+          switch (env.DEVICE) {
+            case 'UPP':
+              env.REMOTE_IP    = '192.168.10.31'
+              env.REMOTE_USER  = 'dyno'
+              env.MAIN_VER_DIR = 'HD_Gen2/upp'
+              env.REQUIREMENTS = 'requirements.txt'
+              break
+            case 'NewGen':
+              env.REMOTE_IP    = '192.168.10.80'
+              env.REMOTE_USER  = 'dyno'
+              env.MAIN_VER_DIR = 'dynamic 6/newGen'  // space-safe later
+              env.REQUIREMENTS = 'requirements.txt'
+              break
+            default:
+              error "DEVICE not set or unrecognized. Set DEVICE to 'UPP' or 'NewGen'."
+          }
+          echo "Using remote ${env.REMOTE_USER}@${env.REMOTE_IP}, firmware dir: ${env.MAIN_VER_DIR}"
+        }
+      }
     }
 
-    stages {
-        
-        stage('Find Latest Firmware Folder') {
-            steps {
-                script {
-                    def latestFolder = sh(
-                        script: """
-                            rclone lsd "${RCLONE_BASE}/${UPP_FOLDER}" | sort -k2,3 | tail -n1 | awk '{\$1=\$2=\$3=\$4=""; print \$0}' | sed 's/^ *//'
-                        """,
-                        returnStdout: true
-                    ).trim()
+    stage('Clone Project on Remote Windows') {
+      steps {
+        sh """
+          echo 🚀 Running remote clone + setup...
 
-                    if (!latestFolder) {
-                        error "❌ Could not find the latest folder in ${RCLONE_BASE}/${UPP_FOLDER}"
-                    }
-
-                    echo "✅ Latest firmware folder: ${latestFolder}"
-                    env.LATEST_FOLDER = latestFolder
-                }
-            }
-        }
-
-                stage('Copy Latest Firmware') {
-            steps {
-                sh """
-                    echo 🧹 Cleaning destination folder: ${DEST_FOLDER}
-                    rm -rf "${DEST_FOLDER}"/*
-                    mkdir -p "${DEST_FOLDER}"
-
-                    echo 📦 Copying from: ${RCLONE_BASE}/${UPP_FOLDER}/${LATEST_FOLDER}/
-                    rclone copy "${RCLONE_BASE}/${UPP_FOLDER}/${LATEST_FOLDER}/" "${DEST_FOLDER}/${LATEST_FOLDER}"
-
-                    echo 🖥️ Cleaning remote destination
-                    ssh ${USER}@${REMOTE_IP} "powershell -Command \\"Remove-Item -Path 'C:\\\\Jenkins\\\\NewVersion\\\\*' -Recurse -Force\\""
-
-                    echo 📤 Sending files to remote host
-                    scp -r "${DEST_FOLDER}/${LATEST_FOLDER}" ${USER}@${REMOTE_IP}:"C:/Jenkins/NewVersion"
-                """
-            }
-        }
-
-
-        stage('Done') {
-            steps {
-               echo "🎉 Firmware files copied successfully to: ${REMOTE_TARGET} on ${REMOTE_IP}"
-            }
-        }
+           ssh ${REMOTE_USER}@${REMOTE_IP} "powershell -NoProfile -Command \\
+        \\"& { \\
+          if (-not (Test-Path 'C:/Jenkins/workspace')) { New-Item -ItemType Directory -Path 'C:/Jenkins/workspace' -Force | Out-Null }; \\
+          if (-not (Test-Path 'C:/Jenkins/workspace/Auto_UDS')) { \\
+            git clone https://github.com/IRPSystems/Auto_UDS.git 'C:/Jenkins/workspace/Auto_UDS' \\
+          } else { \\
+            Write-Host '🔄 Repo exists, pulling latest...'; \\
+            Set-Location 'C:/Jenkins/workspace/Auto_UDS'; \\
+            git pull \\
+          }; \\
+          Set-Location 'C:/Jenkins/workspace/Auto_UDS'; \\
+          if (Test-Path 'venv') { Remove-Item -Recurse -Force 'venv' }; \\
+          python -m venv venv; \\
+          & venv\\\\Scripts\\\\pip.exe install -r ${REQUIREMENTS}; \\
+          Write-Host '✅ Installed packages:'; \\
+          & venv\\\\Scripts\\\\pip.exe freeze | Tee-Object -FilePath 'freeze.txt' \\
+        }\\"
+      "
+    """
+      }
     }
+
+    stage('Find Latest Firmware Folder') {
+      steps {
+        script {
+          def latestFolder = sh(
+            script: """
+              rclone lsd "${RCLONE_BASE}/${MAIN_VER_DIR}" | sort -k2,3 | tail -n1 | awk '{\$1=\$2=\$3=\$4=""; print \$0}' | sed 's/^ *//'
+            """,
+            returnStdout: true
+          ).trim()
+
+          if (!latestFolder) {
+            // use MAIN_VER_DIR in the message
+            error "❌ Could not find the latest folder in ${RCLONE_BASE}/${MAIN_VER_DIR}"
+          }
+          echo "✅ Latest firmware folder: ${latestFolder}"
+          env.LATEST_FOLDER = latestFolder
+        }
+      }
+    }
+
+    stage('Copy Latest Firmware') {
+      steps {
+        sh """
+          echo 🧹 Cleaning destination folder: ${DEST_FOLDER}
+          rm -rf "${DEST_FOLDER}/${LATEST_FOLDER}"
+          mkdir -p "${DEST_FOLDER}"
+
+          echo 📦 Copying from: "${RCLONE_BASE}/${MAIN_VER_DIR}/${LATEST_FOLDER}/"
+          rclone copy "${RCLONE_BASE}/${MAIN_VER_DIR}/${LATEST_FOLDER}/" "${DEST_FOLDER}/${LATEST_FOLDER}"
+
+          echo 🖥️ Cleaning remote destination
+          ssh ${REMOTE_USER}@${REMOTE_IP} "powershell -NoProfile -Command \\
+            \\"\\\$target = 'C:\\\\\\\\Jenkins\\\\\\\\NewVersion\\\\\\\\${LATEST_FOLDER}'; if (Test-Path \\\$target) { Remove-Item -Path \\\$target -Recurse -Force -ErrorAction Stop }\\"
+          "
+
+          echo 📤 Sending files to remote host
+          scp -r "${DEST_FOLDER}/${LATEST_FOLDER}" ${REMOTE_USER}@${REMOTE_IP}:"C:/Jenkins/NewVersion"
+        """
+      }
+    }
+
+    stage('Done') {
+      steps {
+        echo "🎉 Firmware files copied successfully to: ${REMOTE_TARGET} on ${REMOTE_IP}"
+      }
+    }
+  }
 }
