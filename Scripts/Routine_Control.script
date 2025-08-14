@@ -23,7 +23,9 @@ send 31 02 02 96
 #compare CS
 tester on
 send 10 03
-security 1
+security 3
+sleep 100
+send 22 03 03
 send 10 02
 send 31 01 02 00 01
 send 31 01 FF 01

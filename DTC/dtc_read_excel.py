@@ -59,30 +59,24 @@ try:
         raise FileNotFoundError(f"Excel file {excel_file} not found.")
 
     # Read the Excel file, starting at header row (row 2, 0-based index 1)
+    # Read the Excel file
     df = pd.read_excel(excel_file, sheet_name="DTCs", header=0, skiprows=1)
 
-    # Define expected column names based on document structure
-    expected_columns = [
-        "Item No.", "DTC", "Fault Type Byte (FTB)", "DTC Hex Code", "IRP DTC Name",
-        "DTC Description", "DTC Set Conditions", "DTC Maturation Time",
-        "DTC Set Threshold", "DTC Heal Conditions", "DTC Dematuration Time",
-        "DTC Heal Threshold", "Actions (Error Reaction)", "Severity",
-        "Configurable Parameters", "P BIT", "C BIT", "MCU Error Level",
-        "TT", "Alert", "Freeze Frame Data", "SW Plan", "Storage/Memory location",
-        "Reaction Group Healing", "Repair Actions"
-    ]
+    # Clean column names
+    df.columns = [re.sub(r"\s+", " ", str(c).replace("\n", " ")).strip() for c in df.columns]
 
-    # Ensure the dataframe has the correct columns
-    if len(df.columns) >= len(expected_columns):
-        df.columns = expected_columns[:len(df.columns)]
-    else:
-        print(
-            f"Warning: Excel sheet has fewer columns ({len(df.columns)}) than expected ({len(expected_columns)}).")
-        df.columns = expected_columns[:len(df.columns)] + [f"Unnamed: {i}" for i in
-                                                           range(len(df.columns), len(expected_columns))]
+    # Drop extra duplicate columns
+    df = df.loc[:, ~df.columns.duplicated()]
 
-    print(f"Debug: Loaded DTCs sheet. Columns: {list(df.columns)}")
-    print(f"Debug: Number of rows loaded: {len(df)}")
+    # Define required columns
+    dtc_col = "DTC Hex Code"
+    severity_col = "Severity"
+    actions_col = "Actions (Error Reaction)"
+    repair_col = "Repair Actions"
+
+    required_columns = {dtc_col, severity_col, actions_col, repair_col}
+    if not required_columns.issubset(df.columns):
+        raise KeyError(f"Excel does not contain required columns: {required_columns}")
 
     # Define required columns
     dtc_col = "DTC Hex Code"
@@ -307,4 +301,4 @@ def main(only_faults: bool = False):
     generate_dtc_report(dtcs, output_excel="dtc_report.xlsx", only_faults=only_faults)
 
 if __name__ == "__main__":
-    main(only_faults=True)  # Set to True to filter for 0x27 faults only
+    main(only_faults=False)  # Set to True to filter for 0x27 faults only
