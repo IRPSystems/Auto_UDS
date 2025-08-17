@@ -57,10 +57,10 @@ pipeline {
 #Set-Location 'C:\\Jenkins\\workspace\\Auto_UDS'
 
 # Temporarily disabled:
-#if (Test-Path 'venv') { Remove-Item -Recurse -Force 'venv' }
+if (Test-Path 'venv') { Remove-Item -Recurse -Force 'venv' }
 python -m venv venv
-#& 'venv\\Scripts\\pip.exe' install -r '${REQUIREMENTS}'
-#& 'venv\\Scripts\\pip.exe' freeze | Tee-Object -FilePath 'freeze.txt'
+& 'venv\\Scripts\\pip.exe' install -r '${REQUIREMENTS}'
+& 'venv\\Scripts\\pip.exe' freeze | Tee-Object -FilePath 'freeze.txt'
 PS
         """
       }
