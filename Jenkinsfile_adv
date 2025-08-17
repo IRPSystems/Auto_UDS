@@ -59,8 +59,8 @@ Set-Location 'C:\\Jenkins\\workspace\\Auto_UDS'
 # Temporarily disabled:
 if (Test-Path 'venv') { Remove-Item -Recurse -Force 'venv' }
 python -m venv venv
-& 'venv\\Scripts\\pip.exe' install -r '${REQUIREMENTS}'
-& 'venv\\Scripts\\pip.exe' freeze | Tee-Object -FilePath 'freeze.txt'
+#& 'venv\\Scripts\\pip.exe' install -r '${REQUIREMENTS}'
+#& 'venv\\Scripts\\pip.exe' freeze | Tee-Object -FilePath 'freeze.txt'
 PS
         """
       }
@@ -90,7 +90,8 @@ PS
     // 1) Local prep & copy from rclone
     sh """
       echo "🧹 Cleaning destination folder: ${DEST_FOLDER}"
-      rm -rf "${DEST_FOLDER}/${LATEST_FOLDER}"
+      #rm -rf "${DEST_FOLDER}/${LATEST_FOLDER}"
+      rm -rf "${DEST_FOLDER}"
       mkdir -p "${DEST_FOLDER}"
 
       echo "📦 Copying from: ${RCLONE_BASE}/${MAIN_VER_DIR}/${LATEST_FOLDER}/"
@@ -101,48 +102,50 @@ PS
     sh """
       echo "🖥️ Deleting and recreating remote NewVersion folder on ${REMOTE_USER}@${REMOTE_IP}..."
       ssh ${REMOTE_USER}@${REMOTE_IP} powershell -NoProfile -Command - <<'PS'
-      \$root = 'C:\\Jenkins\\NewVersion'
-       Write-Host "➡️ Target:" \$root
+\$root = 'C:\\Jenkins\\NewVersion'
+Write-Host "➡️ Target:" \$root
 
-      # Ensure parent exists
-       \$parent = Split-Path -Parent \$root
-       if (-not (Test-Path \$parent)) { New-Item -ItemType Directory -Path \$parent -Force | Out-Null }
+# Ensure parent exists
+\$parent = Split-Path -Parent \$root
+if (-not (Test-Path \$parent)) { New-Item -ItemType Directory -Path \$parent -Force | Out-Null }
 
-       # Create root if missing
-        if (-not (Test-Path \$root)) { New-Item -ItemType Directory -Path \$root -Force | Out-Null }
+# Create root if missing
+if (-not (Test-Path \$root)) { New-Item -ItemType Directory -Path \$root -Force | Out-Null }
 
-        # Mirror an EMPTY temp folder to root (reliably empties deep trees)
-        \$temp = Join-Path \$env:TEMP ([guid]::NewGuid().ToString())
-        New-Item -ItemType Directory -Path \$temp -Force | Out-Null
-        robocopy \$temp \$root /MIR /NFL /NDL /NJH /NJS /NP | Out-Null
-        \$rc = \$LASTEXITCODE
-        Remove-Item -Recurse -Force \$temp -ErrorAction SilentlyContinue
+# Mirror an EMPTY temp folder to root (reliably empties deep trees)
+\$temp = Join-Path \$env:TEMP ([guid]::NewGuid().ToString())
+New-Item -ItemType Directory -Path \$temp -Force | Out-Null
+robocopy \$temp \$root /MIR /NFL /NDL /NJH /NJS /NP | Out-Null
+\$rc = \$LASTEXITCODE
+Remove-Item -Recurse -Force \$temp -ErrorAction SilentlyContinue
 
-        # Fallback if robocopy indicates failure (>7)
-        if (\$rc -gt 7) {
-          Write-Host "Robocopy exit code \$rc; attempting PowerShell fallback..."
-          Get-ChildItem -LiteralPath \$root -Force | Remove-Item -Recurse -Force -ErrorAction Continue
-        }
+# Fallback if robocopy indicates failure (>7)
+if (\$rc -gt 7) {
+  Write-Host "Robocopy exit code \$rc; attempting PowerShell fallback..."
+  Get-ChildItem -LiteralPath \$root -Force | Remove-Item -Recurse -Force -ErrorAction Continue
+}
 
-        # (Re)create the root (robocopy /MIR keeps it, but ensure presence)
-        if (-not (Test-Path \$root)) { New-Item -ItemType Directory -Path \$root -Force | Out-Null }
+# (Re)create the root (robocopy /MIR keeps it, but ensure presence)
+if (-not (Test-Path \$root)) { New-Item -ItemType Directory -Path \$root -Force | Out-Null }
 
-        # Verify empty; fail if not
-        \$items = Get-ChildItem -LiteralPath \$root -Force
-        if (\$items.Count -gt 0) {
-          Write-Host '❌ Folder not empty after cleanup:'
-          \$items | Select-Object Name,Mode,Length | Format-Table -AutoSize
-          exit 1
-        } else {
-          Write-Host '✅ Folder is empty.'
-        }
-        PS
-            """
+# Verify empty; fail if not
+\$items = Get-ChildItem -LiteralPath \$root -Force
+if (\$items.Count -gt 0) {
+  Write-Host '❌ Folder not empty after cleanup:'
+  \$items | Select-Object Name,Mode,Length | Format-Table -AutoSize
+  exit 1
+} else {
+  Write-Host '✅ Folder is empty.'
+}
+PS
+    """
 
     // 3) Push the freshly copied firmware to the slave
     sh """
       echo "📤 Sending files to remote host"
       scp -r "${DEST_FOLDER}/${LATEST_FOLDER}" ${REMOTE_USER}@${REMOTE_IP}:"C:/Jenkins/NewVersion"
+      ssh ${REMOTE_USER}@${REMOTE_IP} "cmd /c dir C:\\Jenkins\\NewVersion"
+
     """
   }
 }
