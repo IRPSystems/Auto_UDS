@@ -39,25 +39,25 @@ pipeline {
     stage('Clone Project on Remote Windows') {
       steps {
         sh """
-          echo "🚀 Running remote clone + setup (PowerShell via stdin)..."
+#          echo "🚀 Running remote clone + setup (PowerShell via stdin)..."
+#
+#          ssh ${REMOTE_USER}@${REMOTE_IP} powershell -NoProfile -Command - <<'PS'
+#if (-not (Test-Path 'C:\\Jenkins\\workspace')) {
+#  New-Item -ItemType Directory -Path 'C:\\Jenkins\\workspace' -Force | Out-Null
+#}
+#
+#if (-not (Test-Path 'C:\\Jenkins\\workspace\\Auto_UDS')) {
+#  git clone https://github.com/IRPSystems/Auto_UDS.git 'C:\\Jenkins\\workspace\\Auto_UDS'
+#} else {
+##  Write-Host 'Repo exists, pulling latest...'
+#  Set-Location 'C:\\Jenkins\\workspace\\Auto_UDS'
+#  git pull
+#}
 
-          ssh ${REMOTE_USER}@${REMOTE_IP} powershell -NoProfile -Command - <<'PS'
-if (-not (Test-Path 'C:\\Jenkins\\workspace')) {
-  New-Item -ItemType Directory -Path 'C:\\Jenkins\\workspace' -Force | Out-Null
-}
-
-if (-not (Test-Path 'C:\\Jenkins\\workspace\\Auto_UDS')) {
-  git clone https://github.com/IRPSystems/Auto_UDS.git 'C:\\Jenkins\\workspace\\Auto_UDS'
-} else {
-  Write-Host 'Repo exists, pulling latest...'
-  Set-Location 'C:\\Jenkins\\workspace\\Auto_UDS'
-  git pull
-}
-
-Set-Location 'C:\\Jenkins\\workspace\\Auto_UDS'
+#Set-Location 'C:\\Jenkins\\workspace\\Auto_UDS'
 
 # Temporarily disabled:
-if (Test-Path 'venv') { Remove-Item -Recurse -Force 'venv' }
+#if (Test-Path 'venv') { Remove-Item -Recurse -Force 'venv' }
 python -m venv venv
 #& 'venv\\Scripts\\pip.exe' install -r '${REQUIREMENTS}'
 #& 'venv\\Scripts\\pip.exe' freeze | Tee-Object -FilePath 'freeze.txt'
