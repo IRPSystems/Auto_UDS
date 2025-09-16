@@ -1,0 +1,25 @@
+#System Supplier ECU Software Version Number F195
+send 22 F195
+
+#Odometer F1B0
+send 22 F1B0
+
+#Battery Voltage F1B1
+send 22 F1B1
+
+#Vehicle Speed F1B2
+send 22 F1B2
+
+#Motor speed F1B3
+send 22 F1B3
+
+#Reset Reason 1-5 F1B4
+send 22 F1B4
+
+#Reset Counter F1B5
+send 22 F1B5
+
+#Ignition Counter F1B6
+send 22 F1B6
+
+

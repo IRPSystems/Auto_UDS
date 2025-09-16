@@ -1,0 +1,45 @@
+
+#System Supplier ECU Software Version Number F195
+send 22 F195
+linedelay 500
+
+tester on
+send 10 03
+security 1
+sleep 500
+
+#CANWakeupFeatureEnable (Default 0 or 1, Scale 1)
+send 2E 01 03 01 00 00 00 00 00 00 00 00 00
+send 22 01 03
+
+#NMDriveCnttoClearDTC (Default 40, Scale 1)
+send 2E 01 03 00 28 00 00 00 00 00 00 00 00
+send 22 01 03
+
+#BusoffFastRecoveryTime (Default 50, Scale 10)
+send 2E 01 03 00 00 05 00 00 00 00 00 00 00
+send 22 01 03
+
+#FastBusoffRecoveryCount (Default 5, Scale 1)
+send 2E 01 03 00 00 00 05 00 00 00 00 00 00
+send 22 01 03
+
+#BusoffSlowRecoveryTime (Default 500, Scale 10)
+send 2E 01 03 00 00 00 00 32 00 00 00 00 00
+send 22 01 03
+
+#Not in use NM IGN On Startup Delay (Default 2000, Scale 10)
+#send 2E 01 03 00 00 00 00 00 64 00 00 00 00
+#send 22 01 03
+
+#NMRestartDlyTimeAfterUnderVolRecovery (Default 500, Scale 10)
+send 2E 01 03 00 00 00 00 00 00 32 00 00 00
+send 22 01 03
+
+#NMRestartDlyTimeAfterOverVolRecovery (Default 500, Scale 10)
+send 2E 01 03 00 00 00 00 00 00 00 32 00 00
+send 22 01 03
+
+#NM Restart Dly Time After Bus Off recovery (Default 1000, Scale 10)
+send 2E 01 03 00 00 00 00 00 00 00 00 64 00
+send 22 01 03

@@ -1,0 +1,75 @@
+#System Supplier ECU Software Version Number F195
+send 22 F195
+linedelay 500
+
+#Update History zone
+send 31 01 02 01 00 01 02 4D 43 55 41 43 54 30 30 4D 43 55 41 43 54 30 30 1C 0A 07 E9 0A 1E    
+send 22 02 01
+
+#send 31 03 02
+
+# start Resolver Autocalibration
+send 31 01 02 95
+
+#start ActiveDischarge
+send 31 01 02 96
+
+#stop Autocalibration
+send 31 02 02 95
+
+#stop ActiveDischarge
+send 31 02 02 96
+
+#compare CS
+tester on
+send 10 03
+security 3
+sleep 100
+send 22 03 03
+send 10 02
+send 31 01 02 00 01
+send 31 01 FF 01
+send 11 01
+
+
+
+
+
+
+
+
+
+
+
+#NumberInFlash  unit 8
+#send 31 01 02 01 0A 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+#send 22 02 01
+
+#TesterVersion unit 16
+#send 31 01 02 01 00 00 0A 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+#send 22 02 01
+
+#PrevApplSWID string 8
+#send 31 01 02 01 00 00 00 4D 43 55 41 43 54 31 30 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+#send 22 02 01
+
+#PrevApplDataID string 8
+#send 31 01 02 01 00 00 00 00 00 00 00 00 00 00 00 4D 43 55 41 43 54 32 30 00 00 00 00 00 00
+#send 22 02 01
+
+#Date
+#send 31 01 02 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 0D 03 14 19 00 00
+#send 22 02 01
+
+#Time
+#send 31 01 02 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 0F 1E
+#send 22 02 01
+
+
+
+
+
+
+
+
+

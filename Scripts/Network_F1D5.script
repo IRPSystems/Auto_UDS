@@ -1,0 +1,33 @@
+#System Supplier ECU Software Version Number F195
+send 22 F195
+
+tester on
+send 10 03
+security 1
+sleep 500
+
+#Network Management Disable
+#send 2E F1D4 00
+#send 22 F1D4
+
+#Network Management Enable
+#send 2E F1D4 01
+#send 22 F1D4
+
+
+#CriticalCANSignalInvalidTime (Default 50, Scaled 10)
+send 2E F1D5 00 05 00 00 00 00
+send 22 F1D5
+
+#MainCANBusOffHealingTime (Default 1000, Scaled 10)
+send 2E F1D5 00 00 00 64 00 00
+send 22 F1D5
+
+#CANTimeoutSincePowerup (Default 2000, Scaled 20)
+send 2E F1D5 00 00 00 00 00 64
+send 22 F1D5
+
+
+
+
+
