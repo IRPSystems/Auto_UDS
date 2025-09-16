@@ -1,0 +1,34 @@
+2025-08-19 15:36:13 [INFO] - Angle Offset, Converted result: -1  Pass 
+2025-08-19 15:36:13 [INFO] - Angle Offset Delay, Converted result: -1  Pass 
+2025-08-19 15:36:13 [INFO] - Motor Temp - Min Cut, Converted result: 127  Pass 
+2025-08-19 15:36:13 [INFO] - Motor Temp - Min Start, Converted result: 127  Pass 
+2025-08-19 15:36:13 [INFO] - Motor Temp - Max Start, Converted result: 255  Pass 
+2025-08-19 15:36:13 [INFO] - Motor Temp - Max Cut, Converted result: 255  Pass 
+2025-08-19 15:36:13 [INFO] - Controller Temp - Min Cut, Converted result: 127  Pass 
+2025-08-19 15:36:13 [INFO] - Controller Temp - Min Start, Converted result: 127  Pass 
+2025-08-19 15:36:13 [INFO] - Controller Temp - Max Start, Converted result: 255  Pass 
+2025-08-19 15:36:13 [INFO] - Controller Temp - Max Cut, Converted result: 255  Pass 
+2025-08-19 15:36:13 [INFO] - Cooling Plate Temp - Min Cut, Converted result: 127  Pass 
+2025-08-19 15:36:13 [INFO] - Cooling Plate Temp - Min Start, Converted result: 127  Pass 
+2025-08-19 15:36:13 [INFO] - Cooling Plate Temp - Max Start, Converted result: 255  Pass 
+2025-08-19 15:36:13 [INFO] - Cooling Plate Temp - Max Cut, Converted result: 255  Pass 
+2025-08-19 15:36:13 [INFO] - Bus Voltage - Min Cut, Converted result: 1200  Pass 
+2025-08-19 15:36:13 [INFO] - Bus Voltage - Min Start, Converted result: 1  Pass 
+2025-08-19 15:36:13 [INFO] - Bus Voltage - Max Start, Converted result: 500  Pass 
+2025-08-19 15:36:13 [INFO] - Bus Voltage - Max Cut, Converted result: 500  Pass 
+2025-08-19 15:36:13 [INFO] - Max Bus Current Limit Activation, Converted result: 1  Pass 
+2025-08-19 15:36:13 [ERROR] - Max Bus Current Limit , Mismatch Tx and Rx 0790, Fail
+2025-08-19 15:36:13 [INFO] - Max Bus Current Limit , Converted result: 1  Pass 
+2025-08-19 15:36:13 [INFO] - Min Bus Current Limit Activation, Converted result: 1  Pass 
+2025-08-19 15:36:13 [ERROR] - Unknown Condition, Mismatch Tx and Rx 0790, Fail
+2025-08-19 15:36:13 [ERROR] - Unknown Condition, Mismatch Tx and Rx 0790, Fail
+2025-08-19 15:36:13 [ERROR] - Max Bus Voltage Limit , Mismatch Tx and Rx 0790, Fail
+2025-08-19 15:36:13 [ERROR] - Min Bus Voltage Limit Activation, Mismatch Tx and Rx 0790, Fail
+2025-08-19 15:36:13 [ERROR] - Unknown Condition, Mismatch Tx and Rx 0790, Fail
+2025-08-19 15:36:13 [INFO] - Min Bus Voltage Limit , Converted result: 500  Pass 
+2025-08-19 15:36:13 [INFO] - Battery Maximum Current, Converted result: 500  Pass 
+2025-08-19 15:36:13 [INFO] - Bus Under-Voltage, Converted result: 500  Pass 
+2025-08-19 15:36:13 [INFO] - Bus Over-Voltage, Converted result: 500  Pass 
+2025-08-19 15:36:13 [DEBUG] - Creating folder at: Logs\03.01.14
+2025-08-19 15:36:13 [WARNING] - 0300 Diagnostic Session Control 
+2025-08-19 15:36:13 [WARNING] - 01A8 Security Access 

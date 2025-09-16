@@ -1,0 +1,16 @@
+2025-07-29 15:10:08 [INFO] - VCU3_100 Timeout, Converted result: 50  Pass 
+2025-07-29 15:10:08 [INFO] - VCU3_100 Healing Time Threshold, Converted result: 100  Pass 
+2025-07-29 15:10:08 [INFO] - VCU5_500 Timeout, Converted result: 100  Pass 
+2025-07-29 15:10:08 [INFO] - VCU5_500 Healing Time, Converted result: 100  Pass 
+2025-07-29 15:10:08 [INFO] - VCU8_10 Timeout, Converted result: 10  Pass 
+2025-07-29 15:10:08 [INFO] - VCU8_10 Healing Time, Converted result: 10  Pass 
+2025-07-29 15:10:08 [INFO] - VCU9_10 Timeout, Converted result: 5  Pass 
+2025-07-29 15:10:08 [INFO] - VCU9_10 Healing Time, Converted result: 10  Pass 
+2025-07-29 15:10:08 [INFO] - VCU14_20 Timeout, Converted result: 20  Pass 
+2025-07-29 15:10:08 [INFO] - VCU14_20 Healing Time, Converted result: 20  Pass 
+2025-07-29 15:10:08 [INFO] - VCU17_500 Timeout , Converted result: 100  Pass 
+2025-07-29 15:10:08 [INFO] - VCU17_500 Healing Time, Converted result: 100  Pass 
+2025-07-29 15:10:08 [INFO] - BMS6_10 Timeout, Converted result: 5  Pass 
+2025-07-29 15:10:08 [INFO] - BMS6_10 Healing Time, Converted result: 10  Pass 
+2025-07-29 15:10:08 [DEBUG] - Creating folder at: Logs\03.01.11
+2025-07-29 15:10:08 [WARNING] - 0375 Diagnostic Session Control 

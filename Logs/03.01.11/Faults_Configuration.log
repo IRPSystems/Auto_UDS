@@ -1,0 +1,60 @@
+2025-07-29 15:10:07 [INFO] - Motor Over Temp Fault Detection, Converted result: 100  Pass 
+2025-07-29 15:10:07 [INFO] - Low Temperature Faults Healing Hysteresis, Converted result: 10  Pass 
+2025-07-29 15:10:07 [INFO] - Motor Low Temp Fault Detection Time, Converted result: 100  Pass 
+2025-07-29 15:10:07 [INFO] - Motor Low Temp Fault Healing Time, Converted result: 100  Pass 
+2025-07-29 15:10:07 [INFO] - MCU Over Temp Fault Detection Time, Converted result: 100  Pass 
+2025-07-29 15:10:07 [INFO] - MCU Low Temp Fault Detection Time, Converted result: 100  Pass 
+2025-07-29 15:10:07 [INFO] - MCU Low Temp Fault Healing Time, Converted result: 100  Pass 
+2025-07-29 15:10:07 [INFO] - Cooling Plate Over Temp Fault Detection Time, Converted result: 100  Pass 
+2025-07-29 15:10:07 [INFO] - Cooling Plate Temp Sensor Fault Detection Time, Converted result: 100  Pass 
+2025-07-29 15:10:07 [INFO] - uC High Temp Fault Declaration Threshold, Converted result: 50  Pass 
+2025-07-29 15:10:07 [INFO] - uC Over Temp Fault Detection Time, Converted result: 100  Pass 
+2025-07-29 15:10:07 [INFO] - MCU Temp Sensors Plausibility Failed Fault Detection Time, Converted result: 100  Pass 
+2025-07-29 15:10:07 [INFO] - Phases Overcurrent Peak Faults Absolute Declaration Threshold, Converted result: 100  Pass 
+2025-07-29 15:10:07 [INFO] - Phases Overcurrent Peak Faults Deviation Declaration Threshold, Converted result: 100  Pass 
+2025-07-29 15:10:07 [INFO] - Phase Overcurrent Peak Faults Detection Time , Converted result: 15  Pass 
+2025-07-29 15:10:07 [INFO] - Phase Sensor Invalid Faults Detection Time, Converted result: 230  Pass 
+2025-07-29 15:10:07 [INFO] - Phase Disconnected Fault Detection Time, Converted result: 15  Pass 
+2025-07-29 15:10:07 [INFO] - Active Short Circuit Fault Detection Time, Converted result: 100  Pass 
+2025-07-29 15:10:07 [INFO] - Active Short Circuit Fault Healing Time, Converted result: 100  Pass 
+2025-07-29 15:10:07 [INFO] - Gate Drivers Output Feedback Active CBIT Fault Detection Time, Converted result: 100  Pass 
+2025-07-29 15:10:07 [INFO] - Gate Drivers Output Feedback Active CBIT Fault Healing Time, Converted result: 100  Pass 
+2025-07-29 15:10:07 [INFO] - Gate Drivers Output Feedback Inactive CBIT Fault Detection Time, Converted result: 100  Pass 
+2025-07-29 15:10:07 [INFO] - Gate Drivers Output Feedback Inactive CBIT Fault Healing Time, Converted result: 100  Pass 
+2025-07-29 15:10:07 [INFO] - BAT OverCurrent Fault Absolute Declaration Threshold, Converted result: 100  Pass 
+2025-07-29 15:10:07 [INFO] - BAT OverCurrent Fault Discharge Current Declaration Settling Time, Converted result: 100  Pass 
+2025-07-29 15:10:07 [INFO] - BAT OverCurrent Fault Detection Time, Converted result: 20  Pass 
+2025-07-29 15:10:07 [INFO] - BAT Current Sensor Invalid Fault Detection Time, Converted result: 10  Pass 
+2025-07-29 15:10:07 [INFO] - BAT Low Voltage Fault Detection Time, Converted result: 10  Pass 
+2025-07-29 15:10:07 [INFO] - BAT High Voltage Detection Time, Converted result: 10  Pass 
+2025-07-29 15:10:07 [INFO] - BAT Under Voltage Detection Time, Converted result: 20  Pass 
+2025-07-29 15:10:07 [INFO] - Battery_Overvoltage, Converted result: 250  Pass 
+2025-07-29 15:10:07 [INFO] - BAT Over Voltage Detection Time, Converted result: 20  Pass 
+2025-07-29 15:10:07 [INFO] - BAT Voltage Sensing Plausibility Failed Detection Time, Converted result: 50  Pass 
+2025-07-29 15:10:07 [INFO] - Active Discharge Feedback CBIT Detection Time, Converted result: 10  Pass 
+2025-07-29 15:10:07 [INFO] - Active Discharge Feedback CBIT Healing Time, Converted result: 10  Pass 
+2025-07-29 15:10:07 [INFO] - Active Discharge Timeout Detection Time, Converted result: 230  Pass 
+2025-07-29 15:10:07 [INFO] - Active Discharge Timeout Healing Time, Converted result: 10  Pass 
+2025-07-29 15:10:07 [INFO] - Gate Drivers Under Voltage Detection Time, Converted result: 1  Pass 
+2025-07-29 15:10:07 [INFO] - Gate Drivers Fault Detection, Converted result: 150  Pass 
+2025-07-29 15:10:07 [INFO] - KL30 Under Voltage, Converted result: 10  Pass 
+2025-07-29 15:10:07 [INFO] - KL30 Under Voltage Healing Time, Converted result: 10  Pass 
+2025-07-29 15:10:07 [INFO] - KL30 Over Voltage, Converted result: 10  Pass 
+2025-07-29 15:10:07 [INFO] - KL30 Over Voltage Healing Time, Converted result: 10  Pass 
+2025-07-29 15:10:07 [INFO] - KL30 LoS Detection Time, Converted result: 10  Pass 
+2025-07-29 15:10:07 [INFO] - Motor Position Sensor Fault Detection Time, Converted result: 5  Pass 
+2025-07-29 15:10:07 [INFO] - Motor Speed Fault Detection Time, Converted result: 10  Pass 
+2025-07-29 15:10:07 [INFO] - Overspeed Threshold, Converted result: 10  Pass 
+2025-07-29 15:10:07 [INFO] - Speed_upper_limit, Converted result: 120  Pass 
+2025-07-29 15:10:07 [INFO] - Overspeed_limit_Margin, Converted result: 24  Pass 
+2025-07-29 15:10:07 [INFO] - Speed_lower_limit, Converted result: 120  Pass 
+2025-07-29 15:10:07 [INFO] - Overspeed_lower_Margin, Converted result: 24  Pass 
+2025-07-29 15:10:07 [INFO] - Motor Overspeed Detection Time, Converted result: 10  Pass 
+2025-07-29 15:10:07 [INFO] - Motor Stall Timeout, Converted result: 5  Pass 
+2025-07-29 15:10:07 [INFO] - IO Expander Configuration Detection Time, Converted result: 10  Pass 
+2025-07-29 15:10:07 [INFO] - IO Expander Configuration Healing Time, Converted result: 10  Pass 
+2025-07-29 15:10:07 [INFO] - CAN Transceiver Mode Detection Time, Converted result: 10  Pass 
+2025-07-29 15:10:07 [INFO] - CAN Transceiver Mode Healing Time, Converted result: 10  Pass 
+2025-07-29 15:10:07 [INFO] - Sensors 5V Fault Detection Time, Converted result: 10  Pass 
+2025-07-29 15:10:07 [DEBUG] - Creating folder at: Logs\03.01.11
+2025-07-29 15:10:07 [WARNING] - 0375 Diagnostic Session Control 

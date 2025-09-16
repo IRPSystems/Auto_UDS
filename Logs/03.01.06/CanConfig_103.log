@@ -1,0 +1,13 @@
+2025-07-16 11:14:25 [INFO] - Processing file: C:\\temp3\Test1-202507161113.uds.txt
+2025-07-16 11:14:25 [INFO] - Tester Present: ON 
+2025-07-16 11:14:25 [INFO] - CAN Wakeup Feature Enable, Converted result: 1  Pass 
+2025-07-16 11:14:25 [INFO] - NM Drive Cnt to Clear DTC, Converted result: 40  Pass 
+2025-07-16 11:14:25 [INFO] - Busoff Fast Recovery Time, Converted result: 5  Pass 
+2025-07-16 11:14:25 [INFO] - Fast Bus off Recovery Count, Converted result: 5  Pass 
+2025-07-16 11:14:25 [INFO] - Busoff Slow Recovery Time, Converted result: 50  Pass 
+2025-07-16 11:14:25 [INFO] - NM Restart Dly Time After Under Vol Recovery, Converted result: 50  Pass 
+2025-07-16 11:14:25 [INFO] - NM Restart Dly Time After Over Vol Recovery, Converted result: 50  Pass 
+2025-07-16 11:14:25 [INFO] - NM Restart Dly Time After Bus Off recovery, Converted result: 100  Pass 
+2025-07-16 11:14:25 [DEBUG] - Creating folder at: Logs\03.01.06
+2025-07-16 11:14:25 [WARNING] - 0375 Diagnostic Session Control 
+2025-07-16 11:14:25 [WARNING] - 012B Security Access 

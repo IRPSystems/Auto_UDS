@@ -1,0 +1,39 @@
+2025-08-13 12:31:16 [INFO] - VCU3_100 DLC Mismatch Threshold, Converted result: 5  Pass 
+2025-08-13 12:31:16 [INFO] - VCU3_100 CRC Mismatch Threshold, Converted result: 10  Pass 
+2025-08-13 12:31:16 [INFO] - VCU3_100 Parity Mismatch Threshold, Converted result: 10  Pass 
+2025-08-13 12:31:16 [INFO] - VCU3_100 DLC Mismatch Healing Threshold, Converted result: 10  Pass 
+2025-08-13 12:31:16 [INFO] - VCU3_100 CRC Mismatch Healing Threshold, Converted result: 10  Pass 
+2025-08-13 12:31:16 [INFO] - VCU3_100 Parity Mismatch Healing Threshold, Converted result: 10  Pass 
+2025-08-13 12:31:16 [INFO] - VCU5_500 DLC Mismatch Threshold, Converted result: 5  Pass 
+2025-08-13 12:31:16 [INFO] - VCU5_500 Parity Mismatch Threshold , Converted result: 5  Pass 
+2025-08-13 12:31:16 [INFO] - VCU5_500 DLC Mismatch Healing Threshold, Converted result: 10  Pass 
+2025-08-13 12:31:16 [INFO] - VCU5_500 Parity Mismatch Healing Threshold, Converted result: 10  Pass 
+2025-08-13 12:31:16 [INFO] - VCU8_10 DLC Mismatch Threshold, Converted result: 5  Pass 
+2025-08-13 12:31:16 [INFO] - VCU8_10 Parity Mismatch Threshold, Converted result: 5  Pass 
+2025-08-13 12:31:16 [INFO] - VCU8_10 DLC Mismatch Healing Threshold, Converted result: 10  Pass 
+2025-08-13 12:31:16 [INFO] - VCU8_10 Parity Mismatch Healing Threshold, Converted result: 5  Pass 
+2025-08-13 12:31:16 [INFO] - VCU9_10 DLC Mismatch Threshold, Converted result: 5  Pass 
+2025-08-13 12:31:16 [INFO] - VCU9_10 CRC Mismatch Threshold, Converted result: 5  Pass 
+2025-08-13 12:31:16 [INFO] - VCU9_10 Parity Mismatch Threshold, Converted result: 5  Pass 
+2025-08-13 12:31:16 [INFO] - VCU9_10 DLC Mismatch Healing Threshold, Converted result: 5  Pass 
+2025-08-13 12:31:16 [INFO] - VCU9_10 CRC Mismatch Healing Threshold, Converted result: 10  Pass 
+2025-08-13 12:31:16 [INFO] - VCU9_10 Parity Mismatch Healing Threshold, Converted result: 10  Pass 
+2025-08-13 12:31:16 [INFO] - VCU14_20 DLC Mismatch Threshold, Converted result: 5  Pass 
+2025-08-13 12:31:16 [INFO] - VCU14_20 Parity Mismatch Threshold, Converted result: 5  Pass 
+2025-08-13 12:31:16 [INFO] - VCU14_20 DLC Mismatch Healing Threshold, Converted result: 10  Pass 
+2025-08-13 12:31:16 [INFO] - VCU14_20 Parity Mismatch Healing Threshold, Converted result: 10  Pass 
+2025-08-13 12:31:16 [INFO] - VCU17_500 DLC Mismatch Threshold, Converted result: 5  Pass 
+2025-08-13 12:31:16 [INFO] - VCU17_500 CRC Mismatch Threshold, Converted result: 5  Pass 
+2025-08-13 12:31:16 [INFO] - VCU17_500 Parity Mismatch Threshold, Converted result: 5  Pass 
+2025-08-13 12:31:16 [INFO] - VCU17_500 DLC Mismatch Healing Threshold (Dematuration), Converted result: 5  Pass 
+2025-08-13 12:31:16 [INFO] - VCU17_500 CRC Mismatch Healing Threshold, Converted result: 10  Pass 
+2025-08-13 12:31:16 [INFO] - VCU17_500 Parity Mismatch Healing Threshold, Converted result: 10  Pass 
+2025-08-13 12:31:16 [INFO] - VCU3_100 Alive Counter Threshold, Converted result: 5  Pass 
+2025-08-13 12:31:16 [INFO] - VCU3_100 Alive Counter Healing Threshold, Converted result: 10  Pass 
+2025-08-13 12:31:16 [INFO] - VCU9_10 Alive Counter Threshold, Converted result: 5  Pass 
+2025-08-13 12:31:16 [INFO] - VCU9_10 Alive Counter Healing Threshold, Converted result: 10  Pass 
+2025-08-13 12:31:16 [INFO] - VCU17_500 Alive Counter Threshold, Converted result: 5  Pass 
+2025-08-13 12:31:16 [INFO] - VCU17_500 Alive Counter Healing Threshold, Converted result: 10  Pass 
+2025-08-13 12:31:16 [DEBUG] - Creating folder at: Logs\03.01.14
+2025-08-13 12:31:16 [WARNING] - 0300 Diagnostic Session Control 
+2025-08-13 12:31:16 [WARNING] - 0165 Security Access 

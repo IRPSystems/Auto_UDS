@@ -1,0 +1,16 @@
+2025-08-13 12:31:16 [INFO] - Start Active Discharge, Converted result: 1 2 77 67 85 65 67 84 48 48 77 67 85 65 67 84 48 48 28 10 7 233 10 30  Pass 
+2025-08-13 12:31:16 [INFO] - Start Resolver Autocalibration, Converted result: 1 2 77 67 85 65 67 84 48 48 77 67 85 65 67 84 48 48 28 10 7 233 10 30  Pass 
+2025-08-13 12:31:16 [INFO] - Start History Zone Update, Converted result: 1 2 77 67 85 65 67 84 48 48 77 67 85 65 67 84 48 48 28 10 7 233 10 30  Pass 
+2025-08-13 12:31:16 [INFO] - Start Compare CS, Converted result: 1 2 77 67 85 65 67 84 48 48 77 67 85 65 67 84 48 48 28 10 7 233 10 30  Pass 
+2025-08-13 12:31:16 [INFO] - Stop Active Discharge, Converted result: 1 2 77 67 85 65 67 84 48 48 77 67 85 65 67 84 48 48 28 10 7 233 10 30  Pass 
+2025-08-13 12:31:16 [INFO] - Stop Resolver Autocalibration, Converted result: 1 2 77 67 85 65 67 84 48 48 77 67 85 65 67 84 48 48 28 10 7 233 10 30  Pass 
+2025-08-13 12:31:16 [INFO] - Result Active Discharge, Converted result: 1 2 77 67 85 65 67 84 48 48 77 67 85 65 67 84 48 48 28 10 7 233 10 30  Pass 
+2025-08-13 12:31:16 [INFO] - Result Resolver Autocalibration, Converted result: 1 2 77 67 85 65 67 84 48 48 77 67 85 65 67 84 48 48 28 10 7 233 10 30  Pass 
+2025-08-13 12:31:16 [INFO] - Result History Zone Update, Converted result: 1 2 77 67 85 65 67 84 48 48 77 67 85 65 67 84 48 48 28 10 7 233 10 30  Pass 
+2025-08-13 12:31:16 [INFO] - Result Compare CS, Converted result: 1 2 77 67 85 65 67 84 48 48 77 67 85 65 67 84 48 48 28 10 7 233 10 30  Pass 
+2025-08-13 12:31:16 [ERROR] - Unknown Negative Response: 31:16 Rx) Negative Response             : SID=Diagnostic Session Control, NRC=Request Correctly Received - Response Pending (previous Tx invalid)
+2025-08-13 12:31:16 [DEBUG] - Creating folder at: Logs\03.01.14
+2025-08-13 12:31:16 [WARNING] - 0300 Diagnostic Session Control 
+2025-08-13 12:31:16 [WARNING] - 013E Security Access 
+2025-08-13 12:31:16 [WARNING] - 0200 Diagnostic Session Control 
+2025-08-13 12:31:16 [INFO] - 0102 Feature Code  Read Data By Identifier, Converted result: 0, Raw Values: 00

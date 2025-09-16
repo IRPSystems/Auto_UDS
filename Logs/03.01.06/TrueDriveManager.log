@@ -1,0 +1,34 @@
+2025-07-16 11:32:28 [INFO] - Processing file: C:\\temp3\Test1-202507161131.uds.txt
+2025-07-16 11:32:28 [INFO] - Tester Present: ON 
+2025-07-16 11:32:28 [INFO] - Angle Offset, Converted result: 273  Pass 
+2025-07-16 11:32:28 [INFO] - Angle Offset Delay, Converted result: 273  Pass 
+2025-07-16 11:32:28 [INFO] - Motor Temp - Min Cut, Converted result: 236  Pass 
+2025-07-16 11:32:28 [INFO] - Motor Temp - Min Start, Converted result: 246  Pass 
+2025-07-16 11:32:28 [INFO] - Motor Temp - Max Start, Converted result: 160  Pass 
+2025-07-16 11:32:28 [INFO] - Motor Temp - Max Cut, Converted result: 180  Pass 
+2025-07-16 11:32:28 [INFO] - Controller Temp - Min Cut, Converted result: 236  Pass 
+2025-07-16 11:32:28 [INFO] - Controller Temp - Min Start, Converted result: 236  Pass 
+2025-07-16 11:32:28 [INFO] - Controller Temp - Max Start, Converted result: 80  Pass 
+2025-07-16 11:32:28 [INFO] - Controller Temp - Max Cut, Converted result: 90  Pass 
+2025-07-16 11:32:28 [INFO] - Cooling Plate Temp - Min Cut, Converted result: 236  Pass 
+2025-07-16 11:32:28 [INFO] - Cooling Plate Temp - Min Start, Converted result: 246  Pass 
+2025-07-16 11:32:28 [INFO] - Cooling Plate Temp - Max Start, Converted result: 80  Pass 
+2025-07-16 11:32:28 [INFO] - Cooling Plate Temp - Max Cut, Converted result: 90  Pass 
+2025-07-16 11:32:28 [INFO] - Bus Voltage - Min Cut, Converted result: 220  Pass 
+2025-07-16 11:32:28 [INFO] - Bus Voltage - Min Start, Converted result: 250  Pass 
+2025-07-16 11:32:28 [INFO] - Bus Voltage - Max Start, Converted result: 365  Pass 
+2025-07-16 11:32:28 [INFO] - Bus Voltage - Max Cut, Converted result: 370  Pass 
+2025-07-16 11:32:28 [INFO] - Max Bus Current Limit Activation, Converted result: 1  Pass 
+2025-07-16 11:32:28 [INFO] - Max Bus Current Limit , Converted result: 105  Pass 
+2025-07-16 11:32:28 [INFO] - Min Bus Current Limit Activation, Converted result: 1  Pass 
+2025-07-16 11:32:28 [INFO] - Min Bus Current Limit , Converted result: -105  Pass 
+2025-07-16 11:32:28 [INFO] - Max Bus Voltage Limit Activation, Converted result: 1  Pass 
+2025-07-16 11:32:28 [INFO] - Max Bus Voltage Limit , Converted result: 35  Pass 
+2025-07-16 11:32:28 [INFO] - Min Bus Voltage Limit Activation, Converted result: 1  Pass 
+2025-07-16 11:32:28 [INFO] - Min Bus Voltage Limit , Converted result: 20  Pass 
+2025-07-16 11:32:28 [INFO] - Battery Maximum Current, Converted result: 350  Pass 
+2025-07-16 11:32:28 [INFO] - Bus Under-Voltage, Converted result: 220  Pass 
+2025-07-16 11:32:28 [INFO] - Bus Over-Voltage, Converted result: 444  Pass 
+2025-07-16 11:32:28 [DEBUG] - Creating folder at: Logs\03.01.06
+2025-07-16 11:32:28 [WARNING] - 0375 Diagnostic Session Control 
+2025-07-16 11:32:28 [WARNING] - 019F Security Access 

@@ -1,0 +1,1416 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<UDS>
+<!--        P2_CAN_Client: Timeout for the client to wait after	the 
+            successful transmission of a request message 
+            for the start of incoming response messages
+			
+            P2_En_CAN_Client: Enhanced timeout for the client to
+			wait after the reception of a
+			negative response message with
+			negative response code 0x78 for
+			the start of incoming response
+			messages.  -->
+    <System Version = "1.2.6.12"
+			LogDir = "c:/temp3" 
+            P2_CAN_Client = "4000"
+			P2_En_CAN_Client = "5100"
+			TestDevID = "Test1"
+			/> 
+    <CustomerList>
+        <Customer Name="Generic" Rate="500000" CanDev="PCAN" RxID="0x1CFFF9FE" TxID="0x1CFFFEF9" BCID="0x1CFFFEF9">
+            <FWStep Name="READ_APPL_VER" />
+            <FWStep Name="READ_SW_ID" />			
+            <FWStep Name="PROGRAMMING_SESSION" />		<!-- Switch to BL -->
+            <FWStep Name="READ_BOOT_VER" />
+            <FWStep Name="ACCESS_TIMING" />	
+            <FWStep Name="ERASE_FLASH" />			
+            <FWStep Name="REQ_DOWNLOAD" />
+            <FWStep Name="TRANSFER_DATA" />
+            <FWStep Name="TRANSFER_EXIT" />
+            <FWStep Name="COMP_CS" />
+            <FWStep Name="CLEAR_BOOT_FLAG" />
+            <FWStep Name="HARD_RESET" />
+		
+			<ISO-TP ISO_TP_DEFAULT_BLOCK_SIZE="18" 
+			        ISO_TP_DEFAULT_ST_MIN="0" 
+					ISO_TP_DEFAULT_RESPONSE_TIMEOUT="100" />
+        </Customer>
+        <Customer Name="Silence" Rate="250000" CanDev="PCAN" RxID="0x3FE" TxID="0x3FF" BCID="0x3FF"> 
+            <FWStep Name="READ_APPL_VER" />
+            <FWStep Name="PROGRAMMING_SESSION" />		<!-- Switch to BL -->
+            <FWStep Name="READ_BOOT_VER" />
+            <FWStep Name="ERASE_FLASH" />
+            <FWStep Name="REQ_DOWNLOAD" />
+            <FWStep Name="TRANSFER_DATA" />
+            <FWStep Name="TRANSFER_EXIT" />
+            <FWStep Name="CHECK_MEM" />
+            <FWStep Name="VALIDATE_APPL" />
+            <FWStep Name="HARD_RESET" />
+            <FWStep Name="END_SESSION" />
+			
+			<ISO-TP ISO_TP_DEFAULT_BLOCK_SIZE="18" 
+			        ISO_TP_DEFAULT_ST_MIN="1" 
+					ISO_TP_DEFAULT_RESPONSE_TIMEOUT="400" />
+        </Customer>
+        <Customer Name="NewGen" Rate="500000" CanDev="PCAN" RxID="0x1CFFF9FE" TxID="0x1CFFFEF9" BCID="0x1CFFFEF9">
+            <FWStep Name="EXTENDED_SESSION" />
+            <FWStep Name="READ_HISTORY_ZONE" />
+	        <FWStep Name="READ_APPL_VER" />
+	        <FWStep Name="READ_APPL_ID" /> 
+            <FWStep Name="STOP_DTC" />
+            <FWStep Name="COMM_STOP" />
+            <FWStep Name="SECURITY_ACCESS_LEVEL" />
+            <FWStep Name="PROGRAMMING_SESSION" />		<!-- Switch to BL -->
+            <FWStep Name="SET_BOOT_FLAG" />
+            <FWStep Name="UPDATE_HISTORY_ZONE" />
+            <FWStep Name="ACCESS_TIMING" />
+            <FWStep Name="ERASE_FLASH" />
+            <FWStep Name="REQ_DOWNLOAD" />
+            <FWStep Name="TRANSFER_DATA" />
+            <FWStep Name="TRANSFER_EXIT" />
+            <FWStep Name="COMP_CS" />
+            <FWStep Name="CLEAR_BOOT_FLAG" />
+            <FWStep Name="HARD_RESET" />			<!-- Return to Application -->
+			<FWStep Name="DELAY" Param="1000" />
+            <FWStep Name="EXTENDED_SESSION" />      <!-- Switch to Privileged session -->
+            <FWStep Name="COMM_START" />
+            <FWStep Name="START_DTC" />
+            <FWStep Name="CLEAR_DTC" />
+            <FWStep Name="READ_HISTORY_ZONE" />
+            <FWStep Name="END_SESSION" />
+		
+			<ISO-TP ISO_TP_DEFAULT_BLOCK_SIZE="18" 
+			        ISO_TP_DEFAULT_ST_MIN="0" 
+					ISO_TP_DEFAULT_RESPONSE_TIMEOUT="100" />
+        </Customer>
+        <Customer Name="UPP" Rate="500000" CanDev="PCAN" RxID="0x7D8" TxID="0x7D0" BCID="0x7F8"> 
+            <FWStep Name="EXTENDED_SESSION" />
+            <FWStep Name="READ_HISTORY_ZONE" />
+	        <FWStep Name="READ_APPL_VER" />
+	        <FWStep Name="READ_APPL_ID" /> 
+            <FWStep Name="STOP_DTC" />
+            <FWStep Name="COMM_STOP" />
+            <FWStep Name="SECURITY_ACCESS_LEVEL" />
+            <FWStep Name="PROGRAMMING_SESSION" />     <!-- Switch to BL -->
+            <FWStep Name="SET_BOOT_FLAG" />
+            <FWStep Name="UPDATE_HISTORY_ZONE" />
+            <FWStep Name="ACCESS_TIMING" />
+            <FWStep Name="ERASE_FLASH" />
+            <FWStep Name="REQ_DOWNLOAD" />
+            <FWStep Name="TRANSFER_DATA" />
+            <FWStep Name="TRANSFER_EXIT" />
+            <FWStep Name="COMP_CS" />
+            <FWStep Name="CLEAR_BOOT_FLAG" />
+            <FWStep Name="EXTENDED_SESSION"/>       <!-- To allow changing security level -->
+            <FWStep Name="SECURITY_ACCESS_LEVEL" /> <!-- To allow reset -->
+            <FWStep Name="SOFT_RESET" />			<!-- Return to Application -->
+<!--			<FWStep Name="DELAY" Param="1000" /> -->
+            <FWStep Name="EXTENDED_SESSION" Retry="8"/>      <!-- Switch to Privileged session -->
+            <FWStep Name="COMM_START" />
+            <FWStep Name="START_DTC" />
+            <FWStep Name="CLEAR_DTC" />
+            <FWStep Name="READ_HISTORY_ZONE" />
+            <FWStep Name="END_SESSION" />
+			
+			<ISO-TP ISO_TP_DEFAULT_BLOCK_SIZE="18" 
+			        ISO_TP_DEFAULT_ST_MIN="1" 
+					ISO_TP_DEFAULT_RESPONSE_TIMEOUT="100" />
+        </Customer>
+        <Customer Name="**Bootloader**" Rate="500000" CanDev="PCAN" RxID="0x7D8" TxID="0x7D0" BCID="0x7F8"> 
+            <FWStep Name="EXTENDED_SESSION" />
+            <FWStep Name="COMM_STOP" />
+            <FWStep Name="ERASE_BOOT_FLASH" />
+            <FWStep Name="REQ_DOWNLOAD" />
+            <FWStep Name="TRANSFER_DATA" />
+            <FWStep Name="TRANSFER_EXIT" />
+            <FWStep Name="CHECK_MEM" />
+            <FWStep Name="VALIDATE_APPL" />
+            <FWStep Name="COMM_START" />
+      <!--      <FWStep Name="HARD_RESET" /> -->
+            <FWStep Name="END_SESSION" />
+		
+			<ISO-TP ISO_TP_DEFAULT_BLOCK_SIZE="18" 
+			        ISO_TP_DEFAULT_ST_MIN="0" 
+					ISO_TP_DEFAULT_RESPONSE_TIMEOUT="100" />
+        </Customer>
+        <Customer Name="**Bootloader-NG**" Rate="500000" CanDev="PCAN" RxID="0x1CFFF9FE" TxID="0x1CFFFEF9" BCID="0x1CFFFEF9"> 
+            <FWStep Name="EXTENDED_SESSION" />
+            <FWStep Name="SECURITY_ACCESS_LEVEL" />  <!-- Move to SectLevel3 to allow ERASE_BOOT_FLASH in NG -->
+            <FWStep Name="COMM_STOP" />
+            <FWStep Name="ERASE_BOOT_FLASH" />
+            <FWStep Name="REQ_DOWNLOAD" />
+            <FWStep Name="TRANSFER_DATA" />
+            <FWStep Name="TRANSFER_EXIT" />
+            <FWStep Name="EXTENDED_SESSION" />
+            <FWStep Name="CHECK_MEM" />
+            <FWStep Name="VALIDATE_APPL" />
+            <FWStep Name="COMM_START" />
+      <!--      <FWStep Name="HARD_RESET" /> -->
+            <FWStep Name="END_SESSION" />
+		
+			<ISO-TP ISO_TP_DEFAULT_BLOCK_SIZE="18" 
+			        ISO_TP_DEFAULT_ST_MIN="0" 
+					ISO_TP_DEFAULT_RESPONSE_TIMEOUT="100" />
+        </Customer>
+    </CustomerList>
+
+    <Requests>
+        <Service Name="DiagnosticSessionControl"         ID="0x10" DataType="uint8_t">
+            <SubFunc Name="Default Session"                  ID="0x01" DataType="uint8_t" />   
+            <SubFunc Name="ECU Programming Session"          ID="0x02" DataType="uint8_t" />   
+            <SubFunc Name="ECU Extended Diagnostic Session"  ID="0x03" DataType="uint8_t" />   
+            <SubFunc Name="Safety System Diagnostic Session" ID="0x04" DataType="uint8_t" />   
+        </Service>
+        <Service Name="ECUReset"                         ID="0x11" DataType="uint8_t">
+            <SubFunc Name="Hard Reset"  ID="0x01" DataType="uint8_t"> </SubFunc>   
+            <SubFunc Name="Key Off/On"  ID="0x02" DataType="uint8_t"> </SubFunc>   
+            <SubFunc Name="Soft Reset"  ID="0x03" DataType="uint8_t"> </SubFunc>   
+        </Service>
+        <Service Name="ClearDiagnosticInformation"       ID="0x14" DataType="uint8_t">
+            <Field Name="groupOfDTCHighByte"   DataType="uint8_t" Value="FF"/>   
+            <Field Name="groupOfDTCMiddleByte" DataType="uint8_t" Value="FF"/>   
+            <Field Name="groupOfDTCLowByte"    DataType="uint8_t" Value="FF"/>   
+            <Field Name="MemorySelection"      DataType="uint8_t" Value="FF"/>   
+        </Service>
+        <Service Name="ReadDTCInformation"               ID="0x19" DataType="uint8_t">
+            <SubFunc Name="NumberOfDTCByStatusMask"                     ID="0x01"> 
+                <Field Name="DTCStatusMask"             DataType="uint8_t"> </Field>   
+            </SubFunc>
+            <SubFunc Name="DTCByStatusMask"                             ID="0x02"> 
+                <Field Name="DTCStatusMask"             DataType="uint8_t"> </Field>   
+            </SubFunc>
+<!--        <SubFunc Name="DTCSnapshotIdentification"                   ID="0x03"> </SubFunc> -->
+            <SubFunc Name="DTCSnapshotRecordByDTCNumber"                ID="0x04"> 
+                <Field Name="DTCMaskRecord"           DataType="uint8_t[3]" />
+                <Field Name="DTCSnapshotRecordNumber" DataType="uint8_t" />
+            </SubFunc>
+<!--        <SubFunc Name="DTCStoredDataByRecordNumber"                 ID="0x05"> </SubFunc> -->
+            <SubFunc Name="DTCExtDataRecordByDTCNumber"                 ID="0x06"> 
+                <Field Name="DTCMaskRecord"           DataType="uint8_t[3]" />
+                <Field Name="DTCExtDataRecordNumber"  DataType="uint8_t" />
+            </SubFunc>
+<!--        <SubFunc Name="NumberOfDTCBySeverityMaskRecord"             ID="0x07"> </SubFunc> -->
+<!--        <SubFunc Name="DTCBySeverityMaskRecord"                     ID="0x08"> </SubFunc> -->
+<!--        <SubFunc Name="SeverityInformationOfDTC"                    ID="0x09"> </SubFunc> -->
+            <SubFunc Name="SupportedDTC"                                ID="0x0A"> </SubFunc>
+<!--        <SubFunc Name="FirstTestFailedDTC"                          ID="0x0B"> </SubFunc>
+            <SubFunc Name="MostRecentTestFailedDTC"                     ID="0x0D"> </SubFunc>
+            <SubFunc Name="FirstConfirmedDTC"                           ID="0x0C"> </SubFunc>
+            <SubFunc Name="MostRecentConfirmedDTC"                      ID="0x0E"> </SubFunc>
+            <SubFunc Name="DTCFaultDetectionCounter"                    ID="0x14"> </SubFunc>
+            <SubFunc Name="DTCWithPermanentStatus"                      ID="0x15"> </SubFunc>
+            <SubFunc Name="DTCExtDataRecordByRecordNumber"              ID="0x16"> </SubFunc>
+            <SubFunc Name="UserDefMemoryDTCByStatusMask"                ID="0x17"> </SubFunc>
+            <SubFunc Name="UserDefMemoryDTCSnapshotRecordByDTCNumber"   ID="0x18"> </SubFunc>
+            <SubFunc Name="UserDefMemoryDTCExtDataRecordByDTCNumber"    ID="0x19"> </SubFunc>
+            <SubFunc Name="SupportedDTCExtDataRecord"                   ID="0x1A"> </SubFunc>   
+            <SubFunc Name="WWHOBDDTCByMaskRecord"                       ID="0x42"> </SubFunc>   
+            <SubFunc Name="WWHOBDDTCWithPermanentStatus"                ID="0x55"> </SubFunc>   
+            <SubFunc Name="DTCInformationByDTCReadinessGroupIdentifier" ID="0x56"> </SubFunc>
+-->            
+        </Service>
+        <Service Name="ReadDataByIdentifier"             ID="0x22" DataType="uint8_t"> 
+            <DataID Name="Model Number"                                               ID="0x0100" />
+            <DataID Name="Variant Code"                                               ID="0x0101" />
+            <DataID Name="Feature Code"                                               ID="0x0102" />
+			<DataID Name="CANConfig0103"                                              ID="0x0103" />
+			<DataID Name="CANWakeupConfig0104"                                        ID="0x0104" />
+			
+            <DataID Name="bootFlagDataIdentifier"                                     ID="0x0200" />
+            <DataID Name="History Zone"                                               ID="0x0201" />
+            <DataID Name="UpdateServiceHistoryZoneDataIdentifier"                     ID="0x0281" />
+
+			<!-- Additional parameter ID - IRP specific -->
+			<DataID Name="ShortGITCRC"                                          	  ID="0x0301" />
+			<DataID Name="ApplicationCreationTime"                                    ID="0x0302" />
+			<DataID Name="SecurityLevel"                                              ID="0x0303" />
+
+            <DataID Name="FreezFrame"                                                 ID="0x078E" />
+            <DataID Name="FaultsConfiguration"                                        ID="0x078F" />
+            <DataID Name="TrueDriveManager"                                           ID="0x0790" />
+            <DataID Name="EOLCalibration"                                             ID="0x1500" />
+			
+            <DataID Name="wakeUpWaitTimer"                                            ID="0x23F9" />
+            <DataID Name="wakeupSyncTimer"                                            ID="0x23FA" />
+            <DataID Name="sleepWaitTimer"                                             ID="0x23FB" />
+            <DataID Name="normalMinTimer"                                             ID="0x23FC" />
+			<DataID Name="DTC Enable/Disable"                                         ID="0x249C" />
+
+            <DataID Name="bootSoftwareIdentification"                                 ID="0xF180" />
+            <DataID Name="applicationSoftwareIdentification"                          ID="0xF181" />
+            <DataID Name="applicationDataIdentification"                              ID="0xF182" /> 
+            <DataID Name="bootSoftwareIdentification"                                 ID="0xF183" /> 
+            <DataID Name="applicationSoftwareFingerprint"                             ID="0xF184" /> 
+            <DataID Name="applicationDataFingerprint"                                 ID="0xF185" /> 
+            <DataID Name="activeDiagnosticSession"                                    ID="0xF186" /> 
+            <DataID Name="vehicleManufacturerSparePartNumber"                         ID="0xF187" /> 
+            <DataID Name="vehicleManufacturerECUSoftwareNumber"                       ID="0xF188" /> 
+            <DataID Name="vehicleManufacturerECUSoftwareVersionNumber"                ID="0xF189" /> 
+            <DataID Name="systemSupplierIdentifier"                                   ID="0xF18A" /> 
+            <DataID Name="ECUManufacturingDate"                                       ID="0xF18B" /> 
+            <DataID Name="ECUSerialNumber"                                            ID="0xF18C" /> 
+            <DataID Name="supportedFunctionalUnits"                                   ID="0xF18D" /> 
+            <DataID Name="vehicleManufacturerKitAssemblyPartNumber"                   ID="0xF18E" /> 
+            <DataID Name="VIN"                                                        ID="0xF190" /> 
+<!--        <DataID Name="vehicleManufacturerECUHardwareNumber"                       ID="0xF191" /> 
+            <DataID Name="systemSupplierECUHardwareNumber"                            ID="0xF192" />  -->
+            <DataID Name="systemSupplierECUHardwareVersionNumber"                     ID="0xF193" /> 
+            <DataID Name="systemSupplierECUSoftwareNumber"                            ID="0xF194" /> 
+            <DataID Name="systemSupplierECUSoftwareVersionNumber"                     ID="0xF195" /> 
+            <DataID Name="exhaustRegulationOrTypeApprovalNumber"                      ID="0xF196" /> 
+            <DataID Name="systemNameOrEngineType"                                     ID="0xF197" /> 
+            <DataID Name="repairShopCodeOrTesterSerialNumber"                         ID="0xF198" /> 
+            <DataID Name="programmingDate"                                            ID="0xF199" /> 
+            <DataID Name="clibrationRepairShopCodeOrCalibrationEquipmentSerialNumber" ID="0xF19A" /> 
+            <DataID Name="calibrationDate"                                            ID="0xF19B" /> 
+            <DataID Name="calibrationEquipmentSoftwareNumber"                         ID="0xF19C" /> 
+            <DataID Name="ECUInstallationDate"                                        ID="0xF19D" /> 
+            <DataID Name="ODXFile"                                                    ID="0xF19E" /> 
+            <DataID Name="entity"                                                     ID="0xF19F" /> 
+            <DataID Name="Odometer"                                                   ID="0xF1B0" /> 
+            <DataID Name="Battery Voltage"                                            ID="0xF1B1" /> 
+            <DataID Name="Vehicle Speed"                                              ID="0xF1B2" /> 
+            <DataID Name="Motor speed"                                                ID="0xF1B3" /> 
+            <DataID Name="Reset Reason"                                               ID="0xF1B4" /> 
+            <DataID Name="Reset Counter"                                              ID="0xF1B5" /> 
+            <DataID Name="Ignition Counter"                                           ID="0xF1B6" /> 
+            <DataID Name="Snapshot"                                                   ID="0xF1B9" /> 
+            <DataID Name="Engine State"                                               ID="0xF1BE" />
+            <DataID Name="Network Mng Timeout"                                        ID="0xF1D2" />
+            <DataID Name="Network Mng Mismatch"                                       ID="0xF1D3" />
+            <DataID Name="Network Management Enable"                                  ID="0xF1D4" /> 
+			<DataID Name="CAN Configuration"                                          ID="0xF1D5" />
+            <DataID Name="SYSTEM SUPPLIER PART NUMBER - 13 bytes, ASCII"              ID="0xF1F0" /> 
+            <DataID Name="MCU_MotorTorqueEstimated"                                   ID="0xFE4C" /> 
+            <DataID Name="MCU_MotorSpeed"                                             ID="0xFE4D" /> 
+            <DataID Name="MMCU_OperationalMode"                                       ID="0xFE4E" /> 
+            <DataID Name="MCU_State"                                                  ID="0xFE5A" /> 
+            <DataID Name="MCU_Motor_Temp_Indicator"                                   ID="0xFE4F" /> 
+            <DataID Name="MCU_Inverter_Temp_Indicator"                                ID="0xFE5E" /> 
+            <DataID Name="MCU_RegenDerating"                                          ID="0xFE5B" /> 
+            <DataID Name="MCU_TractionDerating"                                       ID="0xFE5C" /> 
+            <DataID Name="MCU_RegenTorqueAvail"                                       ID="0xFE5D" /> 
+            <DataID Name="MCU_TractionTorqueAvail"                                    ID="0xFE50" /> 
+            <DataID Name="VCU_TorqueCommand"                                          ID="0xFE51" /> 
+            <DataID Name="VCU_OperationalModeCmd"                                     ID="0xFE52" /> 
+            <DataID Name="VCU_CommandMode"                                            ID="0xFE53" /> 
+            <DataID Name="VCU_OperationReq"                                           ID="0xFE54" /> 
+            <DataID Name="VCU_EPTCoolantFlow"                                         ID="0xFE55" /> 
+            <DataID Name="VCU_EPTCoolantTemp"                                         ID="0xFE5F" /> 
+            <DataID Name="VCU_ACTV_Discharge_REQ"                                     ID="0xFE56" /> 
+            <DataID Name="VCU_SRSCrashSta"                                            ID="0xFE57" /> 
+            <DataID Name="VCU_CLOCK_DATE"                                             ID="0xFE69" /> 
+            <DataID Name="VCU_CLOCK_FORMAT"                                           ID="0xFE6A" /> 
+            <DataID Name="VCU_CLOCK_HOUR"                                             ID="0xFE6B" /> 
+            <DataID Name="VCU_CLOCK_MIN"                                              ID="0xFE6C" /> 
+            <DataID Name="VCU_CLOCK_MONTH"                                            ID="0xFE6D" /> 
+            <DataID Name="VCU_CLOCK_YEAR"                                             ID="0xFE6E" /> 
+            <DataID Name="BMS_ModuleActiveDischarge"                                  ID="0xFE59" /> 
+            <DataID Name="HVDCVoltageMeasurement"                                     ID="0xFE61" /> 
+            <DataID Name="InverterPhaseCurrentU"                                      ID="0xFE62" /> 
+            <DataID Name="InverterPhaseCurrentV"                                      ID="0xFE63" /> 
+            <DataID Name="InverterPhaseCurrentW"                                      ID="0xFE64" /> 
+            <DataID Name="InletCoolantTemperature"                                    ID="0xFE65" /> 
+            <DataID Name="DischargeRawCurrent"                                        ID="0xFE66" /> 
+            <DataID Name="InternalFinalTorqueRequest"                                 ID="0xFE67" /> 
+            <DataID Name="KL15Voltage"                                                ID="0xFE68" />
+            <DataID Name="UDSVersion"                                                 ID="0xFF00" />
+        </Service>
+        <Service Name="ReadMemoryByAddress"              ID="0x23" DataType="uint8_t"> </Service>
+        <Service Name="ReadScalingDataByIdentifier"      ID="0x24" DataType="uint8_t"> </Service>
+        <Service Name="SecurityAccess"                   ID="0x27" DataType="uint8_t"> 
+            <SubFunc Name="Request Seed L1"       ID="0x01" />
+            <SubFunc Name="Send Key L1"           ID="0x02"> 
+                 <Field Name="SecurityKey1"        DataType="uint8_t[4]" />
+			</SubFunc>
+            <SubFunc Name="Request Seed L3"       ID="0x05" /> 
+            <SubFunc Name="Send Key L3"           ID="0x06"> 
+                 <Field Name="SecurityKey3"        DataType="uint8_t[8]" />
+			</SubFunc>
+		</Service>
+        <Service Name="CommunicationControl"             ID="0x28" DataType="uint8_t">
+			<Field Name="ControlType"               DataType="uint8_t"  Value="01" />
+			<Field Name="CommunicationType"  		DataType="uint8_t"  Value="00" />
+			<Field Name="nodeIdentificationNumber"  DataType="uint16_t" Value="00,00" />
+        </Service>
+        <Service Name="ReadDataPeriodicByIdentifier"     ID="0x2A" DataType="uint8_t"> </Service>
+        <Service Name="DynamicallyDefinedDataIdentifier" ID="0x2C" DataType="uint8_t"> </Service>
+        <Service Name="WriteDataByIdentifier"            ID="0x2E" DataType="uint8_t"> 
+			<DataID Name="Model Number"                                               ID="0x0100"> <Field Name="Val"  DataType="string[18]"  Value="IRP-ModelNumber0001"/> </DataID>  
+            <DataID Name="Variant Code"                 							  ID="0x0101"> <Field Name="Val"  DataType="uint8_t[20]" Value="11,22,33,44,55,66,77,88,99,AA,BB,CC,DD,EE,FF,00,12,34,56,78" /> </DataID>
+            <DataID Name="Feature Code"                 							  ID="0x0102"> <Field Name="Val"  DataType="uint8_t[20]" Value="00,12,34,56,78,11,22,33,44,55,66,77,88,99,AA,BB,CC,DD,EE,FF" /> </DataID>
+            <DataID Name="CANConfig0103"                                              ID="0x0103"> 
+    		    <Field Name="CANWakeupFeatureEnable"				DataType="uint8_t" DefVal="0" MinVal="0"  MaxVal="0"  Unit=""  Offset="0"  Res="1"  Value="AA"/>
+    		    <Field Name="NMDriveCnttoClearDTC"					DataType="uint8_t" DefVal="0" MinVal="0"  MaxVal="0"  Unit=""  Offset="0"  Res="1"  Value="BB"/>
+    		    <Field Name="BusoffFastRecoveryTime"				DataType="uint8_t" DefVal="0" MinVal="0"  MaxVal="0"  Unit=""  Offset="0"  Res="10" Value="CC"/>
+    		    <Field Name="FastBusoffRecoveryCount"				DataType="uint8_t" DefVal="0" MinVal="0"  MaxVal="0"  Unit=""  Offset="0"  Res="1"  Value="DD"/>
+    		    <Field Name="BusoffSlowRecoveryTime"				DataType="uint8_t" DefVal="0" MinVal="0"  MaxVal="0"  Unit=""  Offset="0"  Res="10" Value="EE"/>
+    		    <Field Name="NMIGNOnStartupDelay"					DataType="uint8_t" DefVal="0" MinVal="0"  MaxVal="0"  Unit=""  Offset="0"  Res="20" Value="FF"/>
+    		    <Field Name="NMRestartDlyTimeAfterUnderVolRecovery"	DataType="uint8_t" DefVal="0" MinVal="0"  MaxVal="0"  Unit=""  Offset="0"  Res="10" Value="11"/>
+    		    <Field Name="NMRestartDlyTimeAfterOverVolRecovery"	DataType="uint8_t" DefVal="0" MinVal="0"  MaxVal="0"  Unit=""  Offset="0"  Res="10" Value="22"/>
+    		    <Field Name="NMRestartDlyTimeAfterBusOffrecovery"	DataType="uint8_t" DefVal="0" MinVal="0"  MaxVal="0"  Unit=""  Offset="0"  Res="10" Value="33"/>
+    		    <Field Name="NMRestartDlyTimeAfterCranking"			DataType="uint8_t" DefVal="0" MinVal="0"  MaxVal="0"  Unit=""  Offset="0"  Res="10" Value="44"/>
+			</DataID>
+            <DataID Name="CANWakeupConfig0104"                                        ID="0x0104"> 
+        		<Field Name="CANWakeupMsgCount"						DataType="uint8_t" DefVal="0" Unit="cnt"	Res="1" 	Value="0A"/>
+        		<Field Name="QuickRecoverytimeoutperiod"			DataType="uint8_t" DefVal="0" Unit="ms"	    Res="10" 	Value="0A"/>
+        		<Field Name="QuickRecoveryretrylimit"				DataType="uint8_t" DefVal="0" Unit="cnt"	Res="1" 	Value="03"/>
+        		<Field Name="SlowRecoverytimeoutperiod"				DataType="uint8_t" DefVal="0" Unit="ms"		Res="10" 	Value="64"/>
+        		<Field Name="SlowRecoveryretrylimit"				DataType="uint8_t" DefVal="0" Unit="cnt"	Res="1" 	Value="02"/>
+			</DataID>
+            <DataID Name="bootFlagDataIdentifier"                                     ID="0x0200"> <Field Name="BootFlag"  DataType="uint8_t" /> </DataID>
+            <DataID Name="History Zone"                                               ID="0x0201"> </DataID>
+            <DataID Name="FreezFrame"                                                 ID="0x078E">
+                 <Field Name="ETS_MOT_Torque_Act_Nm"             DataType="uint16_t"  DefVal="0"       MinVal="-300"    MaxVal="300"     Unit="Nm"     Offset="-300"     Res="0.1"  />                             
+                 <Field Name="ETS_MOT_Speed_Act_rpm"             DataType="uint16_t"  DefVal="-14500"  MinVal="-14500"  MaxVal="14500"   Unit="RPM"    Offset="-14500"   Res="1"    />                            
+                 <Field Name="ETS_MCU_OperatingMode_enum"        DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="15"      Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="ETS_MOT_Temp_Act_degC"             DataType="uint8_t"   DefVal="-45"     MinVal="-45"     MaxVal="209"     Unit="degC"   Offset="-45"      Res="1"    />                            
+                 <Field Name="ETS_MCU_InverterTemp_Act_degC"     DataType="uint8_t"   DefVal="-45"     MinVal="-45"     MaxVal="209"     Unit="degC"   Offset="-45"      Res="1"    />                            
+                 <Field Name="ETS_MCU_RegenDerateReason_enum"    DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="7"       Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="ETS_MCU_TractionDerateReason_enum" DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="7"       Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="ETS_MOT_RegenTorque_Limit_Nm"      DataType="uint16_t"  DefVal="0"       MinVal="-300"    MaxVal="300"     Unit="Nm"     Offset="-300"     Res="0.1"  />                            
+                 <Field Name="ETS_MOT_TractionTorque_Limit_Nm"   DataType="uint16_t"  DefVal="0"       MinVal="-300"    MaxVal="300"     Unit="Nm"     Offset="-300"     Res="0.1"  />                            
+                 <Field Name="ETS_VCU_TorqueDemand_Cmd_Nm"       DataType="uint16_t"  DefVal="0"       MinVal="-300"    MaxVal="300"     Unit="Nm"     Offset="0"        Res="1"    />                            
+                 <Field Name="ETS_VCU_OperatingMode_Req_enum"    DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="7"       Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="ETS_VCU_ActiveDischrg_Req_B"       DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="1"       Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="ETS_VCU_SRSCrashSta"               DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="1"       Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="ETS_MCU_DCVoltage_Inp_V"           DataType="uint16_t"  DefVal="0"       MinVal="0"       MaxVal="500"     Unit="V"      Offset="0"        Res="0.25" />                            
+                 <Field Name="ETS_MOT_PhaseCurrentU_Inp_A"       DataType="uint16_t"  DefVal="0"       MinVal="-500"    MaxVal="500"     Unit="A"      Offset="-500"     Res="0.25" />                            
+                 <Field Name="ETS_MOT_PhaseCurrentV_Inp_A"       DataType="uint16_t"  DefVal="0"       MinVal="-500"    MaxVal="500"     Unit="A"      Offset="-500"     Res="0.25" />                            
+                 <Field Name="ETS_MOT_PhaseCurrentW_Inp_A"       DataType="uint16_t"  DefVal="0"       MinVal="-500"    MaxVal="500"     Unit="A"      Offset="-500"     Res="0.25" />                            
+                 <Field Name="ETS_VCU_MaxDischargeCurrent"       DataType="uint16_t"  DefVal="0"       MinVal="0"       MaxVal="511.5"   Unit="A"      Offset="0"        Res="0.5"  />                            
+                 <Field Name="ETS_MCU_AuxBatt_Sup_V"             DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="16"      Unit=""       Offset="0"        Res="0.1"  />                            
+                 <Field Name="ETS_VCU_MCULid_HVIL_STS"           DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="3"       Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="ETS_MCU_Motor_Sts"                 DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="3"       Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="MCU_ASC_SPO_STS"                   DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="3"       Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="ETS_MCU_FaultlevelEnum"            DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="3"       Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="CanTransceiverModeFaultStatus"     DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="1"       Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="LowPassFilteredSensors5V"          DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="25.5"    Unit="V"      Offset="0"        Res="0.1"  />                            
+                 <Field Name="CoolingPlateTemperature"           DataType="uint8_t"   DefVal="-45"     MinVal="-45"     MaxVal="209"     Unit="degC"   Offset="-45"      Res="1"    />                            
+                 <Field Name="MotorOutletCoolantTemperature"     DataType="uint8_t"   DefVal="-45"     MinVal="-45"     MaxVal="209"     Unit="degC"   Offset="-45"      Res="1"    />                            
+                 <Field Name="FreewheelingStatus"                DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="1"       Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="TECCount"                          DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="255"     Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="RECCount"                          DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="255"     Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="BusOffStatus"                      DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="255"     Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="ResolverCalibrationStatus"         DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="1"       Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="MicroResetReason"                  DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="255"     Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="Reserved"                          DataType="uint8_t[8]" />                                                          
+            </DataID>
+            <DataID Name="FaultsConfiguration"                                        ID="0x078F">
+                 <!--1 --> <Field Name="MotorOverTempDetection"                            					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="ms"     Offset="0"     Res="10"    />
+                 <!--2 --> <Field Name="LowTemperatureFaultsHealingHysteresisUdsOnly"             			DataType="uint8_t"   DefVal="0"   MinVal="0"    MaxVal="0"   Value="55"      Unit="degC"   Offset="0"     Res="1"     />
+                 <!--3 --> <Field Name="MotorLowTempDetection"                             					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="ms"     Offset="0"     Res="10"    />
+                 <!--4 --> <Field Name="MotorLowTempHealing"                               					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="ms"     Offset="0"     Res="10"    />
+                 <!--5 --> <Field Name="McuOverTempDetection"                              					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="ms"     Offset="0"     Res="10"    />
+                 <!--6 --> <Field Name="McuLowTempDetection"                               					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="ms"     Offset="0"     Res="10"    />
+                 <!--7 --> <Field Name="McuLowTempHealing"                                 					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="ms"     Offset="0"     Res="10"    />
+                 <!--8 --> <Field Name="CoolingPlateOverTempDetection"                     					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="ms"     Offset="0"     Res="10"    />
+                 <!--9 --> <Field Name="CoolingPlateSensorFault"                           					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="ms"     Offset="0"     Res="10"    />
+                 <!--10--> <Field Name="MicroControllerHighTemp"                           					DataType="uint8_t"   DefVal="0"   MinVal="0"    MaxVal="0"   Value="55"      Unit="degC"   Offset="0"     Res="1"     />
+                 <!--11--> <Field Name="MicroControllerOverTempDetection"                  					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="ms"     Offset="0"     Res="10"    />
+                 <!--12--> <Field Name="McuTempSensorsPlausibilityDetection"               					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="ms"     Offset="0"     Res="10"    />
+                 <!--13--> <Field Name="MaxPhaseCurrentPeak"                               					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="A"      Offset="0"     Res="1"     />
+                 <!--14--> <Field Name="MaxPhaseCurrentDeviation"                          					DataType="uint8_t"   DefVal="0"   MinVal="0"    MaxVal="0"   Value="55"      Unit="A"      Offset="0"     Res="1"     />
+                 <!--15--> <Field Name="PhaseOverCurrentDetection"                         					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="us"     Offset="0"     Res="20"    />
+                 <!--16--> <Field Name="PhaseSensorInvalid"                                					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="us"     Offset="0"     Res="20"    />
+                 <!--17--> <Field Name="PhaseDisconnectedDetection"                        					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="us"     Offset="0"     Res="20"    />
+                 <!--18--> <Field Name="ActiveShortCircuitDetection"                       					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="ms"     Offset="0"     Res="10"    />
+                 <!--19--> <Field Name="ActiveShortCircuitHealing"                         					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="ms"     Offset="0"     Res="10"    />
+                 <!--20--> <Field Name="GateDriverActiveCbitDetection"                     					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="ms"     Offset="0"     Res="10"    />
+                 <!--21--> <Field Name="GateDriverActiveCbitHealing"                       					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="ms"     Offset="0"     Res="10"    />
+                 <!--22--> <Field Name="GateDriverInactiveCbitDetection"                   					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="ms"     Offset="0"     Res="10"    />
+                 <!--23--> <Field Name="GateDriverInactiveCbitHealing"                     					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="ms"     Offset="0"     Res="10"    />
+                 <!--24--> <Field Name="MaxBatteryCurrent"                                 					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="A"      Offset="0"     Res="2.5"   />
+                 <!--25--> <Field Name="MaxBatDischargeCurrentSettling"                    					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="ms"     Offset="0"     Res="10"    />
+                 <!--26--> <Field Name="BatOverCurrentFaultChargeCurrentDeclarationSettlingTimeUdsOnly"     DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="ms"     Offset="0"     Res="10"    />
+                 <!--27--> <Field Name="BatOverCurrentDetection"                           					DataType="uint8_t"   DefVal="0"   MinVal="0"    MaxVal="0"   Value="55"      Unit="ms"     Offset="0"     Res="1"     />
+                 <!--28--> <Field Name="BatCurrentSensorInvaldDetection"                   					DataType="uint8_t"   DefVal="0"   MinVal="0"    MaxVal="0"   Value="55"      Unit="ms"     Offset="0"     Res="1"     />
+                 <!--29--> <Field Name="BatLowVoltageDetection"                            					DataType="uint8_t"   DefVal="0"   MinVal="0"    MaxVal="0"   Value="55"      Unit="ms"     Offset="0"     Res="1"     />
+                 <!--30--> <Field Name="BatHighVoltageDetection"                           					DataType="uint8_t"   DefVal="0"   MinVal="0"    MaxVal="0"   Value="55"      Unit="ms"     Offset="0"     Res="1"     />
+                 <!--31--> <Field Name="BatUnderVoltageFaultDeclarationThresholdUdsOnly"             		DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="V"      Offset="0"     Res="1"     />
+                 <!--32--> <Field Name="BatUnderVoltageDetection"                          					DataType="uint8_t"   DefVal="0"   MinVal="0"    MaxVal="0"   Value="55"      Unit="ms"     Offset="0"     Res="1"     />
+                 <!--33--> <Field Name="BatteryOvervoltageUdsOnly"             								DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="V"      Offset="0"     Res="1"     />
+                 <!--34--> <Field Name="BatOverVoltageDetection"                           					DataType="uint8_t"   DefVal="0"   MinVal="0"    MaxVal="0"   Value="55"      Unit="ms"     Offset="0"     Res="1"     />
+                 <!--35--> <Field Name="BatVoltagePlausibilityDetection"                   					DataType="uint8_t"   DefVal="0"   MinVal="0"    MaxVal="0"   Value="55"      Unit="ms"     Offset="0"     Res="1"     />
+                 <!--36--> <Field Name="ActiveDischargeFeedbackCbitDetection"              					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="ms"     Offset="0"     Res="10"    />
+                 <!--37--> <Field Name="ActiveDischargeFeedbackCbitHealing"                					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="ms"     Offset="0"     Res="10"    />
+                 <!--38--> <Field Name="ActiveDischargeTimeoutDetection"                   					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="ms"     Offset="0"     Res="10"    />
+                 <!--39--> <Field Name="ActiveDischargeTimeoutHealing"                     					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="ms"     Offset="0"     Res="10"    />
+                 <!--40--> <Field Name="GateDriverUnderVoltageDetection"                   					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="ms"     Offset="0"     Res="10"    />
+                 <!--41--> <Field Name="GateDriverFaultDetection"                          					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="ms"     Offset="0"     Res="20"    />
+                 <!--42--> <Field Name="Kl30UnderVoltageDetection"                         					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="ms"     Offset="0"     Res="10"    />
+                 <!--43--> <Field Name="Kl30UnderVoltageHealing"                           					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="ms"     Offset="0"     Res="10"    />
+                 <!--44--> <Field Name="Kl30OverVoltageDetection"                          					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="ms"     Offset="0"     Res="10"    />
+                 <!--45--> <Field Name="Kl30OverVoltageHealing"                            					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="ms"     Offset="0"     Res="10"    />
+                 <!--46--> <Field Name="Kl30LosDetection"                                  					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="ms"     Offset="0"     Res="10"    />
+                 <!--47--> <Field Name="MotorPositionSensorFaultDetection"                 					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="ms"     Offset="0"     Res="20"    />
+                 <!--48--> <Field Name="MotorSpeedFalutDetection"                          					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="ms"     Offset="0"     Res="10"    />
+                 <!--49--> <Field Name="OverSpeedThreshold"                                					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="RPM"    Offset="0"     Res="100"   />
+                 <!--50--> <Field Name="SpeedUpperLimitPositive"                           					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="RPM"    Offset="0"     Res="100"   />
+                 <!--51--> <Field Name="OverSpeedPositiveMargin"                           					DataType="uint8_t"   DefVal="0"   MinVal="0"    MaxVal="0"   Value="55"      Unit=""       Offset="0"     Res="0.05"  />
+                 <!--52--> <Field Name="SpeedLowerLimitNegative"                           					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="RPM"    Offset="0"     Res="100"   />
+                 <!--53--> <Field Name="OverSpeedNegativeMargin"                           					DataType="uint8_t"   DefVal="0"   MinVal="0"    MaxVal="0"   Value="55"      Unit=""       Offset="0"     Res="0.05"  />
+                 <!--54--> <Field Name="MotorOverSpeedDetection"                           					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="ms"     Offset="0"     Res="10"    />
+                 <!--55--> <Field Name="MotorStallTimeout"                                 					DataType="uint8_t"   DefVal="0"   MinVal="0"    MaxVal="0"   Value="55"      Unit="sec"    Offset="0"     Res="1"     />
+                 <!--56--> <Field Name="IoExpenderConfigDetection"                         					DataType="uint8_t"   DefVal="0"   MinVal="0"    MaxVal="0"   Value="55"      Unit="sec"    Offset="0"     Res="0.1"   />
+                 <!--57--> <Field Name="IoExpenderConfigHealing"                           					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="ms"     Offset="0"     Res="10"    />
+                 <!--58--> <Field Name="CanTransceiverModeDetection"                       					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="ms"     Offset="0"     Res="10"    />
+                 <!--59--> <Field Name="CanTransceiverModeHealing"                         					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="ms"     Offset="0"     Res="10"    />
+                 <!--60--> <Field Name="Sensors5vFaultDetection"                           					DataType="uint16_t"  DefVal="0"   MinVal="0"    MaxVal="0"   Value="00,64"   Unit="ms"     Offset="0"     Res="1"     />
+            </DataID>
+            <DataID Name="TrueDriveManager"                                           ID="0x0790">
+                 <!--1 --> <Field Name="AngleOffset"                            							DataType="uint16_t"   DefVal="0"       MinVal="0"    MaxVal="0"     Value="30,39" Unit=""     		Offset="0"     Res="1"  /> <!--Physical Value: 12345 without units	-->
+                 <!--2 --> <Field Name="AngleOffsetDelay"                            						DataType="int16_t"    DefVal="0"       MinVal="0"    MaxVal="0"     Value="FF,85" Unit="deg/KRPM"   Offset="0"     Res="1"  /> <!--Physical Value: -123 				-->
+                 <!--3 --> <Field Name="MotorTempMinCut"                            						DataType="int8_t"     DefVal="0"       MinVal="0"    MaxVal="0"     Value="E3"    Unit="degC"     	Offset="0"     Res="1"  /> <!--Physical Value: -29					-->
+                 <!--4 --> <Field Name="MotorTempMinStart"                            						DataType="int8_t"     DefVal="0"       MinVal="0"    MaxVal="0"     Value="E7"    Unit="degC"     	Offset="0"     Res="1"  /> <!--Physical Value: -25					-->
+                 <!--5 --> <Field Name="MotorTempMaxStart"                            						DataType="uint8_t"    DefVal="0"       MinVal="0"    MaxVal="0"     Value="7B"    Unit="degC"     	Offset="0"     Res="1"  /> <!--Physical Value: 123 uint				-->
+                 <!--6 --> <Field Name="MotorTempMaxCut"                            						DataType="uint8_t"    DefVal="0"       MinVal="0"    MaxVal="0"     Value="EA"    Unit="degC"     	Offset="0"     Res="1"  /> <!--Physical Value: 234 uint				-->
+                 <!--7 --> <Field Name="ControllerTempMinCut"                            					DataType="int8_t"     DefVal="0"       MinVal="0"    MaxVal="0"     Value="E3"    Unit="degC"     	Offset="0"     Res="1"  /> <!--Physical Value: -29					-->
+                 <!--8 --> <Field Name="ControllerTempMinStart"                            					DataType="int8_t"     DefVal="0"       MinVal="0"    MaxVal="0"     Value="E7"    Unit="degC"     	Offset="0"     Res="1"  /> <!--Physical Value: -25					-->
+                 <!--9 --> <Field Name="ControllerTempMaxStart"                            					DataType="uint8_t"    DefVal="0"       MinVal="0"    MaxVal="0"     Value="7B"    Unit="degC"     	Offset="0"     Res="1"  /> <!--Physical Value: 123 uint				-->
+                 <!--10--> <Field Name="ControllerTempMaxCut"                            					DataType="uint8_t"    DefVal="0"       MinVal="0"    MaxVal="0"     Value="EA"    Unit="degC"     	Offset="0"     Res="1"  /> <!--Physical Value: 234 uint				-->
+                 <!--11--> <Field Name="CoolingPlateTempMinCut"                            					DataType="int8_t"     DefVal="0"       MinVal="0"    MaxVal="0"     Value="E3"    Unit="degC"     	Offset="0"     Res="1"  /> <!--Physical Value: -29					-->
+                 <!--12--> <Field Name="CoolingPlateTempMinStart"                            				DataType="int8_t"     DefVal="0"       MinVal="0"    MaxVal="0"     Value="E7"    Unit="degC"     	Offset="0"     Res="1"  /> <!--Physical Value: -25					-->
+                 <!--13--> <Field Name="CoolingPlateTempMaxStart"                            				DataType="uint8_t"    DefVal="0"       MinVal="0"    MaxVal="0"     Value="7B"    Unit="degC"     	Offset="0"     Res="1"  /> <!--Physical Value: 123 uint				-->
+                 <!--14--> <Field Name="CoolingPlateTempMaxCut"                            					DataType="uint8_t"    DefVal="0"       MinVal="0"    MaxVal="0"     Value="EA"    Unit="degC"     	Offset="0"     Res="1"  /> <!--Physical Value: 234 uint				-->
+                 <!--15--> <Field Name="BusVoltageMinCut"                            						DataType="int16_t"    DefVal="0"       MinVal="0"    MaxVal="0"     Value="01,59" Unit="V"     		Offset="0"     Res="1"  /> <!--Physical Value: 345 					-->
+                 <!--16--> <Field Name="BusVoltageMinStart"                            						DataType="int16_t"    DefVal="0"       MinVal="0"    MaxVal="0"     Value="01,5A" Unit="V"     		Offset="0"     Res="1"  /> <!--Physical Value: 346					-->
+                 <!--17--> <Field Name="BusVoltageMaxStart"                            						DataType="int16_t"    DefVal="0"       MinVal="0"    MaxVal="0"     Value="01,84" Unit="V"     		Offset="0"     Res="1"  /> <!--Physical Value: 388					-->
+                 <!--18--> <Field Name="BusVoltageMaxCut"                            						DataType="int16_t"    DefVal="0"       MinVal="0"    MaxVal="0"     Value="01,85" Unit="V"     		Offset="0"     Res="1"  /> <!--Physical Value: 389					-->
+                 <!--19--> <Field Name="MaxBusCurrentLimitActivation"                            			DataType="int8_t"     DefVal="0"       MinVal="0"    MaxVal="0"     Value="01" 	  Unit=""     	    Offset="0"     Res="1"  /> <!--Physical Value: 1 					-->
+                 <!--20--> <Field Name="MaxBusCurrentLimit"                            						DataType="uint8_t"    DefVal="0"       MinVal="0"    MaxVal="0"     Value="7B" 	  Unit="A"     		Offset="0"     Res="2"  /> <!--Physical Value: 123*2 = 246 			-->
+                 <!--21--> <Field Name="MinBusCurrentLimitActivation"                            			DataType="int8_t"     DefVal="0"       MinVal="0"    MaxVal="0"     Value="01" 	  Unit=""     		Offset="0"     Res="1"  /> <!--Physical Value: 1 					-->
+                 <!--22--> <Field Name="MinBusCurrentLimit"                            						DataType="int16_t"    DefVal="0"       MinVal="0"    MaxVal="0"     Value="FF,85" Unit="A"     		Offset="0"     Res="2"  /> <!--Physical Value: -123*2 = -246		-->
+                 <!--23--> <Field Name="MaxBusVoltageLimitActivation"                            			DataType="int8_t"     DefVal="0"       MinVal="0"    MaxVal="0"     Value="01"    Unit=""     		Offset="0"     Res="1"  /> <!--Physical Value: 1 					-->
+                 <!--24--> <Field Name="MaxBusVoltageLimit"                            						DataType="uint8_t"    DefVal="0"       MinVal="0"    MaxVal="0"     Value="DE"    Unit="V"     		Offset="0"     Res="2"  /> <!--Physical Value: 222 * 2 = 444 		-->
+                 <!--25--> <Field Name="MinBusVoltageLimitActivation"                            			DataType="int8_t"     DefVal="0"       MinVal="0"    MaxVal="0"     Value="01"    Unit=""     		Offset="0"     Res="1"  /> <!--Physical Value: 1 					-->
+                 <!--26--> <Field Name="MinBusVoltageLimit"                            						DataType="int8_t"     DefVal="0"       MinVal="0"    MaxVal="0"     Value="6F"    Unit="V"     		Offset="0"     Res="2"  /> <!--Physical Value: 111 * 2 = 222 		-->
+                 <!--27--> <Field Name="BatteryMaximumCurrent"                            					DataType="int16_t"    DefVal="0"       MinVal="0"    MaxVal="0"     Value="00,7B" Unit="A"     		Offset="0"     Res="1"  /> <!--Physical Value: 123 int				-->
+                 <!--28--> <Field Name="Bus_Under_Voltage"                            						DataType="int16_t"    DefVal="0"       MinVal="0"    MaxVal="0"     Value="00,EA" Unit="V"     		Offset="0"     Res="1"  /> <!--Physical Value: 234 int				-->
+                 <!--29--> <Field Name="Bus_Over_Voltage"                            						DataType="int16_t"    DefVal="0"       MinVal="0"    MaxVal="0"     Value="01,BC" Unit="V"     		Offset="0"     Res="1"  /> <!--Physical Value: 444 int				-->
+            </DataID>  
+            <DataID Name="EOLCalibration"                                             ID="0x1500">
+                 <Field Name="FocSensorAngleOffset"                                   DataType="uint32_t"  DefVal="0"  MinVal="0"  MaxVal="65535"     Unit=""     		Offset="0"     Res="1"  />
+            </DataID>   	
+
+            <DataID Name="wakeUpWaitTimer"                                            ID="0x23F9"> <Field Name="Val" DataType="uint16_t" /> </DataID>
+            <DataID Name="wakeupSyncTimer"                                            ID="0x23FA"> <Field Name="Val" DataType="uint16_t" /> </DataID>
+            <DataID Name="sleepWaitTimer"                                             ID="0x23FB"> <Field Name="Val" DataType="uint16_t" /> </DataID>
+            <DataID Name="normalMinTimer"                                             ID="0x23FC"> <Field Name="Val" DataType="uint16_t" /> </DataID>
+			<DataID Name="DTC Enable/Disable"                 						  ID="0x249C"> <Field Name="Val" DataType="uint8_t[16]" /> </DataID>
+
+            <DataID Name="bootSoftwareIdentification"                                 ID="0xF180"> <Field Name="Val" DataType="string[15]"  /> </DataID>
+            <DataID Name="applicationSoftwareIdentification"                          ID="0xF181"> <Field Name="Val" DataType="string[15]"  /> </DataID>
+            <DataID Name="applicationDataIdentification"                              ID="0xF182"> <Field Name="Val" DataType="string[15]"  /></DataID> 
+            <DataID Name="bootSoftwareIdentification"                                 ID="0xF183"> <Field Name="Val" DataType="uint8_t[8]" /> </DataID> 
+            <DataID Name="applicationSoftwareFingerprint"                             ID="0xF184"> </DataID> 
+            <DataID Name="applicationDataFingerprint"                                 ID="0xF185"> </DataID> 
+            <DataID Name="activeDiagnosticSession"                                    ID="0xF186"> <Field Name="Val" DataType="uint8_t"    /> </DataID> 
+            <DataID Name="vehicleManufacturerSparePartNumber"                         ID="0xF187"> <Field Name="Val" DataType="string[16]" /></DataID> 
+            <DataID Name="vehicleManufacturerECUSoftwareNumber"                       ID="0xF188"> </DataID> 
+            <DataID Name="vehicleManufacturerECUSoftwareVersionNumber"                ID="0xF189"> <Field Name="Val" DataType="string[8]"  /> </DataID> 
+            <DataID Name="systemSupplierIdentifier"                                   ID="0xF18A"> <Field Name="Val" DataType="string[16]" /> </DataID> 
+            <DataID Name="ECUManufacturingDate"                                       ID="0xF18B"> 
+				<Field Name="Day"	DataType="uint8_t"  Value="11" />
+				<Field Name="Month" DataType="uint8_t"  Value="0B" />
+				<Field Name="Year"  DataType="uint16_t" Value="07,DE" />
+				<Field Name="Fill"  DataType="uint16_t" Value="00,00" />
+			</DataID> 
+            <DataID Name="ECUSerialNumber"                                            ID="0xF18C"> <Field Name="Val" DataType="string[13]" /> </DataID> 
+            <DataID Name="supportedFunctionalUnits"                                   ID="0xF18D"> </DataID> 
+            <DataID Name="vehicleManufacturerKitAssemblyPartNumber"                   ID="0xF18E"> </DataID> 
+            <DataID Name="VIN"                                                        ID="0xF190"> <Field Name="VID" DataType="string[17]" /> </DataID> 
+ <!--       <DataID Name="vehicleManufacturerECUHardwareNumber"                       ID="0xF191"> <Field Name="Val" DataType="uint8_t[8]" /> </DataID> 
+            <DataID Name="systemSupplierECUHardwareNumber"                            ID="0xF192"> <Field Name="Val" DataType="uint8_t[8]" /> </DataID>  -->
+            <DataID Name="systemSupplierECUSoftwareNumber"                            ID="0xF194"> </DataID> 
+            <DataID Name="exhaustRegulationOrTypeApprovalNumber"                      ID="0xF196"> </DataID> 
+            <DataID Name="systemNameOrEngineType"                                     ID="0xF197"> <Field Name="Val" DataType="uint8_t[16]"/> </DataID> 
+            <DataID Name="repairShopCodeOrTesterSerialNumber"                         ID="0xF198"> <Field Name="Val" DataType="string[16]"  Value="repairShopCodeOr" /> </DataID> 
+            <DataID Name="programmingDate"                                            ID="0xF199"> <Field Name="Val" DataType="string[6]"  /> </DataID> 
+            <DataID Name="clibrationRepairShopCodeOrCalibrationEquipmentSerialNumber" ID="0xF19A"> </DataID> 
+            <DataID Name="calibrationDate"                                            ID="0xF19B"> <Field Name="Val" DataType="uint8_t[8]" /> </DataID> 
+            <DataID Name="calibrationEquipmentSoftwareNumber"                         ID="0xF19C"> </DataID> 
+            <DataID Name="ECUInstallationDate"                                        ID="0xF19D"> <Field Name="Val" DataType="string[6]"  Value="123456" /> </DataID> 
+            <DataID Name="ODXFile"                                                    ID="0xF19E"> <Field Name="Val" DataType="uint8_t[8]" /> </DataID> 
+            <DataID Name="entity"                                                     ID="0xF19F"> </DataID> 
+            <DataID Name="Odometer"                                                   ID="0xF1B0"> <Field Name="Val" DataType="uint8_t[3]"  /> </DataID> 
+            <DataID Name="Battery Voltage"                                            ID="0xF1B1"> <Field Name="Val" DataType="uint16_t"    /> </DataID> 
+            <DataID Name="Vehicle Speed"                                              ID="0xF1B2"> <Field Name="Val" DataType="uint16_t"    /> </DataID> 
+            <DataID Name="Motor speed"                                                ID="0xF1B3"> <Field Name="Val" DataType="uint16_t"    /> </DataID> 
+   <!--     <DataID Name="Reset Reason"                                               ID="0xF1B4"> <Field Name="Val" DataType="uint8_t[3]"  /> </DataID> -->
+   <!--     <DataID Name="Reset Counter"                                              ID="0xF1B5"> <Field Name="Val" DataType="uint16_t"    /> </DataID> -->
+   <!--     <DataID Name="Ignition Counter"                                           ID="0xF1B6"> <Field Name="Val" DataType="uint16_t"    /> </DataID> -->
+            <DataID Name="Snapshot"                                                   ID="0xF1B9"> 
+                 <Field Name="VehicleSpeed"   DataType="uint16_t"   PyDataType="float"        DefVal="0"            MinVal="0"        MaxVal="300"         Unit="Kmph" Res="0.015625"/>
+                 <Field Name="BatteryVoltage" DataType="uint16_t"   PyDataType="float"        DefVal="0"            MinVal="7"        MaxVal="18"          Unit="V"    Res="0.1"/>
+                 <Field Name="OrgOdo"         DataType="uint8_t[3]" PyDataType="float"        DefVal="0"            MinVal="0"        MaxVal="16777215"    Unit="km"   Res="1"/>
+            </DataID> 
+            <DataID Name="Engine State"                                               ID="0xF1BE"> <Field Name="Val" DataType="uint8_t"     /> </DataID> 
+            <DataID Name="Network Mng Timeout"                                        ID="0xF1D2"> 
+				<Field Name="VCU_100Timeout"               DataType="uint8_t" DefVal="1000"	Unit="ms"	Res="20" Value="0B" />
+				<Field Name="VCU_100TimeoutHealingTime"    DataType="uint8_t" DefVal="1000"	Unit="ms"	Res="20" Value="0A" />				
+				<Field Name="VCU3_100Timeout"              DataType="uint8_t" DefVal="1000"	Unit="ms"	Res="20" Value="0B" />
+				<Field Name="VCU3_100HealingTimeThreshold" DataType="uint8_t" DefVal="1000"	Unit="ms"	Res="10" Value="04" />
+				<Field Name="VCU5_500Timeout"              DataType="uint8_t" DefVal="5000"	Unit="ms"	Res="50" Value="04" />
+				<Field Name="VCU5_500HealingTime"          DataType="uint8_t" DefVal="5000"	Unit="ms"	Res="50" Value="05" />
+				<Field Name="VCU8_10Timeout"               DataType="uint8_t" DefVal="100"	Unit="ms"	Res="10" Value="07" />
+				<Field Name="VCU8_10HealingTime"           DataType="uint8_t" DefVal="100"	Unit="ms"	Res="10" Value="08" />
+				<Field Name="VCU9_10Timeout"               DataType="uint8_t" DefVal="50"	Unit="ms"	Res="10" Value="09" />
+				<Field Name="VCU9_10HealingTime"           DataType="uint8_t" DefVal="100"	Unit="ms"	Res="10" Value="12" />
+				<Field Name="VCU14_20Timeout"              DataType="uint8_t" DefVal="200"	Unit="ms"	Res="10" Value="10" />
+				<Field Name="VCU14_20HealingTime"          DataType="uint8_t" DefVal="200"	Unit="ms"	Res="10" Value="11" />
+				<Field Name="VCU17_500Timeout"             DataType="uint8_t" DefVal="5000"	Unit="ms"	Res="50" Value="04" />
+				<Field Name="VCU17_500HealingTime"         DataType="uint8_t" 		                    Res="1"  Value="05" />
+				<Field Name="VCU5_100Timeout"              DataType="uint8_t" 	                        Res="1"  Value="FF" />
+				<Field Name="VCU_ACTIVETimeout"            DataType="uint8_t" 	                        Res="1"  Value="AB" />
+				<Field Name="VCU_ACTIVEHealingTime"        DataType="uint8_t" 	                        Res="1"  Value="CD" />
+				<Field Name="BMS5_10Timeout"               DataType="uint8_t" 	                        Res="1"  Value="EF" />
+				<Field Name="BMS5_10HealingTime"           DataType="uint8_t" 	                        Res="1"  Value="12" />
+				<Field Name="BMS6_10Timeout"               DataType="uint8_t" DefVal="50"	Unit="ms"	Res="10" Value="18" />
+				<Field Name="BMS6_10HealingTime"           DataType="uint8_t" DefVal="100"	Unit="ms"	Res="10" Value="19" />
+			</DataID>  
+            <DataID Name="Network Mng Mismatch"                                       ID="0xF1D3">
+				<Field Name="VCU_100DLCMismatchThreshold"				 DataType="uint8_t" Unit="msg" DefVal="5"  Value="11"/> 
+				<Field Name="VCU_100ParityMismatchThreshold"             DataType="uint8_t" Unit="msg" DefVal="5"  Value="22"/> 
+				<Field Name="VCU_100DLCMismatchHealingThreshold"         DataType="uint8_t" Unit="msg" DefVal="10" Value="33"/> 
+				<Field Name="VCU_100ParityMismatchHealingThreshold"      DataType="uint8_t" Unit="msg" DefVal="10" Value="44"/> 
+				<Field Name="VCU3_100DLCMismatchThreshold"               DataType="uint8_t" Unit="msg" DefVal="5"  Value="55"/> 
+				<Field Name="VCU3_100CRCMismatchThreshold"               DataType="uint8_t" Unit="msg" DefVal="5"  Value="66"/> 
+				<Field Name="VCU3_100ParityMismatchThreshold"            DataType="uint8_t" Unit="msg" DefVal="5"  Value="77"/> 
+				<Field Name="VCU3_100DLCMismatchHealingThreshold"        DataType="uint8_t" Unit="msg" DefVal="10" Value="88"/> 
+				<Field Name="VCU3_100CRCMismatchHealingThreshold"        DataType="uint8_t" Unit="msg" DefVal="10" Value="99"/> 
+				<Field Name="VCU3_100ParityMismatchHealingThreshold"     DataType="uint8_t" Unit="msg" DefVal="10" Value="AA"/> 
+				<Field Name="VCU5_500DLCMismatchThreshold"               DataType="uint8_t" Unit="msg" DefVal="5"  Value="BB"/> 
+				<Field Name="VCU5_500ParityMismatchThreshold"            DataType="uint8_t" Unit="msg" DefVal="5"  Value="CC"/> 
+				<Field Name="VCU5_500DLCMismatchHealingThreshold"        DataType="uint8_t" Unit="msg" DefVal="10" Value="DD"/> 
+				<Field Name="VCU5_500ParityMismatchHealingThreshold"     DataType="uint8_t" Unit="msg" DefVal="10" Value="EE"/> 
+				<Field Name="VCU8_10DLCMismatchThreshold"                DataType="uint8_t" Unit="msg" DefVal="5"  Value="FF"/> 
+				<Field Name="VCU8_10ParityMismatchThreshold"             DataType="uint8_t" Unit="msg" DefVal="5"  Value="11"/> 
+				<Field Name="VCU8_10DLCMismatchHealingThreshold"         DataType="uint8_t" Unit="msg" DefVal="10" Value="22"/> 
+				<Field Name="VCU8_10ParityMismatchHealingThreshold"      DataType="uint8_t" Unit="msg" DefVal="10" Value="33"/> 
+				<Field Name="VCU9_10DLCMismatchThreshold"                DataType="uint8_t" Unit="msg" DefVal="5"  Value="44"/> 
+				<Field Name="VCU9_10CRCMismatchThreshold"                DataType="uint8_t" Unit="msg" DefVal="5"  Value="55"/> 
+				<Field Name="VCU9_10ParityMismatchThreshold"             DataType="uint8_t" Unit="msg" DefVal="5"  Value="66"/> 
+				<Field Name="VCU9_10DLCMismatchHealingThreshold"         DataType="uint8_t" Unit="msg" DefVal="10" Value="77"/> 
+				<Field Name="VCU9_10CRCMismatchHealingThreshold"         DataType="uint8_t" Unit="msg" DefVal="10" Value="88"/> 
+				<Field Name="VCU9_10ParityMismatchHealingThreshold"      DataType="uint8_t" Unit="msg" DefVal="10" Value="99"/> 
+				<Field Name="VCU14_20DLCMismatchThreshold"               DataType="uint8_t" Unit="msg" DefVal="5"  Value="AA"/> 
+				<Field Name="VCU14_20ParityMismatchThreshold"            DataType="uint8_t" Unit="msg" DefVal="5"  Value="BB"/> 
+				<Field Name="VCU14_20DLCMismatchHealingThreshold"        DataType="uint8_t" Unit="msg" DefVal="10" Value="CC"/> 
+				<Field Name="VCU14_20ParityMismatchHealingThreshold"     DataType="uint8_t" Unit="msg" DefVal="10" Value="DD"/> 
+				<Field Name="VCU17_500DLCMismatchThreshold"              DataType="uint8_t" Unit="msg" DefVal="5"  Value="EE"/> 
+				<Field Name="VCU17_500CRCMismatchThreshold"              DataType="uint8_t" Unit="msg" DefVal="5"  Value="FF"/> 
+				<Field Name="VCU17_500ParityMismatchThreshold"           DataType="uint8_t" Unit="msg" DefVal="5"  Value="11"/> 
+				<Field Name="VCU17_500DLCMismatchHealingThreshold"       DataType="uint8_t" Unit="msg" DefVal="10" Value="22"/> 
+				<Field Name="VCU17_500CRCMismatchHealingThreshold"       DataType="uint8_t" Unit="msg" DefVal="10" Value="33"/> 
+				<Field Name="VCU17_500ParityMismatchHealingThreshold"    DataType="uint8_t" Unit="msg" DefVal="10" Value="44"/> 
+				<Field Name="VCU3_100AliveCounterThreshold"              DataType="uint8_t" Unit="msg" DefVal="5"  Value="55"/> 
+				<Field Name="VCU3_100AliveCounterHealingThreshold"       DataType="uint8_t" Unit="msg" DefVal="10" Value="66"/> 
+				<Field Name="VCU9_10AliveCounterThreshold"               DataType="uint8_t" Unit="msg" DefVal="5"  Value="77"/> 
+				<Field Name="VCU9_10AliveCounterHealingThreshold"        DataType="uint8_t" Unit="msg" DefVal="10" Value="88"/> 
+				<Field Name="VCU17_500AliveCounterThreshold"             DataType="uint8_t" Unit="msg" DefVal="5"  Value="99"/> 
+				<Field Name="VCU17_500AliveCounterHealingThreshold"      DataType="uint8_t" Unit="msg" DefVal="10" Value="AA"/> 
+				<Field Name="VCU_ActiveDLCMismatchThreshold"             DataType="uint8_t"                        Value="BB"/>   
+				<Field Name="VCU_ActiveParityMismatchThreshold"          DataType="uint8_t"                        Value="CC"/> 
+				<Field Name="VCU_ActiveDLCMismatchHealingThreshold"      DataType="uint8_t"                        Value="DD"/> 
+				<Field Name="VCU_ActiveParityMismatchHealingThreshold"   DataType="uint8_t"                        Value="EE"/> 
+				<Field Name="VCU5_500DLCMismatchThreshold_2"             DataType="uint8_t"                        Value="FF"/> 
+				<Field Name="VCU5_500ParityMismatchThreshold_2"          DataType="uint8_t"                        Value="11"/> 
+				<Field Name="VCU5_500DLCMismatchHealingThreshold_2"      DataType="uint8_t"                        Value="22"/> 
+				<Field Name="VCU5_500ParityMismatchHealingThreshold_2"   DataType="uint8_t"                        Value="33"/> 
+				<Field Name="BMS5_10DLCMismatchThreshold"                DataType="uint8_t"                        Value="44"/> 
+				<Field Name="BMS5_10CRCMismatchThreshold"                DataType="uint8_t"                        Value="55"/> 
+				<Field Name="BMS5_10ParityMismatchThreshold"             DataType="uint8_t"                        Value="66"/> 
+				<Field Name="BMS5_10DLCMismatchHealingThreshold"         DataType="uint8_t"                        Value="77"/> 
+				<Field Name="BMS5_10CRCMismatchHealingThreshold"         DataType="uint8_t"                        Value="88"/> 
+				<Field Name="BMS5_10ParityMismatchHealingThreshold"      DataType="uint8_t"                        Value="99"/> 
+				<Field Name="BMS5_10AliveCounterThreshold"               DataType="uint8_t"                        Value="AA"/> 
+				<Field Name="BMS5_10AliveCounterHealingThreshold"        DataType="uint8_t"                        Value="BB"/> 
+				<Field Name="BMS6_10DLCMismatchThreshold"                DataType="uint8_t"                        Value="CC"/> 
+				<Field Name="BMS6_10CRCMismatchThreshold"                DataType="uint8_t"                        Value="DD"/> 
+				<Field Name="BMS6_10ParityMismatchThreshold"             DataType="uint8_t"                        Value="EE"/> 
+				<Field Name="BMS6_10DLCMismatchHealingThreshold"         DataType="uint8_t"                        Value="FF"/> 
+				<Field Name="BMS6_10CRCMismatchHealingThreshold"         DataType="uint8_t"                        Value="12"/> 
+				<Field Name="BMS6_10ParityMismatchHealingThreshold"      DataType="uint8_t"                        Value="34"/> 
+				<Field Name="BMS6_10AliveCounterThreshold"               DataType="uint8_t"                        Value="56"/> 
+				<Field Name="BMS6_10AliveCounterHealingThreshold"        DataType="uint8_t"                        Value="78"/> 
+			</DataID>  
+            <DataID Name="Network Management Enable"                                  ID="0xF1D4"> <Field Name="Val" DataType="uint8_t" Value="00"    /> </DataID>  
+            <DataID Name="CAN Configuration"                                          ID="0xF1D5"> 
+    			<Field Name="CriticalCANSignalInvalidTime"	 DataType="uint16_t" Value="00,07" DefVal="50"   Unit="ms" Res="10"/>
+    			<Field Name="MainCANBusOffHealingTime"		 DataType="uint16_t" Value="00,50" DefVal="1000" Unit="ms" Res="10"/>
+    			<Field Name="CANTimeoutSincePowerup"		 DataType="uint16_t" Value="00,40" DefVal="2000" Unit="ms" Res="20"/>
+			</DataID>  
+            <DataID Name="SYSTEM SUPPLIER PART NUMBER - 13 bytes, ASCII"              ID="0xF1F0"> <Field Name="Val" DataType="uint8_t[13]" /> </DataID> 
+<!--        <DataID Name="MCU_MotorTorqueEstimated"     ID="0xFE4C"> <Field Name="Val"    DataType="uint32_t"  PyDataType="float"        DefVal="-2045"            MinVal="-2045"        MaxVal="2045"     Unit="Nm"        Offset="-2048"    Res="0.0625" /> </DataID>
+            <DataID Name="MCU_MotorSpeed"                ID="0xFE4D"> <Field Name="Val"    DataType="uint32_t"  PyDataType="float"        DefVal="-32760"            MinVal="-32760"        MaxVal="32760"     Unit="RPM"        Offset="-32767"    Res="1"      /> </DataID>
+            <DataID Name="MMCU_OperationalMode"            ID="0xFE4E"> <Field Name="Val"    DataType="uint8_t"   PyDataType="uint8_t"    DefVal="0"                MinVal="0"            MaxVal="7"         Unit=""        Offset="0"        Res="1"      /> </DataID>
+            <DataID Name="MCU_State"                    ID="0xFE5A"> <Field Name="Val"    DataType="uint8_t"   PyDataType="uint8_t"    DefVal="0"                MinVal="0"            MaxVal="15"         Unit=""        Offset="0"        Res="1"      /> </DataID>
+            <DataID Name="MCU_Motor_Temp_Indicator"        ID="0xFE4F"> <Field Name="Val"    DataType="uint32_t"  PyDataType="float"        DefVal="0"                MinVal="-50"        MaxVal="200"     Unit="deg C"    Offset="-50"    Res="1"      /> </DataID>
+            <DataID Name="MCU_Inverter_Temp_Indicator"    ID="0xFE5E"> <Field Name="Val"    DataType="uint32_t"  PyDataType="float"        DefVal="0"                MinVal="-50"        MaxVal="200"     Unit="deg C"    Offset="-50"    Res="1"      /> </DataID>
+            <DataID Name="MCU_RegenDerating"            ID="0xFE5B"> <Field Name="Val"    DataType="uint8_t"   PyDataType="uint8_t"    DefVal="0"                MinVal="0"            MaxVal="7"         Unit=""        Offset="0"        Res="1"      /> </DataID>
+            <DataID Name="MCU_TractionDerating"            ID="0xFE5C"> <Field Name="Val"    DataType="uint8_t"   PyDataType="uint8_t"    DefVal="0"                MinVal="0"            MaxVal="7"         Unit=""        Offset="0"        Res="1"      /> </DataID>
+            <DataID Name="MCU_RegenTorqueAvail"            ID="0xFE5D"> <Field Name="Val"    DataType="uint32_t"  PyDataType="float"        DefVal="0"                MinVal="0"            MaxVal="2045"     Unit="Nm"        Offset="0"        Res="0.0625" /> </DataID>
+            <DataID Name="MCU_TractionTorqueAvail"        ID="0xFE50"> <Field Name="Val"    DataType="uint32_t"  PyDataType="float"        DefVal="0"                MinVal="0"            MaxVal="2045"     Unit="Nm"        Offset="0"        Res="0.0625" /> </DataID>
+            <DataID Name="VCU_TorqueCommand"            ID="0xFE51"> <Field Name="Val"  DataType="uint32_t"  PyDataType="float"        DefVal="-2045"            MinVal="-2045"        MaxVal="2045"     Unit="Nm"        Offset="-2048"    Res="0.0625" /> </DataID>
+            <DataID Name="VCU_OperationalModeCmd"        ID="0xFE52"> <Field Name="Val"  DataType="uint8_t"   PyDataType="uint8_t"    DefVal="0"                MinVal="0"            MaxVal="7"         Unit=""        Offset="0"        Res="1"      /> </DataID>
+            <DataID Name="VCU_CommandMode"                ID="0xFE53"> <Field Name="Val"  DataType="uint8_t"   PyDataType="uint8_t"    DefVal="0"                MinVal="0"            MaxVal="3"         Unit=""        Offset="0"        Res="1"      /> </DataID>
+            <DataID Name="VCU_OperationReq"                ID="0xFE54"> <Field Name="Val"  DataType="uint8_t"   PyDataType="uint8_t"    DefVal="0"                MinVal="0"            MaxVal="7"         Unit=""        Offset="0"        Res="1"      /> </DataID>
+            <DataID Name="VCU_EPTCoolantFlow"            ID="0xFE55"> <Field Name="Val"  DataType="uint32_t"  PyDataType="float"        DefVal="0"                MinVal="0"            MaxVal="100"     Unit="%"        Offset="0"        Res="0.5"    /> </DataID>
+            <DataID Name="VCU_EPTCoolantTemp"            ID="0xFE5F"> <Field Name="Val"  DataType="uint32_t"  PyDataType="float"        DefVal="0"                MinVal="-40"        MaxVal="215"     Unit="deg C"    Offset="-40"    Res="1"      /> </DataID>
+            <DataID Name="VCU_ACTV_Discharge_REQ"        ID="0xFE56"> <Field Name="Val"  DataType="uint8_t"   PyDataType="uint8_t"    DefVal="0"                MinVal="0"            MaxVal="1"         Unit=""        Offset="0"        Res="1"      /> </DataID>
+            <DataID Name="VCU_SRSCrashSta"                ID="0xFE57"> <Field Name="Val"  DataType="uint8_t"   PyDataType="uint8_t"    DefVal="0"                MinVal="0"            MaxVal="1"         Unit=""        Offset="0"        Res="1"      /> </DataID>
+            <DataID Name="VCU_CLOCK_DATE"                ID="0xFE69"> <Field Name="Val"  DataType="uint8_t"   PyDataType="uint8_t"    DefVal="0"                MinVal="0"            MaxVal="31"         Unit=""        Offset="0"        Res="1"      /> </DataID>
+            <DataID Name="VCU_CLOCK_FORMAT"                ID="0xFE6A"> <Field Name="Val"  DataType="uint8_t"   PyDataType="uint8_t"    DefVal="0"                MinVal="0"            MaxVal="1"         Unit=""        Offset="0"        Res="1"      /> </DataID>
+            <DataID Name="VCU_CLOCK_HOUR"                ID="0xFE6B"> <Field Name="Val"  DataType="uint8_t"   PyDataType="uint8_t"    DefVal="0"                MinVal="0"            MaxVal="23"         Unit="Hour"    Offset="0"        Res="1"      /> </DataID>
+            <DataID Name="VCU_CLOCK_MIN"                ID="0xFE6C"> <Field Name="Val"  DataType="uint8_t"   PyDataType="uint8_t"    DefVal="0"                MinVal="0"            MaxVal="59"         Unit="Minute"    Offset="0"        Res="1"      /> </DataID>
+            <DataID Name="VCU_CLOCK_MONTH"                ID="0xFE6D"> <Field Name="Val"  DataType="uint8_t"   PyDataType="uint8_t"    DefVal="0"                MinVal="0"            MaxVal="12"         Unit=""        Offset="0"        Res="1"      /> </DataID>
+            <DataID Name="VCU_CLOCK_YEAR"                ID="0xFE6E"> <Field Name="Val"  DataType="uint16_t"  PyDataType="uint16_t"    DefVal="2016"            MinVal="2016"        MaxVal="2063"     Unit=""        Offset="2000"    Res="1"      /> </DataID>
+            <DataID Name="BMS_ModuleActiveDischarge"    ID="0xFE59"> <Field Name="Val"  DataType="uint8_t"   PyDataType="uint8_t"    DefVal="0"                MinVal="0"            MaxVal="3"         Unit=""        Offset="0"        Res="1"      /> </DataID>
+            <DataID Name="HVDCVoltageMeasurement"        ID="0xFE61"> <Field Name="Val"  DataType="uint32_t"  PyDataType="float"        DefVal="365"            MinVal="0"            MaxVal="460"     Unit="V"        Offset="0"        Res="0.1"    /> </DataID>
+            <DataID Name="InverterPhaseCurrentU"        ID="0xFE62"> <Field Name="Val"  DataType="uint32_t"  PyDataType="float"        DefVal="-2048"            MinVal="-2048"        MaxVal="2048"     Unit="A"        Offset="-2048"    Res="0.1"    /> </DataID>
+            <DataID Name="InverterPhaseCurrentV"        ID="0xFE63"> <Field Name="Val"  DataType="uint32_t"  PyDataType="float"        DefVal="-2048"            MinVal="-2048"        MaxVal="2048"     Unit="A"        Offset="-2048"    Res="0.1"    /> </DataID>
+            <DataID Name="InverterPhaseCurrentW"        ID="0xFE64"> <Field Name="Val"  DataType="uint32_t"  PyDataType="float"        DefVal="-2048"            MinVal="-2048"        MaxVal="2048"     Unit="A"        Offset="-2048"    Res="0.1"    /> </DataID>
+            <DataID Name="InletCoolantTemperature"        ID="0xFE65"> <Field Name="Val"  DataType="uint32_t"  PyDataType="float"        DefVal="0"                MinVal="-40"        MaxVal="215"     Unit="deg C"    Offset="-40"    Res="1"      /> </DataID>
+            <DataID Name="DischargeRawCurrent"            ID="0xFE66"> <Field Name="Val"  DataType="uint16_t"  PyDataType="uint16_t"    DefVal="0"                MinVal="-600"        MaxVal="600"     Unit="A"        Offset="-600"     Res="0.1"    /> </DataID>
+            <DataID Name="InternalFinalTorqueRequest"    ID="0xFE67"> <Field Name="Val"  DataType="uint32_t"  PyDataType="float"        DefVal="-2045"            MinVal="-2045"        MaxVal="2045"     Unit="Nm"        Offset="-2048"    Res="0.0625" /> </DataID>
+            <DataID Name="KL15Voltage"                    ID="0xFE68"> <Field Name="Val"  DataType="uint32_t"  PyDataType="float"        DefVal="0"                MinVal="0"            MaxVal="24"         Unit="V"        Offset="0"        Res="0.001"  /> </DataID>            
+            <DataID Name="UDSVersion"                    ID="0xFF00"/> 
+                      
+-->  			
+<!--        <DataID Name="bootFlagDataIdentifier"        ID="0x0200"> </DataID>
+            <DataID Name="History Zone"                  ID="0x0201"> </DataID>            
+-->			
+          
+            <DataID Name="UpdateServiceHistoryZoneDataIdentifier"                      ID="0x0281"> </DataID>
+        </Service>
+        <Service Name="IOControlByIdentifier"            ID="0x2F" DataType="uint8_t"> </Service>
+        <Service Name="RoutineControl"                   ID="0x31" DataType="uint8_t"> 
+            <SubFunc Name="Start"                        ID="0x01"> 
+				<DataID Name="Set Boot Flag"             ID="0x0200"> 
+					<Field Name="BootFlag"  DataType="uint8_t"> </Field>   
+				</DataID>
+				<DataID Name="Update HistoryZone" ID="0x0201"> 
+					<Field Name="NumberInFlash"   DataType="uint8_t" 	Value="00" />
+					<Field Name="TesterVersion"   DataType="uint16_t" 	Value="01,02" />
+					<Field Name="PrevApplSWID"    DataType="string[8]" 	Value="MCUACT00" />   <!-- MCU, Application, Common, Test, 00 -->
+					<Field Name="PrevApplDataID"  DataType="string[8]" 	Value="MCUACT00" />   <!-- MCU, Application, Common, Test, 00 -->
+					<Field Name="Date"            DataType="uint32_t" 	Value="1C,0A,07,E8" /> <!-- 28 Oct. 2024 -->
+					<Field Name="Time"            DataType="uint16_t" 	Value="0A,1E" />      <!-- 10:30 -->
+				</DataID>
+				<DataID Name="ResolverAutoCalibration"       ID="0x0295"> 
+				</DataID>
+				<DataID Name="ActiveDischarge"       ID="0x0296"> 
+				</DataID>
+				<DataID Name="Check Memory"       ID="0x07E0"> 
+				</DataID>
+				<DataID Name="Validate Appl"       ID="0x07E1"> 
+				</DataID>
+				<DataID Name="Erase Flash"               ID="0xFF00"> 
+					<Field Name="FlashArea"  DataType="uint8_t"> </Field>   
+				</DataID>
+				<DataID Name="Compare CS"               ID="0xFF01"> 
+				</DataID>
+			</SubFunc>
+            <SubFunc Name="Stop"                         ID="0x02">
+				<DataID Name="ResolverAutoCalibration"    ID="0x0295"> 
+				</DataID>
+				<DataID Name="ActiveDischarge"       ID="0x0296"> 
+				</DataID>
+			</SubFunc>
+            <SubFunc Name="Request Results"              ID="0x03">
+				<DataID Name="Update HistoryZone" ID="0x0201"> </DataID>
+				<DataID Name="ResolverAutoCalibration" ID="0x0295"> </DataID>
+				<DataID Name="ActiveDischarge" ID="0x0296"> </DataID>
+				<DataID Name="Compare CS" ID="0xFF01"> </DataID>
+			</SubFunc>
+		</Service>
+        <Service Name="RequestDownload"                  ID="0x34" DataType="uint8_t"> 
+            <Field Name="dataFormatIdentifier"             DataType="uint8_t" />
+            <Field Name="addressAndLengthFormatIdentifier" DataType="uint8_t" />
+            <Field Name="MemoryAddress"                    DataType="uint32_t" />
+            <Field Name="MemorySize" 					   DataType="uint32_t" />		
+		</Service>
+        <Service Name="RequestUpload"                    ID="0x35" DataType="uint8_t"> </Service>
+        <Service Name="TransferData"                     ID="0x36" DataType="uint8_t"> 
+            <Field Name="SeqNum"             DataType="uint8_t" />
+            <Field Name="Block"              DataType="uint8_t[256]" />
+		</Service>
+        <Service Name="RequestTransferExit"              ID="0x37" DataType="uint8_t"> </Service>
+        <Service Name="RequestFileTransfer"              ID="0x38" DataType="uint8_t"> </Service>
+        <Service Name="WriteMemoryByAddress"             ID="0x3D" DataType="uint8_t"> </Service>    
+        <Service Name="TesterPresent"                    ID="0x3E" DataType="uint8_t"> </Service>
+        <Service Name="NegativeResponse"                 ID="0x7F" DataType="uint8_t"> </Service>
+        <Service Name="AccessTimingParameter"            ID="0x83" DataType="uint8_t">
+            <SubFunc Name="Read Currently Active Timing Parameters"  ID="0x03"/>
+            <SubFunc Name="Set Timing Parameters To Given Values"    ID="0x04"> 
+                <Field Name="P2Min" DataType="uint16_t" />
+                <Field Name="P2Max" DataType="uint16_t" />
+                <Field Name="P3Min" DataType="uint8_t"  />
+                <Field Name="P3Max" DataType="uint8_t"  />
+                <Field Name="STMin" DataType="uint8_t"  />
+			</SubFunc>
+		</Service>
+        <Service Name="SecuredDataTransmission"          ID="0x84" DataType="uint8_t"> </Service>
+        <Service Name="ControlDTCSetting"                ID="0x85" DataType="uint8_t">
+            <SubFunc Name="On"                                ID="0x01"> </SubFunc>
+            <SubFunc Name="Off"                               ID="0x02"> </SubFunc>
+            <SubFunc Name="PermanentOn"                       ID="0x41"> </SubFunc>
+            <SubFunc Name="PermanentOff"                      ID="0x42"> </SubFunc>
+            <SubFunc Name="OutOfRange"                        ID="0x50"> </SubFunc>
+        </Service>
+        <Service Name="ResponseOnEvent"                  ID="0x86" DataType="uint8_t"> </Service>
+        <Service Name="LinkControl"                      ID="0x87" DataType="uint8_t"> </Service>
+    </Requests>
+    <Responses>
+        <Service Name="DiagnosticSessionControl"         ID="0x50" DataType="uint8_t"> 
+            <SubFunc Name="Default Session"                  ID="0x01" DataType="uint8_t"> </SubFunc>   
+            <SubFunc Name="ECU Programming Session"          ID="0x02" DataType="uint8_t"> </SubFunc>   
+            <SubFunc Name="ECU Extended Diagnostic Session"  ID="0x03" DataType="uint8_t"> </SubFunc>   
+            <SubFunc Name="Safety System Diagnostic Session" ID="0x04" DataType="uint8_t"> </SubFunc>   
+        </Service>
+        <Service Name="ECUReset"                         ID="0x51" DataType="uint8_t"> 
+            <SubFunc Name="Hard Reset"  ID="0x01" DataType="uint8_t"> </SubFunc>   
+            <SubFunc Name="Key Off/On"  ID="0x02" DataType="uint8_t"> </SubFunc>   
+            <SubFunc Name="Soft Reset"  ID="0x03" DataType="uint8_t"> </SubFunc>   
+		</Service>
+        <Service Name="ClearDiagnosticInformation"       ID="0x54" DataType="uint8_t"> </Service>
+        <Service Name="ReadDTCInformation"               ID="0x59" DataType="uint8_t">
+            <SubFunc Name="NumberOfDTCByStatusMask"                     ID="0x01"> 
+                <Field Name="DTCStatusAvailabilityMask"  DataType="uint8_t"  />
+                <Field Name="DTCFormatIdentifier"        DataType="uint8_t"  />
+                <Field Name="DTCCount"                   DataType="uint16_t" />
+            </SubFunc>
+            <SubFunc Name="DTCByStatusMask"                             ID="0x02">
+                <Field Name="DTCStatusAvailabilityMask"        DataType="uint8_t" />
+                <Field Name="DTCAndStatusRecord"               DataType="uint32_t[64]" />
+            </SubFunc>            
+<!--        <SubFunc Name="DTCSnapshotIdentification"                   ID="0x03"> </SubFunc> -->
+            <SubFunc Name="DTCSnapshotRecordByDTCNumber"                ID="0x04">
+                 <Field Name="DTCAndStatusRecord"        DataType="uint32_t" />
+                 <Field Name="RecordNumber"              DataType="uint8_t"  />
+                 <Field Name="RecordNumberOfIdentifiers" DataType="uint8_t"  />
+                 <Field Name="DataID"                    DataType="uint16_t" />
+                
+                 <!-- SDTCSnapshotData m_SnapshotData; -->
+                 <Field Name="VehicleSpeed"   DataType="int16_t"    PyDataType="float"        DefVal="0"            MinVal="0"        MaxVal="300"         Unit="Kmph"    Res="0.015625"/>
+                 <Field Name="BatteryVoltage" DataType="uint16_t"   PyDataType="float"        DefVal="0"            MinVal="7"        MaxVal="18"             Unit="V"    Res="0.1"/>
+                 <Field Name="OrgOdo"         DataType="uint8_t[3]" PyDataType="float"        DefVal="0"            MinVal="0"        MaxVal="16777215"    Unit="km"    Res="1"/>
+                
+                 <!-- SDTCFreezFrame   m_FreezFrame;   -->
+                 <Field Name="ETS_MOT_Torque_Act_Nm"             DataType="uint16_t"  DefVal="0"       MinVal="-300"    MaxVal="300"     Unit="Nm"     Offset="-300"     Res="0.1"  />                             
+                 <Field Name="ETS_MOT_Speed_Act_rpm"             DataType="uint16_t"  DefVal="-14500"  MinVal="-14500"  MaxVal="14500"   Unit="RPM"    Offset="-14500"   Res="1"    />                            
+                 <Field Name="ETS_MCU_OperatingMode_enum"        DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="15"      Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="ETS_MOT_Temp_Act_degC"             DataType="uint8_t"   DefVal="-45"     MinVal="-45"     MaxVal="209"     Unit="degC"   Offset="-45"      Res="1"    />                            
+                 <Field Name="ETS_MCU_InverterTemp_Act_degC"     DataType="uint8_t"   DefVal="-45"     MinVal="-45"     MaxVal="209"     Unit="degC"   Offset="-45"      Res="1"    />                            
+                 <Field Name="ETS_MCU_RegenDerateReason_enum"    DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="7"       Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="ETS_MCU_TractionDerateReason_enum" DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="7"       Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="ETS_MOT_RegenTorque_Limit_Nm"      DataType="uint16_t"  DefVal="0"       MinVal="-300"    MaxVal="300"     Unit="Nm"     Offset="-300"     Res="0.1"  />                            
+                 <Field Name="ETS_MOT_TractionTorque_Limit_Nm"   DataType="uint16_t"  DefVal="0"       MinVal="-300"    MaxVal="300"     Unit="Nm"     Offset="-300"     Res="0.1"  />                            
+                 <Field Name="ETS_VCU_TorqueDemand_Cmd_Nm"       DataType="uint16_t"  DefVal="0"       MinVal="-300"    MaxVal="300"     Unit="Nm"     Offset="0"        Res="1"    />                            
+                 <Field Name="ETS_VCU_OperatingMode_Req_enum"    DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="7"       Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="ETS_VCU_ActiveDischrg_Req_B"       DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="1"       Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="ETS_VCU_SRSCrashSta"               DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="1"       Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="ETS_MCU_DCVoltage_Inp_V"           DataType="uint16_t"  DefVal="0"       MinVal="0"       MaxVal="500"     Unit="V"      Offset="0"        Res="0.25" />                            
+                 <Field Name="ETS_MOT_PhaseCurrentU_Inp_A"       DataType="uint16_t"  DefVal="0"       MinVal="-500"    MaxVal="500"     Unit="A"      Offset="-500"     Res="0.25" />                            
+                 <Field Name="ETS_MOT_PhaseCurrentV_Inp_A"       DataType="uint16_t"  DefVal="0"       MinVal="-500"    MaxVal="500"     Unit="A"      Offset="-500"     Res="0.25" />                            
+                 <Field Name="ETS_MOT_PhaseCurrentW_Inp_A"       DataType="uint16_t"  DefVal="0"       MinVal="-500"    MaxVal="500"     Unit="A"      Offset="-500"     Res="0.25" />                            
+                 <Field Name="ETS_VCU_MaxDischargeCurrent"       DataType="uint16_t"  DefVal="0"       MinVal="0"       MaxVal="511.5"   Unit="A"      Offset="0"        Res="0.5"  />                            
+                 <Field Name="ETS_MCU_AuxBatt_Sup_V"             DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="16"      Unit=""       Offset="0"        Res="0.1"  />                            
+                 <Field Name="ETS_VCU_MCULid_HVIL_STS"           DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="3"       Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="ETS_MCU_Motor_Sts"                 DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="3"       Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="MCU_ASC_SPO_STS"                   DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="3"       Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="ETS_MCU_FaultlevelEnum"            DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="3"       Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="CanTransceiverModeFaultStatus"     DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="1"       Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="LowPassFilteredSensors5V"          DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="25.5"    Unit="V"      Offset="0"        Res="0.1"  />                            
+                 <Field Name="CoolingPlateTemperature"           DataType="uint8_t"   DefVal="-45"     MinVal="-45"     MaxVal="209"     Unit="degC"   Offset="-45"      Res="1"    />                            
+                 <Field Name="MotorOutletCoolantTemperature"     DataType="uint8_t"   DefVal="-45"     MinVal="-45"     MaxVal="209"     Unit="degC"   Offset="-45"      Res="1"    />                            
+                 <Field Name="FreewheelingStatus"                DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="1"       Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="TECCount"                          DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="255"     Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="RECCount"                          DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="255"     Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="BusOffStatus"                      DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="255"     Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="ResolverCalibrationStatus"         DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="1"       Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="MicroResetReason"                  DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="255"     Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="Reserved"                          DataType="uint8_t[8]" />                                                          
+            </SubFunc>            
+<!--        <SubFunc Name="DTCStoredDataByRecordNumber"                 ID="0x05"> </SubFunc> -->
+            <SubFunc Name="DTCExtDataRecordByDTCNumber"                 ID="0x06"> 
+                <Field Name="DTCAndStatusRecord"       DataType="uint32_t" /> 
+                <Field Name="DTCExtDataRecordNumber"   DataType="uint8_t"  /> 
+                <Field Name="m_DTCFrequency"           DataType="uint8_t"     DefVal="0"  Min="0" Max="255"          Unit=""    Res="1" /> 
+                <Field Name="m_OperationCycleCounter"  DataType="uint8_t"     DefVal="0"  Min="0" Max="255"          Unit=""    Res="1" /> 
+                <Field Name="m_MostRecentOdo"          DataType="uint8_t[3]"  DefVal="0"  Min="0" Max="16777215"  Unit="km"    Res="1" /> 
+            </SubFunc>
+<!--        <SubFunc Name="NumberOfDTCBySeverityMaskRecord"             ID="0x07"> </SubFunc> -->
+<!--        <SubFunc Name="DTCBySeverityMaskRecord"                     ID="0x08"> </SubFunc> -->
+<!--        <SubFunc Name="SeverityInformationOfDTC"                    ID="0x09"> </SubFunc> -->
+            <SubFunc Name="SupportedDTC"                                ID="0x0A"> 
+                <Field Name="DTCStatusAvailabilityMask"      DataType="uint8_t" /> 
+                <Field Name="DTCAndStatusRecord"             DataType="uint32_t[128]" />
+            </SubFunc> 
+<!--            
+            <SubFunc Name="FirstTestFailedDTC"                          ID="0x0B"> </SubFunc>
+            <SubFunc Name="MostRecentTestFailedDTC"                     ID="0x0D"> </SubFunc>
+            <SubFunc Name="FirstConfirmedDTC"                           ID="0x0C"> </SubFunc>
+            <SubFunc Name="MostRecentConfirmedDTC"                      ID="0x0E"> </SubFunc>
+            <SubFunc Name="DTCFaultDetectionCounter"                    ID="0x14"> </SubFunc>
+            <SubFunc Name="DTCWithPermanentStatus"                      ID="0x15"> </SubFunc>
+            <SubFunc Name="DTCExtDataRecordByRecordNumber"              ID="0x16"> </SubFunc>
+            <SubFunc Name="UserDefMemoryDTCByStatusMask"                ID="0x17"> </SubFunc>
+            <SubFunc Name="UserDefMemoryDTCSnapshotRecordByDTCNumber"   ID="0x18"> </SubFunc>
+            <SubFunc Name="UserDefMemoryDTCExtDataRecordByDTCNumber"    ID="0x19"> </SubFunc>
+            <SubFunc Name="SupportedDTCExtDataRecord"                   ID="0x1A"> </SubFunc>   
+            <SubFunc Name="WWHOBDDTCByMaskRecord"                       ID="0x42"> </SubFunc>   
+            <SubFunc Name="WWHOBDDTCWithPermanentStatus"                ID="0x55"> </SubFunc>   
+            <SubFunc Name="DTCInformationByDTCReadinessGroupIdentifier" ID="0x56"> </SubFunc>
+-->                        
+        </Service>
+        <Service Name="ReadDataByIdentifier"             ID="0x62" DataType="uint8_t">
+            <!-- Mahindra specific codes -->
+            <DataID Name="Model Number"                                                ID="0x0100"> <Field Name="Val"  DataType="string[18]" /> </DataID>            
+            <DataID Name="Variant Code"                                                ID="0x0101"> <Field Name="Val"  DataType="uint8_t[20]" /> </DataID>
+            <DataID Name="Feature Code"                                                ID="0x0102"> <Field Name="Val"  DataType="uint8_t[20]" DefVal="0"       MinVal="0"       MaxVal="255"       Unit=""       Offset="0"        Res="1"/> </DataID>
+            <DataID Name="CANConfig0103"                                               ID="0x0103"> 
+    		    <Field Name="CANWakeupFeatureEnable"				DataType="uint8_t" DefVal="0" MinVal="0"  MaxVal="0"  Unit=""  Offset="0"  Res="1" />
+    		    <Field Name="NMDriveCnttoClearDTC"					DataType="uint8_t" DefVal="0" MinVal="0"  MaxVal="0"  Unit=""  Offset="0"  Res="1" />
+    		    <Field Name="BusoffFastRecoveryTime"				DataType="uint8_t" DefVal="0" MinVal="0"  MaxVal="0"  Unit=""  Offset="0"  Res="10"/>
+    		    <Field Name="FastBusoffRecoveryCount"				DataType="uint8_t" DefVal="0" MinVal="0"  MaxVal="0"  Unit=""  Offset="0"  Res="1" />
+    		    <Field Name="BusoffSlowRecoveryTime"				DataType="uint8_t" DefVal="0" MinVal="0"  MaxVal="0"  Unit=""  Offset="0"  Res="10"/>
+    		    <Field Name="NMIGNOnStartupDelay"					DataType="uint8_t" DefVal="0" MinVal="0"  MaxVal="0"  Unit=""  Offset="0"  Res="20"/>
+    		    <Field Name="NMRestartDlyTimeAfterUnderVolRecovery"	DataType="uint8_t" DefVal="0" MinVal="0"  MaxVal="0"  Unit=""  Offset="0"  Res="10"/>
+    		    <Field Name="NMRestartDlyTimeAfterOverVolRecovery"	DataType="uint8_t" DefVal="0" MinVal="0"  MaxVal="0"  Unit=""  Offset="0"  Res="10"/>
+    		    <Field Name="NMRestartDlyTimeAfterBusOffrecovery"	DataType="uint8_t" DefVal="0" MinVal="0"  MaxVal="0"  Unit=""  Offset="0"  Res="10"/>
+    		    <Field Name="NMRestartDlyTimeAfterCranking"			DataType="uint8_t" DefVal="0" MinVal="0"  MaxVal="0"  Unit=""  Offset="0"  Res="10"/>
+			</DataID>
+            <DataID Name="CANWakeupConfig0104"                                         ID="0x0104"> 
+        		<Field Name="CANWakeupMsgCount"						DataType="uint8_t" DefVal="0" Unit="cnt"	Res="1" />
+        		<Field Name="QuickRecoverytimeoutperiod"			DataType="uint8_t" DefVal="0" Unit="ms"	    Res="10"/>
+        		<Field Name="QuickRecoveryretrylimit"				DataType="uint8_t" DefVal="0" Unit="cnt"	Res="1" />
+        		<Field Name="SlowRecoverytimeoutperiod"				DataType="uint8_t" DefVal="0" Unit="ms"		Res="10"/>
+        		<Field Name="SlowRecoveryretrylimit"				DataType="uint8_t" DefVal="0" Unit="cnt"	Res="1" />
+			</DataID>
+
+            <DataID Name="bootFlagDataIdentifier"                                      ID="0x0200"> <Field Name="BootFlag"  DataType="uint8_t" /> </DataID>
+            <DataID Name="History Zone"                                                ID="0x0201"> </DataID>
+            <DataID Name="UpdateServiceHistoryZoneDataIdentifier"                      ID="0x0281"> </DataID>
+			
+			<!-- Additional parameter ID - IRP specific -->
+			<DataID Name="ShortGITCRC"                                          	  ID="0x0301"> 
+        		<Field Name="Value"						DataType="uint32_t"/>
+			</DataID>
+			<DataID Name="ApplicationCreationTime"                                    ID="0x0302"> 
+        		<Field Name="Value"						DataType="uint64_t"/>
+			</DataID>
+			<DataID Name="SecurityLevel"                                              ID="0x0303"> 
+        		<Field Name="Value"						DataType="uint8_t"/>
+			</DataID>
+			
+            <DataID Name="FreezFrame"                                                  ID="0x078E">
+                 <Field Name="ETS_MOT_Torque_Act_Nm"             DataType="uint16_t"  DefVal="0"       MinVal="-300"    MaxVal="300"     Unit="Nm"     Offset="-300"     Res="0.1"  />                             
+                 <Field Name="ETS_MOT_Speed_Act_rpm"             DataType="uint16_t"  DefVal="-14500"  MinVal="-14500"  MaxVal="14500"   Unit="RPM"    Offset="-14500"   Res="1"    />                            
+                 <Field Name="ETS_MCU_OperatingMode_enum"        DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="15"      Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="ETS_MOT_Temp_Act_degC"             DataType="uint8_t"   DefVal="-45"     MinVal="-45"     MaxVal="209"     Unit="degC"   Offset="-45"      Res="1"    />                            
+                 <Field Name="ETS_MCU_InverterTemp_Act_degC"     DataType="uint8_t"   DefVal="-45"     MinVal="-45"     MaxVal="209"     Unit="degC"   Offset="-45"      Res="1"    />                            
+                 <Field Name="ETS_MCU_RegenDerateReason_enum"    DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="7"       Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="ETS_MCU_TractionDerateReason_enum" DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="7"       Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="ETS_MOT_RegenTorque_Limit_Nm"      DataType="uint16_t"  DefVal="0"       MinVal="-300"    MaxVal="300"     Unit="Nm"     Offset="-300"     Res="0.1"  />                            
+                 <Field Name="ETS_MOT_TractionTorque_Limit_Nm"   DataType="uint16_t"  DefVal="0"       MinVal="-300"    MaxVal="300"     Unit="Nm"     Offset="-300"     Res="0.1"  />                            
+                 <Field Name="ETS_VCU_TorqueDemand_Cmd_Nm"       DataType="uint16_t"  DefVal="0"       MinVal="-300"    MaxVal="300"     Unit="Nm"     Offset="0"        Res="1"    />                            
+                 <Field Name="ETS_VCU_OperatingMode_Req_enum"    DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="7"       Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="ETS_VCU_ActiveDischrg_Req_B"       DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="1"       Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="ETS_VCU_SRSCrashSta"               DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="1"       Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="ETS_MCU_DCVoltage_Inp_V"           DataType="uint16_t"  DefVal="0"       MinVal="0"       MaxVal="500"     Unit="V"      Offset="0"        Res="0.25" />                            
+                 <Field Name="ETS_MOT_PhaseCurrentU_Inp_A"       DataType="uint16_t"  DefVal="0"       MinVal="-500"    MaxVal="500"     Unit="A"      Offset="-500"     Res="0.25" />                            
+                 <Field Name="ETS_MOT_PhaseCurrentV_Inp_A"       DataType="uint16_t"  DefVal="0"       MinVal="-500"    MaxVal="500"     Unit="A"      Offset="-500"     Res="0.25" />                            
+                 <Field Name="ETS_MOT_PhaseCurrentW_Inp_A"       DataType="uint16_t"  DefVal="0"       MinVal="-500"    MaxVal="500"     Unit="A"      Offset="-500"     Res="0.25" />                            
+                 <Field Name="ETS_VCU_MaxDischargeCurrent"       DataType="uint16_t"  DefVal="0"       MinVal="0"       MaxVal="511.5"   Unit="A"      Offset="0"        Res="0.5"  />                            
+                 <Field Name="ETS_MCU_AuxBatt_Sup_V"             DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="16"      Unit=""       Offset="0"        Res="0.1"  />                            
+                 <Field Name="ETS_VCU_MCULid_HVIL_STS"           DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="3"       Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="ETS_MCU_Motor_Sts"                 DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="3"       Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="MCU_ASC_SPO_STS"                   DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="3"       Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="ETS_MCU_FaultlevelEnum"            DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="3"       Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="CanTransceiverModeFaultStatus"     DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="1"       Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="LowPassFilteredSensors5V"          DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="25.5"    Unit="V"      Offset="0"        Res="0.1"  />                            
+                 <Field Name="CoolingPlateTemperature"           DataType="uint8_t"   DefVal="-45"     MinVal="-45"     MaxVal="209"     Unit="degC"   Offset="-45"      Res="1"    />                            
+                 <Field Name="MotorOutletCoolantTemperature"     DataType="uint8_t"   DefVal="-45"     MinVal="-45"     MaxVal="209"     Unit="degC"   Offset="-45"      Res="1"    />                            
+                 <Field Name="FreewheelingStatus"                DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="1"       Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="TECCount"                          DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="255"     Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="RECCount"                          DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="255"     Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="BusOffStatus"                      DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="255"     Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="ResolverCalibrationStatus"         DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="1"       Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="MicroResetReason"                  DataType="uint8_t"   DefVal="0"       MinVal="0"       MaxVal="255"     Unit=""       Offset="0"        Res="1"    />                            
+                 <Field Name="Reserved"                          DataType="uint8_t[8]" />                                                          
+            </DataID>
+            <DataID Name="FaultsConfiguration"                                         ID="0x078F">
+                 <!--1 --> <Field Name="MotorOverTempDetection"                            					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="10"  />
+                 <!--2 --> <Field Name="LowTemperatureFaultsHealingHysteresisUdsOnly"             			DataType="uint8_t"   DefVal="0"       MinVal="0"    MaxVal="0"     Unit="degC"   Offset="0"     Res="1"   />
+                 <!--3 --> <Field Name="MotorLowTempDetection"                             					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="10"  />
+                 <!--4 --> <Field Name="MotorLowTempHealing"                               					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="10"  />
+                 <!--5 --> <Field Name="McuOverTempDetection"                              					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="10"  />
+                 <!--6 --> <Field Name="McuLowTempDetection"                               					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="10"  />
+                 <!--7 --> <Field Name="McuLowTempHealing"                                 					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="10"  />
+                 <!--8 --> <Field Name="CoolingPlateOverTempDetection"                     					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="10"  />
+                 <!--9 --> <Field Name="CoolingPlateSensorFault"                           					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="10"  />
+                 <!--10--> <Field Name="MicroControllerHighTemp"                           					DataType="uint8_t"   DefVal="0"       MinVal="0"    MaxVal="0"     Unit="degC"   Offset="0"     Res="1"   />
+                 <!--11--> <Field Name="MicroControllerOverTempDetection"                  					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="10"  />
+                 <!--12--> <Field Name="McuTempSensorsPlausibilityDetection"               					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="10"  />
+                 <!--13--> <Field Name="MaxPhaseCurrentPeak"                               					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="A"      Offset="0"     Res="1"   />
+                 <!--14--> <Field Name="MaxPhaseCurrentDeviation"                          					DataType="uint8_t"   DefVal="0"       MinVal="0"    MaxVal="0"     Unit="A"      Offset="0"     Res="1"   />
+                 <!--15--> <Field Name="PhaseOverCurrentDetection"                         					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="us"     Offset="0"     Res="20"  />
+                 <!--16--> <Field Name="PhaseSensorInvalid"                                					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="us"     Offset="0"     Res="20"  />
+                 <!--17--> <Field Name="PhaseDisconnectedDetection"                        					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="us"     Offset="0"     Res="20"  />
+                 <!--18--> <Field Name="ActiveShortCircuitDetection"                       					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="10"  />
+                 <!--19--> <Field Name="ActiveShortCircuitHealing"                         					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="10"  />
+                 <!--20--> <Field Name="GateDriverActiveCbitDetection"                     					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="10"  />
+                 <!--21--> <Field Name="GateDriverActiveCbitHealing"                       					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="10"  />
+                 <!--22--> <Field Name="GateDriverInactiveCbitDetection"                   					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="10"  />
+                 <!--23--> <Field Name="GateDriverInactiveCbitHealing"                     					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="10"  />
+                 <!--24--> <Field Name="MaxBatteryCurrent"                                 					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="A"      Offset="0"     Res="2.5" />
+                 <!--25--> <Field Name="MaxBatDischargeCurrentSettling"                    					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="10"  />
+                 <!--26--> <Field Name="BatOverCurrentFaultChargeCurrentDeclarationSettlingTimeUdsOnly"     DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="10"  />
+                 <!--27--> <Field Name="BatOverCurrentDetection"                           					DataType="uint8_t"   DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="1"   />
+                 <!--28--> <Field Name="BatCurrentSensorInvaldDetection"                   					DataType="uint8_t"   DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="1"   />
+                 <!--29--> <Field Name="BatLowVoltageDetection"                            					DataType="uint8_t"   DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="1"   />
+                 <!--30--> <Field Name="BatHighVoltageDetection"                           					DataType="uint8_t"   DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="1"   />
+                 <!--31--> <Field Name="BatUnderVoltageFaultDeclarationThresholdUdsOnly"             		DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="V"      Offset="0"     Res="1"   />
+                 <!--32--> <Field Name="BatUnderVoltageDetection"                          					DataType="uint8_t"   DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="1"   />
+                 <!--33--> <Field Name="BatteryOvervoltageUdsOnly"             								DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="V"      Offset="0"     Res="1"   />
+                 <!--34--> <Field Name="BatOverVoltageDetection"                           					DataType="uint8_t"   DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="1"   />
+                 <!--35--> <Field Name="BatVoltagePlausibilityDetection"                   					DataType="uint8_t"   DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="1"   />
+                 <!--36--> <Field Name="ActiveDischargeFeedbackCbitDetection"              					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="10"  />
+                 <!--37--> <Field Name="ActiveDischargeFeedbackCbitHealing"                					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="10"  />
+                 <!--38--> <Field Name="ActiveDischargeTimeoutDetection"                   					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="10"  />
+                 <!--39--> <Field Name="ActiveDischargeTimeoutHealing"                     					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="10"  />
+                 <!--40--> <Field Name="GateDriverUnderVoltageDetection"                   					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="10"  />
+                 <!--41--> <Field Name="GateDriverFaultDetection"                          					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="20"  />
+                 <!--42--> <Field Name="Kl30UnderVoltageDetection"                         					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="10"  />
+                 <!--43--> <Field Name="Kl30UnderVoltageHealing"                           					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="10"  />
+                 <!--44--> <Field Name="Kl30OverVoltageDetection"                          					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="10"  />
+                 <!--45--> <Field Name="Kl30OverVoltageHealing"                            					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="10"  />
+                 <!--46--> <Field Name="Kl30LosDetection"                                  					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="10"  />
+                 <!--47--> <Field Name="MotorPositionSensorFaultDetection"                 					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="20"  />
+                 <!--48--> <Field Name="MotorSpeedFalutDetection"                          					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="10"  />
+                 <!--49--> <Field Name="OverSpeedThreshold"                                					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="RPM"    Offset="0"     Res="100" />
+                 <!--50--> <Field Name="SpeedUpperLimitPositive"                           					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="RPM"    Offset="0"     Res="100" />
+                 <!--51--> <Field Name="OverSpeedPositiveMargin"                           					DataType="uint8_t"   DefVal="0"       MinVal="0"    MaxVal="0"     Unit=""       Offset="0"     Res="0.05"/>
+                 <!--52--> <Field Name="SpeedLowerLimitNegative"                           					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="RPM"    Offset="0"     Res="100" />
+                 <!--53--> <Field Name="OverSpeedNegativeMargin"                           					DataType="uint8_t"   DefVal="0"       MinVal="0"    MaxVal="0"     Unit=""       Offset="0"     Res="0.05"/>
+                 <!--54--> <Field Name="MotorOverSpeedDetection"                           					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="10"  />
+                 <!--55--> <Field Name="MotorStallTimeout"                                 					DataType="uint8_t"   DefVal="0"       MinVal="0"    MaxVal="0"     Unit="sec"    Offset="0"     Res="1"   />
+                 <!--56--> <Field Name="IoExpenderConfigDetection"                         					DataType="uint8_t"   DefVal="0"       MinVal="0"    MaxVal="0"     Unit="sec"    Offset="0"     Res="0.1" />
+                 <!--57--> <Field Name="IoExpenderConfigHealing"                           					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="10"  />
+                 <!--58--> <Field Name="CanTransceiverModeDetection"                       					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="10"  />
+                 <!--59--> <Field Name="CanTransceiverModeHealing"                         					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="10"  />
+                 <!--60--> <Field Name="Sensors5vFaultDetection"                           					DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit="ms"     Offset="0"     Res="1"   />
+            </DataID>
+            <DataID Name="TrueDriveManager"                                            ID="0x0790">
+                 <!--1 --> <Field Name="AngleOffset"                            							DataType="uint16_t"  DefVal="0"       MinVal="0"    MaxVal="0"     Unit=""     		Offset="0"     Res="1"  />
+                 <!--2 --> <Field Name="AngleOffsetDelay"                            						DataType="int16_t"   DefVal="0"       MinVal="0"    MaxVal="0"     Unit="Deg/KRPM" 	Offset="0"     Res="1"  />
+                 <!--3 --> <Field Name="MotorTempMinCut"                            						DataType="int8_t"    DefVal="0"       MinVal="0"    MaxVal="0"     Unit="degC"    	Offset="0"     Res="1"  />
+                 <!--4 --> <Field Name="MotorTempMinStart"                            						DataType="int8_t"    DefVal="0"       MinVal="0"    MaxVal="0"     Unit="degC"    	Offset="0"     Res="1"  />
+                 <!--5 --> <Field Name="MotorTempMaxStart"                            						DataType="uint8_t"   DefVal="0"       MinVal="0"    MaxVal="0"     Unit="degC"    	Offset="0"     Res="1"  />
+                 <!--6 --> <Field Name="MotorTempMaxCut"                            						DataType="uint8_t"   DefVal="0"       MinVal="0"    MaxVal="0"     Unit="degC"    	Offset="0"     Res="1"  />
+                 <!--7 --> <Field Name="ControllerTempMinCut"                            					DataType="int8_t"    DefVal="0"       MinVal="0"    MaxVal="0"     Unit="degC"    	Offset="0"     Res="1"  />
+                 <!--8 --> <Field Name="ControllerTempMinStart"                            					DataType="int8_t"    DefVal="0"       MinVal="0"    MaxVal="0"     Unit="degC"    	Offset="0"     Res="1"  />
+                 <!--9 --> <Field Name="ControllerTempMaxStart"                            					DataType="uint8_t"   DefVal="0"       MinVal="0"    MaxVal="0"     Unit="degC"    	Offset="0"     Res="1"  />
+                 <!--10--> <Field Name="ControllerTempMaxCut"                            					DataType="uint8_t"   DefVal="0"       MinVal="0"    MaxVal="0"     Unit="degC"    	Offset="0"     Res="1"  />
+                 <!--11--> <Field Name="CoolingPlateTempMinCut"                            					DataType="int8_t"    DefVal="0"       MinVal="0"    MaxVal="0"     Unit="degC"    	Offset="0"     Res="1"  />
+                 <!--12--> <Field Name="CoolingPlateTempMinStart"                            				DataType="int8_t"    DefVal="0"       MinVal="0"    MaxVal="0"     Unit="degC"    	Offset="0"     Res="1"  />
+                 <!--13--> <Field Name="CoolingPlateTempMaxStart"                            				DataType="uint8_t"   DefVal="0"       MinVal="0"    MaxVal="0"     Unit="degC"    	Offset="0"     Res="1"  />
+                 <!--14--> <Field Name="CoolingPlateTempMaxCut"                            					DataType="uint8_t"   DefVal="0"       MinVal="0"    MaxVal="0"     Unit="degC"    	Offset="0"     Res="1"  />
+                 <!--15--> <Field Name="BusVoltageMinCut"                            						DataType="int16_t"   DefVal="0"       MinVal="0"    MaxVal="0"     Unit="V"       	Offset="0"     Res="1"  />
+                 <!--16--> <Field Name="BusVoltageMinStart"                            						DataType="int16_t"   DefVal="0"       MinVal="0"    MaxVal="0"     Unit="V"       	Offset="0"     Res="1"  />
+                 <!--17--> <Field Name="BusVoltageMaxStart"                            						DataType="int16_t"   DefVal="0"       MinVal="0"    MaxVal="0"     Unit="V"       	Offset="0"     Res="1"  />
+                 <!--18--> <Field Name="BusVoltageMaxCut"                            						DataType="int16_t"   DefVal="0"       MinVal="0"    MaxVal="0"     Unit="V"       	Offset="0"     Res="1"  />
+                 <!--19--> <Field Name="MaxBusCurrentLimitActivation"                            			DataType="int8_t"    DefVal="0"       MinVal="0"    MaxVal="0"     Unit=""        	Offset="0"     Res="1"  />
+                 <!--20--> <Field Name="MaxBusCurrentLimit"                            						DataType="uint8_t"   DefVal="0"       MinVal="0"    MaxVal="0"     Unit="A"       	Offset="0"     Res="2"  />
+                 <!--21--> <Field Name="MinBusCurrentLimitActivation"                            			DataType="int8_t"    DefVal="0"       MinVal="0"    MaxVal="0"     Unit=""        	Offset="0"     Res="1"  />
+                 <!--22--> <Field Name="MinBusCurrentLimit"                            						DataType="int16_t"   DefVal="0"       MinVal="0"    MaxVal="0"     Unit="A"       	Offset="0"     Res="2"  />
+                 <!--23--> <Field Name="MaxBusVoltageLimitActivation"                            			DataType="int8_t"    DefVal="0"       MinVal="0"    MaxVal="0"     Unit=""        	Offset="0"     Res="1"  />
+                 <!--24--> <Field Name="MaxBusVoltageLimit"                            						DataType="uint8_t"   DefVal="0"       MinVal="0"    MaxVal="0"     Unit="V"       	Offset="0"     Res="2"  />
+                 <!--25--> <Field Name="MinBusVoltageLimitActivation"                            			DataType="int8_t"    DefVal="0"       MinVal="0"    MaxVal="0"     Unit=""        	Offset="0"     Res="1"  />
+                 <!--26--> <Field Name="MinBusVoltageLimit"                            						DataType="int8_t"    DefVal="0"       MinVal="0"    MaxVal="0"     Unit="V"       	Offset="0"     Res="2"  />
+                 <!--27--> <Field Name="BatteryMaximumCurrent"                            					DataType="int16_t"   DefVal="0"       MinVal="0"    MaxVal="0"     Unit="A"       	Offset="0"     Res="1"  />
+                 <!--28--> <Field Name="Bus_Under_Voltage"                            						DataType="int16_t"   DefVal="0"       MinVal="0"    MaxVal="0"     Unit="V"       	Offset="0"     Res="1"  />
+                 <!--29--> <Field Name="Bus_Over_Voltage"                            						DataType="int16_t"   DefVal="0"       MinVal="0"    MaxVal="0"     Unit="V"       	Offset="0"     Res="1"  />
+            </DataID>   
+            <DataID Name="EOLCalibration"                                              ID="0x1500">
+                 <Field Name="FocSensorAngleOffset"                                    DataType="uint32_t"  DefVal="0"  MinVal="0"  MaxVal="65535"     Unit=""     		Offset="0"     Res="1"  />
+            </DataID>   			
+
+            <DataID Name="wakeUpWaitTimer"                                             ID="0x23F9"> <Field Name="Val" DataType="uint16_t" /> </DataID>
+            <DataID Name="wakeupSyncTimer"                                             ID="0x23FA"> <Field Name="Val" DataType="uint16_t" /> </DataID>
+            <DataID Name="sleepWaitTimer"                                              ID="0x23FB"> <Field Name="Val" DataType="uint16_t" /> </DataID>
+            <DataID Name="normalMinTimer"                                              ID="0x23FC"> <Field Name="Val" DataType="uint16_t" /> </DataID>
+
+            <DataID Name="bootSoftwareIdentification"                                  ID="0xF180"> <Field Name="Val" DataType="string[15]" /> </DataID>
+            <DataID Name="applicationSoftwareIdentification"                           ID="0xF181"> <Field Name="Val" DataType="string[15]" /> </DataID>
+            <DataID Name="applicationDataIdentification"                               ID="0xF182"> <Field Name="Val" DataType="string[15]" /> </DataID> 
+            <DataID Name="bootSoftwareIdentification"                                  ID="0xF183"> <Field Name="Val" DataType="uint8_t[8]" /> </DataID> 
+            <DataID Name="applicationSoftwareFingerprint"                              ID="0xF184"> </DataID> 
+            <DataID Name="applicationDataFingerprint"                                  ID="0xF185"> </DataID> 
+            <DataID Name="activeDiagnosticSession"                                     ID="0xF186"> <Field Name="Val" DataType="uint8_t"    /> </DataID> 
+            <DataID Name="vehicleManufacturerSparePartNumber"                          ID="0xF187"> <Field Name="Val" DataType="string[16]" /> </DataID> 
+            <DataID Name="vehicleManufacturerECUSoftwareNumber"                        ID="0xF188"> </DataID> 
+            <DataID Name="vehicleManufacturerECUSoftwareVersionNumber"                 ID="0xF189"> <Field Name="Val" DataType="string[8]"   /> </DataID> 
+            <DataID Name="systemSupplierIdentifier"                                    ID="0xF18A"> <Field Name="Val" DataType="string[16]" /> </DataID> 
+            <DataID Name="ECUManufacturingDate"                                        ID="0xF18B"> 
+				<Field Name="Day"	DataType="uint8_t"  Value="11" />
+				<Field Name="Month" DataType="uint8_t"  Value="0B" />
+				<Field Name="Year"  DataType="uint16_t" Value="07,DE" />
+				<Field Name="Fill"  DataType="uint16_t" Value="00,00" />
+			</DataID> 
+            <DataID Name="ECUSerialNumber"                                             ID="0xF18C"> <Field Name="Val" DataType="uint8_t[13]" /> </DataID> 
+            <DataID Name="supportedFunctionalUnits"                                    ID="0xF18D"> </DataID> 
+            <DataID Name="vehicleManufacturerKitAssemblyPartNumber"                    ID="0xF18E"> </DataID> 
+            <DataID Name="VIN"                                                         ID="0xF190"> <Field Name="Val" DataType="string[17]" /> </DataID> 
+<!--        <DataID Name="vehicleManufacturerECUHardwareNumber"                        ID="0xF191"> <Field Name="Val" DataType="uint8_t[8]" /> </DataID> 
+            <DataID Name="systemSupplierECUHardwareNumber"                             ID="0xF192"> <Field Name="Val" DataType="string[4]" /> </DataID>  -->
+            <DataID Name="systemSupplierECUHardwareVersionNumber"                      ID="0xF193"> <Field Name="Val" DataType="string[4]" /> </DataID> 
+            <DataID Name="systemSupplierECUSoftwareNumber"                             ID="0xF194"> </DataID> 
+            <DataID Name="systemSupplierECUSoftwareVersionNumber"                      ID="0xF195"> <Field Name="Val" DataType="string[8]" /> </DataID> 
+            <DataID Name="exhaustRegulationOrTypeApprovalNumber"                       ID="0xF196"> </DataID> 
+            <DataID Name="systemNameOrEngineType"                                      ID="0xF197"> <Field Name="Val" DataType="uint8_t[16]" /> </DataID> 
+            <DataID Name="repairShopCodeOrTesterSerialNumber"                          ID="0xF198"> <Field Name="Val" DataType="string[16]"  /> </DataID> 
+            <DataID Name="programmingDate"                                             ID="0xF199"> <Field Name="Val" DataType="string[6]"   /> </DataID> 
+            <DataID Name="clibrationRepairShopCodeOrCalibrationEquipmentSerialNumber"  ID="0xF19A"> </DataID> 
+            <DataID Name="calibrationDate"                                             ID="0xF19B"> <Field Name="Val" DataType="uint8_t[8]"  /> </DataID> 
+            <DataID Name="calibrationEquipmentSoftwareNumber"                          ID="0xF19C"> </DataID> 
+            <DataID Name="ECUInstallationDate"                                         ID="0xF19D"> <Field Name="Val" DataType="string[6]"   /> </DataID> 
+            <DataID Name="ODXFile"                                                     ID="0xF19E"> <Field Name="Val" DataType="uint8_t[8]"  /> </DataID> 
+            <DataID Name="entity"                                                      ID="0xF19F"> </DataID> 
+            <DataID Name="Odometer"                                                    ID="0xF1B0"> <Field Name="Val" DataType="uint8_t[3]"  /> </DataID> 
+            <DataID Name="Battery Voltage"                                             ID="0xF1B1"> <Field Name="Val" DataType="uint16_t"    /> </DataID> 
+            <DataID Name="Vehicle Speed"                                               ID="0xF1B2"> <Field Name="Val" DataType="uint16_t"    /> </DataID> 
+            <DataID Name="Motor speed"                                                 ID="0xF1B3"> <Field Name="Val" DataType="uint16_t"    /> </DataID> 
+            <DataID Name="Reset Reason"                                                ID="0xF1B4"> <Field Name="Val" DataType="uint8_t[3]"  /> </DataID> 
+            <DataID Name="Reset Counter"                                               ID="0xF1B5"> <Field Name="Val" DataType="uint16_t"    /> </DataID> 
+            <DataID Name="Ignition Counter"                                            ID="0xF1B6"> <Field Name="Val" DataType="uint16_t"    /> </DataID> 
+            <DataID Name="Snapshot"                                                    ID="0xF1B9"> 
+                 <Field Name="VehicleSpeed"   DataType="uint16_t"   PyDataType="float"        DefVal="0"            MinVal="0"        MaxVal="300"         Unit="Kmph" Res="0.015625"/>
+                 <Field Name="BatteryVoltage" DataType="uint16_t"   PyDataType="float"        DefVal="0"            MinVal="7"        MaxVal="18"          Unit="V"    Res="0.1"/>
+                 <Field Name="OrgOdo"         DataType="uint8_t[3]" PyDataType="float"        DefVal="0"            MinVal="0"        MaxVal="16777215"    Unit="km"   Res="1"/>
+            </DataID> 
+            <DataID Name="Engine State"                                                ID="0xF1BE"> <Field Name="Val" DataType="uint8_t"     /> </DataID> 
+            <DataID Name="Network Mng Timeout"                                         ID="0xF1D2"> 
+				<Field Name="VCU_100Timeout"               DataType="uint8_t" DefVal="1000"	Unit="ms"	Res="20" />
+				<Field Name="VCU_100TimeoutHealingTime"    DataType="uint8_t" DefVal="1000"	Unit="ms"	Res="20" />		
+				<Field Name="VCU3_100Timeout"              DataType="uint8_t" DefVal="1000"	Unit="ms"	Res="20" />
+				<Field Name="VCU3_100HealingTimeThreshold" DataType="uint8_t" DefVal="1000"	Unit="ms"	Res="10" />
+				<Field Name="VCU5_500Timeout"              DataType="uint8_t" DefVal="5000"	Unit="ms"	Res="50" />
+				<Field Name="VCU5_500HealingTime"          DataType="uint8_t" DefVal="5000"	Unit="ms"	Res="50" />
+				<Field Name="VCU8_10Timeout"               DataType="uint8_t" DefVal="100"	Unit="ms"	Res="10" />
+				<Field Name="VCU8_10HealingTime"           DataType="uint8_t" DefVal="100"	Unit="ms"	Res="10" />
+				<Field Name="VCU9_10Timeout"               DataType="uint8_t" DefVal="50"	Unit="ms"	Res="10" />
+				<Field Name="VCU9_10HealingTime"           DataType="uint8_t" DefVal="100"	Unit="ms"	Res="10" />
+				<Field Name="VCU14_20Timeout"              DataType="uint8_t" DefVal="200"	Unit="ms"	Res="10" />
+				<Field Name="VCU14_20HealingTime"          DataType="uint8_t" DefVal="200"	Unit="ms"	Res="10" />
+				<Field Name="VCU17_500Timeout"             DataType="uint8_t" DefVal="5000"	Unit="ms"	Res="50" />
+				<Field Name="VCU17_500HealingTime"         DataType="uint8_t" 		                    Res="1"  />
+				<Field Name="VCU5_100Timeout"              DataType="uint8_t" 	                        Res="1"  />
+				<Field Name="VCU_ACTIVETimeout"            DataType="uint8_t" 	                        Res="1"  />
+				<Field Name="VCU_ACTIVEHealingTime"        DataType="uint8_t" 	                        Res="1"  />
+				<Field Name="BMS5_10Timeout"               DataType="uint8_t" 	                        Res="1"  />
+				<Field Name="BMS5_10HealingTime"           DataType="uint8_t" 	                        Res="1"  />
+				<Field Name="BMS6_10Timeout"               DataType="uint8_t" DefVal="50"	Unit="ms"	Res="10" />
+				<Field Name="BMS6_10HealingTime"           DataType="uint8_t" DefVal="100"	Unit="ms"	Res="10" />
+			</DataID>  
+            <DataID Name="Network Mng Mismatch"                                        ID="0xF1D3">
+				<Field Name="VCU_100DLCMismatchThreshold"				 DataType="uint8_t" Unit="msg" DefVal="5"  /> 
+				<Field Name="VCU_100ParityMismatchThreshold"             DataType="uint8_t" Unit="msg" DefVal="5"  /> 
+				<Field Name="VCU_100DLCMismatchHealingThreshold"         DataType="uint8_t" Unit="msg" DefVal="10" /> 
+				<Field Name="VCU_100ParityMismatchHealingThreshold"      DataType="uint8_t" Unit="msg" DefVal="10" /> 
+				<Field Name="VCU3_100DLCMismatchThreshold"               DataType="uint8_t" Unit="msg" DefVal="5"  /> 
+				<Field Name="VCU3_100CRCMismatchThreshold"               DataType="uint8_t" Unit="msg" DefVal="5"  /> 
+				<Field Name="VCU3_100ParityMismatchThreshold"            DataType="uint8_t" Unit="msg" DefVal="5"  /> 
+				<Field Name="VCU3_100DLCMismatchHealingThreshold"        DataType="uint8_t" Unit="msg" DefVal="10" /> 
+				<Field Name="VCU3_100CRCMismatchHealingThreshold"        DataType="uint8_t" Unit="msg" DefVal="10" /> 
+				<Field Name="VCU3_100ParityMismatchHealingThreshold"     DataType="uint8_t" Unit="msg" DefVal="10" /> 
+				<Field Name="VCU5_500DLCMismatchThreshold"               DataType="uint8_t" Unit="msg" DefVal="5"  /> 
+				<Field Name="VCU5_500ParityMismatchThreshold"            DataType="uint8_t" Unit="msg" DefVal="5"  /> 
+				<Field Name="VCU5_500DLCMismatchHealingThreshold"        DataType="uint8_t" Unit="msg" DefVal="10" /> 
+				<Field Name="VCU5_500ParityMismatchHealingThreshold"     DataType="uint8_t" Unit="msg" DefVal="10" /> 
+				<Field Name="VCU8_10DLCMismatchThreshold"                DataType="uint8_t" Unit="msg" DefVal="5"  /> 
+				<Field Name="VCU8_10ParityMismatchThreshold"             DataType="uint8_t" Unit="msg" DefVal="5"  /> 
+				<Field Name="VCU8_10DLCMismatchHealingThreshold"         DataType="uint8_t" Unit="msg" DefVal="10" /> 
+				<Field Name="VCU8_10ParityMismatchHealingThreshold"      DataType="uint8_t" Unit="msg" DefVal="10" /> 
+				<Field Name="VCU9_10DLCMismatchThreshold"                DataType="uint8_t" Unit="msg" DefVal="5"  /> 
+				<Field Name="VCU9_10CRCMismatchThreshold"                DataType="uint8_t" Unit="msg" DefVal="5"  /> 
+				<Field Name="VCU9_10ParityMismatchThreshold"             DataType="uint8_t" Unit="msg" DefVal="5"  /> 
+				<Field Name="VCU9_10DLCMismatchHealingThreshold"         DataType="uint8_t" Unit="msg" DefVal="10" /> 
+				<Field Name="VCU9_10CRCMismatchHealingThreshold"         DataType="uint8_t" Unit="msg" DefVal="10" /> 
+				<Field Name="VCU9_10ParityMismatchHealingThreshold"      DataType="uint8_t" Unit="msg" DefVal="10" /> 
+				<Field Name="VCU14_20DLCMismatchThreshold"               DataType="uint8_t" Unit="msg" DefVal="5"  /> 
+				<Field Name="VCU14_20ParityMismatchThreshold"            DataType="uint8_t" Unit="msg" DefVal="5"  /> 
+				<Field Name="VCU14_20DLCMismatchHealingThreshold"        DataType="uint8_t" Unit="msg" DefVal="10" /> 
+				<Field Name="VCU14_20ParityMismatchHealingThreshold"     DataType="uint8_t" Unit="msg" DefVal="10" /> 
+				<Field Name="VCU17_500DLCMismatchThreshold"              DataType="uint8_t" Unit="msg" DefVal="5"  /> 
+				<Field Name="VCU17_500CRCMismatchThreshold"              DataType="uint8_t" Unit="msg" DefVal="5"  /> 
+				<Field Name="VCU17_500ParityMismatchThreshold"           DataType="uint8_t" Unit="msg" DefVal="5"  /> 
+				<Field Name="VCU17_500DLCMismatchHealingThreshold"       DataType="uint8_t" Unit="msg" DefVal="10" /> 
+				<Field Name="VCU17_500CRCMismatchHealingThreshold"       DataType="uint8_t" Unit="msg" DefVal="10" /> 
+				<Field Name="VCU17_500ParityMismatchHealingThreshold"    DataType="uint8_t" Unit="msg" DefVal="10" /> 
+				<Field Name="VCU3_100AliveCounterThreshold"              DataType="uint8_t" Unit="msg" DefVal="5"  /> 
+				<Field Name="VCU3_100AliveCounterHealingThreshold"       DataType="uint8_t" Unit="msg" DefVal="10" /> 
+				<Field Name="VCU9_10AliveCounterThreshold"               DataType="uint8_t" Unit="msg" DefVal="5"  /> 
+				<Field Name="VCU9_10AliveCounterHealingThreshold"        DataType="uint8_t" Unit="msg" DefVal="10" /> 
+				<Field Name="VCU17_500AliveCounterThreshold"             DataType="uint8_t" Unit="msg" DefVal="5"  /> 
+				<Field Name="VCU17_500AliveCounterHealingThreshold"      DataType="uint8_t" Unit="msg" DefVal="10" />  
+				<Field Name="VCU_ActiveDLCMismatchThreshold"             DataType="uint8_t" /> 
+				<Field Name="VCU_ActiveParityMismatchThreshold"          DataType="uint8_t" /> 
+				<Field Name="VCU_ActiveDLCMismatchHealingThreshold"      DataType="uint8_t" /> 
+				<Field Name="VCU_ActiveParityMismatchHealingThreshold"   DataType="uint8_t" /> 
+				<Field Name="VCU5_500DLCMismatchThreshold_2"             DataType="uint8_t" /> 
+				<Field Name="VCU5_500ParityMismatchThreshold_2"          DataType="uint8_t" /> 
+				<Field Name="VCU5_500DLCMismatchHealingThreshold_2"      DataType="uint8_t" /> 
+				<Field Name="VCU5_500ParityMismatchHealingThreshold_2"   DataType="uint8_t" /> 
+				<Field Name="BMS5_10DLCMismatchThreshold"                DataType="uint8_t" /> 
+				<Field Name="BMS5_10CRCMismatchThreshold"                DataType="uint8_t" /> 
+				<Field Name="BMS5_10ParityMismatchThreshold"             DataType="uint8_t" /> 
+				<Field Name="BMS5_10DLCMismatchHealingThreshold"         DataType="uint8_t" /> 
+				<Field Name="BMS5_10CRCMismatchHealingThreshold"         DataType="uint8_t" /> 
+				<Field Name="BMS5_10ParityMismatchHealingThreshold"      DataType="uint8_t" /> 
+				<Field Name="BMS5_10AliveCounterThreshold"               DataType="uint8_t" /> 
+				<Field Name="BMS5_10AliveCounterHealingThreshold"        DataType="uint8_t" /> 
+				<Field Name="BMS6_10DLCMismatchThreshold"                DataType="uint8_t" /> 
+				<Field Name="BMS6_10CRCMismatchThreshold"                DataType="uint8_t" /> 
+				<Field Name="BMS6_10ParityMismatchThreshold"             DataType="uint8_t" /> 
+				<Field Name="BMS6_10DLCMismatchHealingThreshold"         DataType="uint8_t" /> 
+				<Field Name="BMS6_10CRCMismatchHealingThreshold"         DataType="uint8_t" /> 
+				<Field Name="BMS6_10ParityMismatchHealingThreshold"      DataType="uint8_t" /> 
+				<Field Name="BMS6_10AliveCounterThreshold"               DataType="uint8_t" /> 
+				<Field Name="BMS6_10AliveCounterHealingThreshold"        DataType="uint8_t" /> 
+			</DataID>  
+            <DataID Name="Network Management Enable"                                   ID="0xF1D4"> <Field Name="Val" DataType="uint8_t"     /> </DataID> 
+            <DataID Name="CAN Configuration"                                           ID="0xF1D5"> 
+    			<Field Name="CriticalCANSignalInvalidTime"	 DataType="uint16_t" DefVal="50"   Unit="ms" Res="10"/>"
+    			<Field Name="MainCANBusOffHealingTime"		 DataType="uint16_t" DefVal="1000" Unit="ms" Res="10"/>"
+    			<Field Name="CANTimeoutSincePowerup"		 DataType="uint16_t" DefVal="2000" Unit="ms" Res="20"/>"
+			</DataID>  
+            <DataID Name="SYSTEM SUPPLIER PART NUMBER - 13 bytes, ASCII"               ID="0xF1F0"> <Field Name="Val" DataType="uint8_t[13]" /> </DataID> 
+            
+            <!-- UPP specific codes 
+            <DataID Name="MCU_MotorTorqueEstimated"     ID="0xFE4C"> <Field Name="Val"    DataType="uint32_t"  PyDataType="float"        DefVal="-2045"            MinVal="-2045"        MaxVal="2045"     Unit="Nm"        Offset="-2048"    Res="0.0625" /> </DataID>
+            <DataID Name="MCU_MotorSpeed"                ID="0xFE4D"> <Field Name="Val"    DataType="uint32_t"  PyDataType="float"        DefVal="-32760"            MinVal="-32760"        MaxVal="32760"     Unit="RPM"        Offset="-32767"    Res="1"      /> </DataID>
+            <DataID Name="MMCU_OperationalMode"            ID="0xFE4E"> <Field Name="Val"    DataType="uint8_t"   PyDataType="uint8_t"    DefVal="0"                MinVal="0"            MaxVal="7"         Unit=""        Offset="0"        Res="1"      /> </DataID>
+            <DataID Name="MCU_State"                    ID="0xFE5A"> <Field Name="Val"    DataType="uint8_t"   PyDataType="uint8_t"    DefVal="0"                MinVal="0"            MaxVal="15"         Unit=""        Offset="0"        Res="1"      /> </DataID>
+            <DataID Name="MCU_Motor_Temp_Indicator"        ID="0xFE4F"> <Field Name="Val"    DataType="uint32_t"  PyDataType="float"        DefVal="0"                MinVal="-50"        MaxVal="200"     Unit="deg C"    Offset="-50"    Res="1"      /> </DataID>
+            <DataID Name="MCU_Inverter_Temp_Indicator"    ID="0xFE5E"> <Field Name="Val"    DataType="uint32_t"  PyDataType="float"        DefVal="0"                MinVal="-50"        MaxVal="200"     Unit="deg C"    Offset="-50"    Res="1"      /> </DataID>
+            <DataID Name="MCU_RegenDerating"            ID="0xFE5B"> <Field Name="Val"    DataType="uint8_t"   PyDataType="uint8_t"    DefVal="0"                MinVal="0"            MaxVal="7"         Unit=""        Offset="0"        Res="1"      /> </DataID>
+            <DataID Name="MCU_TractionDerating"            ID="0xFE5C"> <Field Name="Val"    DataType="uint8_t"   PyDataType="uint8_t"    DefVal="0"                MinVal="0"            MaxVal="7"         Unit=""        Offset="0"        Res="1"      /> </DataID>
+            <DataID Name="MCU_RegenTorqueAvail"            ID="0xFE5D"> <Field Name="Val"    DataType="uint32_t"  PyDataType="float"        DefVal="0"                MinVal="0"            MaxVal="2045"     Unit="Nm"        Offset="0"        Res="0.0625" /> </DataID>
+            <DataID Name="MCU_TractionTorqueAvail"        ID="0xFE50"> <Field Name="Val"    DataType="uint32_t"  PyDataType="float"        DefVal="0"                MinVal="0"            MaxVal="2045"     Unit="Nm"        Offset="0"        Res="0.0625" /> </DataID>
+            <DataID Name="VCU_TorqueCommand"            ID="0xFE51"> <Field Name="Val"  DataType="uint32_t"  PyDataType="float"        DefVal="-2045"            MinVal="-2045"        MaxVal="2045"     Unit="Nm"        Offset="-2048"    Res="0.0625" /> </DataID>
+            <DataID Name="VCU_OperationalModeCmd"        ID="0xFE52"> <Field Name="Val"  DataType="uint8_t"   PyDataType="uint8_t"    DefVal="0"                MinVal="0"            MaxVal="7"         Unit=""        Offset="0"        Res="1"      /> </DataID>
+            <DataID Name="VCU_CommandMode"                ID="0xFE53"> <Field Name="Val"  DataType="uint8_t"   PyDataType="uint8_t"    DefVal="0"                MinVal="0"            MaxVal="3"         Unit=""        Offset="0"        Res="1"      /> </DataID>
+            <DataID Name="VCU_OperationReq"                ID="0xFE54"> <Field Name="Val"  DataType="uint8_t"   PyDataType="uint8_t"    DefVal="0"                MinVal="0"            MaxVal="7"         Unit=""        Offset="0"        Res="1"      /> </DataID>
+            <DataID Name="VCU_EPTCoolantFlow"            ID="0xFE55"> <Field Name="Val"  DataType="uint32_t"  PyDataType="float"        DefVal="0"                MinVal="0"            MaxVal="100"     Unit="%"        Offset="0"        Res="0.5"    /> </DataID>
+            <DataID Name="VCU_EPTCoolantTemp"            ID="0xFE5F"> <Field Name="Val"  DataType="uint32_t"  PyDataType="float"        DefVal="0"                MinVal="-40"        MaxVal="215"     Unit="deg C"    Offset="-40"    Res="1"      /> </DataID>
+            <DataID Name="VCU_ACTV_Discharge_REQ"        ID="0xFE56"> <Field Name="Val"  DataType="uint8_t"   PyDataType="uint8_t"    DefVal="0"                MinVal="0"            MaxVal="1"         Unit=""        Offset="0"        Res="1"      /> </DataID>
+            <DataID Name="VCU_SRSCrashSta"                ID="0xFE57"> <Field Name="Val"  DataType="uint8_t"   PyDataType="uint8_t"    DefVal="0"                MinVal="0"            MaxVal="1"         Unit=""        Offset="0"        Res="1"      /> </DataID>
+            <DataID Name="VCU_CLOCK_DATE"                ID="0xFE69"> <Field Name="Val"  DataType="uint8_t"   PyDataType="uint8_t"    DefVal="0"                MinVal="0"            MaxVal="31"         Unit=""        Offset="0"        Res="1"      /> </DataID>
+            <DataID Name="VCU_CLOCK_FORMAT"                ID="0xFE6A"> <Field Name="Val"  DataType="uint8_t"   PyDataType="uint8_t"    DefVal="0"                MinVal="0"            MaxVal="1"         Unit=""        Offset="0"        Res="1"      /> </DataID>
+            <DataID Name="VCU_CLOCK_HOUR"                ID="0xFE6B"> <Field Name="Val"  DataType="uint8_t"   PyDataType="uint8_t"    DefVal="0"                MinVal="0"            MaxVal="23"         Unit="Hour"    Offset="0"        Res="1"      /> </DataID>
+            <DataID Name="VCU_CLOCK_MIN"                ID="0xFE6C"> <Field Name="Val"  DataType="uint8_t"   PyDataType="uint8_t"    DefVal="0"                MinVal="0"            MaxVal="59"         Unit="Minute"    Offset="0"        Res="1"      /> </DataID>
+            <DataID Name="VCU_CLOCK_MONTH"                ID="0xFE6D"> <Field Name="Val"  DataType="uint8_t"   PyDataType="uint8_t"    DefVal="0"                MinVal="0"            MaxVal="12"         Unit=""        Offset="0"        Res="1"      /> </DataID>
+            <DataID Name="VCU_CLOCK_YEAR"                ID="0xFE6E"> <Field Name="Val"  DataType="uint16_t"  PyDataType="uint16_t"    DefVal="2016"            MinVal="2016"        MaxVal="2063"     Unit=""        Offset="2000"    Res="1"      /> </DataID>
+            <DataID Name="BMS_ModuleActiveDischarge"    ID="0xFE59"> <Field Name="Val"  DataType="uint8_t"   PyDataType="uint8_t"    DefVal="0"                MinVal="0"            MaxVal="3"         Unit=""        Offset="0"        Res="1"      /> </DataID>
+            <DataID Name="HVDCVoltageMeasurement"        ID="0xFE61"> <Field Name="Val"  DataType="uint32_t"  PyDataType="float"        DefVal="365"            MinVal="0"            MaxVal="460"     Unit="V"        Offset="0"        Res="0.1"    /> </DataID>
+            <DataID Name="InverterPhaseCurrentU"        ID="0xFE62"> <Field Name="Val"  DataType="uint32_t"  PyDataType="float"        DefVal="-2048"            MinVal="-2048"        MaxVal="2048"     Unit="A"        Offset="-2048"    Res="0.1"    /> </DataID>
+            <DataID Name="InverterPhaseCurrentV"        ID="0xFE63"> <Field Name="Val"  DataType="uint32_t"  PyDataType="float"        DefVal="-2048"            MinVal="-2048"        MaxVal="2048"     Unit="A"        Offset="-2048"    Res="0.1"    /> </DataID>
+            <DataID Name="InverterPhaseCurrentW"        ID="0xFE64"> <Field Name="Val"  DataType="uint32_t"  PyDataType="float"        DefVal="-2048"            MinVal="-2048"        MaxVal="2048"     Unit="A"        Offset="-2048"    Res="0.1"    /> </DataID>
+            <DataID Name="InletCoolantTemperature"        ID="0xFE65"> <Field Name="Val"  DataType="uint32_t"  PyDataType="float"        DefVal="0"                MinVal="-40"        MaxVal="215"     Unit="deg C"    Offset="-40"    Res="1"      /> </DataID>
+            <DataID Name="DischargeRawCurrent"            ID="0xFE66"> <Field Name="Val"  DataType="uint16_t"  PyDataType="uint16_t"    DefVal="0"                MinVal="-600"        MaxVal="600"     Unit="A"        Offset="-600"     Res="0.1"    /> </DataID>
+            <DataID Name="InternalFinalTorqueRequest"    ID="0xFE67"> <Field Name="Val"  DataType="uint32_t"  PyDataType="float"        DefVal="-2045"            MinVal="-2045"        MaxVal="2045"     Unit="Nm"        Offset="-2048"    Res="0.0625" /> </DataID>
+            <DataID Name="KL15Voltage"                    ID="0xFE68"> <Field Name="Val"  DataType="uint32_t"  PyDataType="float"        DefVal="0"                MinVal="0"            MaxVal="24"         Unit="V"        Offset="0"        Res="0.001"  /> </DataID>            
+-->            
+            <DataID Name="UDSVersion"                   ID="0xFF00"> </DataID> 
+        </Service>
+        <Service Name="ReadMemoryByAddress"              ID="0x63" DataType="uint8_t"> </Service>
+        <Service Name="ReadScalingDataByIdentifier"      ID="0x64" DataType="uint8_t"> </Service>
+        <Service Name="SecurityAccess"                   ID="0x67" DataType="uint8_t"> 
+            <SubFunc Name="Request Seed L1"       ID="0x01">
+                 <Field Name="SecuritySeed1"        DataType="uint8_t[4]" />
+			</SubFunc>
+            <SubFunc Name="Send Key L1"           ID="0x02" /> 
+            <SubFunc Name="Request Seed L3"       ID="0x05"> 
+                 <Field Name="SecuritySeed3"        DataType="uint8_t[8]" />
+			</SubFunc>
+            <SubFunc Name="Send Key L3"           ID="0x06" /> 
+		</Service>
+        <Service Name="CommunicationControl"             ID="0x68" DataType="uint8_t"> </Service>
+        <Service Name="ReadDataPeriodicByIdentifier"     ID="0x6A" DataType="uint8_t"> </Service>
+        <Service Name="DynamicallyDefinedDataIdentifier" ID="0x6C" DataType="uint8_t"> </Service>
+        <Service Name="WriteDataByIdentifier"            ID="0x6E" DataType="uint8_t"> 
+            <DataID Name="Model Number"                                                 ID="0x0100" />
+            <DataID Name="Variant Code"                                                 ID="0x0101" />
+            <DataID Name="Feature Code"                                                 ID="0x0102" />
+	        <DataID Name="CANConfig0103"                                              	ID="0x0103" />
+	        <DataID Name="CANWakeupConfig0104"                                        	ID="0x0104" />
+            <DataID Name="bootFlagDataIdentifier"                                       ID="0x0200" />
+            <DataID Name="History Zone"                                                 ID="0x0201" />
+            <DataID Name="UpdateServiceHistoryZoneDataIdentifier"    			        ID="0x0281" />
+	        <DataID Name="FreezFrame"                                                   ID="0x078E" />
+            <DataID Name="FaultsConfiguration"                                          ID="0x078F" />
+	        <DataID Name="TrueDriveManager"                                             ID="0x0790" />
+            <DataID Name="EOLCalibration"                                               ID="0x1500" />
+
+            <DataID Name="wakeUpWaitTimer"                                              ID="0x23F9" />
+            <DataID Name="wakeupSyncTimer"                                              ID="0x23FA" />
+            <DataID Name="sleepWaitTimer"                                               ID="0x23FB" />
+            <DataID Name="normalMinTimer"                                               ID="0x23FC" />
+
+            <DataID Name="bootSoftwareIdentification"                                   ID="0xF180" />
+            <DataID Name="applicationSoftwareIdentification"                            ID="0xF181" />
+            <DataID Name="applicationDataIdentification"                                ID="0xF182" /> 
+            <DataID Name="bootSoftwareIdentification"                                   ID="0xF183" /> 
+            <DataID Name="applicationSoftwareFingerprint"                               ID="0xF184" /> 
+            <DataID Name="applicationDataFingerprint"                                   ID="0xF185" /> 
+            <DataID Name="activeDiagnosticSession"                                      ID="0xF186" /> 
+            <DataID Name="vehicleManufacturerSparePartNumber"                           ID="0xF187" /> 
+            <DataID Name="vehicleManufacturerECUSoftwareNumber"                         ID="0xF188" /> 
+            <DataID Name="vehicleManufacturerECUSoftwareVersionNumber"                  ID="0xF189" /> 
+            <DataID Name="systemSupplierIdentifier"                                     ID="0xF18A" /> 
+            <DataID Name="ECUManufacturingDate"                                         ID="0xF18B" /> 
+            <DataID Name="ECUSerialNumber"                                              ID="0xF18C" /> 
+            <DataID Name="supportedFunctionalUnits"                                     ID="0xF18D" /> 
+            <DataID Name="vehicleManufacturerKitAssemblyPartNumber"                     ID="0xF18E" /> 
+            <DataID Name="VIN"                                                          ID="0xF190" /> 
+<!--        <DataID Name="vehicleManufacturerECUHardwareNumber"                         ID="0xF191" /> 
+            <DataID Name="systemSupplierECUHardwareNumber"                              ID="0xF192" />  -->
+            <DataID Name="systemSupplierECUHardwareVersionNumber"                       ID="0xF193" /> 
+            <DataID Name="systemSupplierECUSoftwareNumber"                              ID="0xF194" /> 
+            <DataID Name="systemSupplierECUSoftwareVersionNumber"                       ID="0xF195" /> 
+            <DataID Name="exhaustRegulationOrTypeApprovalNumber"                        ID="0xF196" /> 
+            <DataID Name="systemNameOrEngineType"                                       ID="0xF197" /> 
+            <DataID Name="repairShopCodeOrTesterSerialNumber"                           ID="0xF198" /> 
+            <DataID Name="programmingDate"                                              ID="0xF199" /> 
+            <DataID Name="clibrationRepairShopCodeOrCalibrationEquipmentSerialNumber"   ID="0xF19A" /> 
+            <DataID Name="calibrationDate"                                              ID="0xF19B" /> 
+            <DataID Name="calibrationEquipmentSoftwareNumber"                           ID="0xF19C" /> 
+            <DataID Name="ECUInstallationDate"                                          ID="0xF19D" /> 
+            <DataID Name="ODXFile"                                                      ID="0xF19E" /> 
+            <DataID Name="entity"                                                       ID="0xF19F" /> 
+            <DataID Name="Odometer"                                                     ID="0xF1B0" /> 
+            <DataID Name="Battery Voltage"                                              ID="0xF1B1" /> 
+            <DataID Name="Vehicle Speed"                                                ID="0xF1B2" /> 
+            <DataID Name="Motor speed"                                                  ID="0xF1B3" /> 
+    <!--    <DataID Name="Reset Reason"                                                 ID="0xF1B4" /> -->
+    <!--    <DataID Name="Reset Counter"                                                ID="0xF1B5" /> -->
+    <!--    <DataID Name="Ignition Counter"                                             ID="0xF1B6" /> -->
+            <DataID Name="Network Mng Timeout"                                          ID="0xF1D2" />
+            <DataID Name="Network Mng Mismatch"                                       	ID="0xF1D3" />
+            <DataID Name="Network Management Enable"                                  	ID="0xF1D4" /> 
+	        <DataID Name="CAN Configuration"                                          	ID="0xF1D5" />
+            <DataID Name="Engine State"                                                 ID="0xF1BE" /> 
+            <DataID Name="SYSTEM SUPPLIER PART NUMBER - 13 bytes, ASCII"                ID="0xF1F0" /> 
+            <DataID Name="MCU_MotorTorqueEstimated"                                     ID="0xFE4C" /> 
+            <DataID Name="MCU_MotorSpeed"                                               ID="0xFE4D" /> 
+            <DataID Name="MMCU_OperationalMode"                                         ID="0xFE4E" /> 
+            <DataID Name="MCU_State"                                                    ID="0xFE5A" /> 
+            <DataID Name="MCU_Motor_Temp_Indicator"                                     ID="0xFE4F" /> 
+            <DataID Name="MCU_Inverter_Temp_Indicator"                                  ID="0xFE5E" /> 
+            <DataID Name="MCU_RegenDerating"                                            ID="0xFE5B" /> 
+            <DataID Name="MCU_TractionDerating"                                         ID="0xFE5C" /> 
+            <DataID Name="MCU_RegenTorqueAvail"                                         ID="0xFE5D" /> 
+            <DataID Name="MCU_TractionTorqueAvail"                                      ID="0xFE50" /> 
+            <DataID Name="VCU_TorqueCommand"                                            ID="0xFE51" /> 
+            <DataID Name="VCU_OperationalModeCmd"                                       ID="0xFE52" /> 
+            <DataID Name="VCU_CommandMode"                                              ID="0xFE53" /> 
+            <DataID Name="VCU_OperationReq"                                             ID="0xFE54" /> 
+            <DataID Name="VCU_EPTCoolantFlow"                                           ID="0xFE55" /> 
+            <DataID Name="VCU_EPTCoolantTemp"                                           ID="0xFE5F" /> 
+            <DataID Name="VCU_ACTV_Discharge_REQ"                                       ID="0xFE56" /> 
+            <DataID Name="VCU_SRSCrashSta"                                              ID="0xFE57" /> 
+            <DataID Name="VCU_CLOCK_DATE"                                               ID="0xFE69" /> 
+            <DataID Name="VCU_CLOCK_FORMAT"                                             ID="0xFE6A" /> 
+            <DataID Name="VCU_CLOCK_HOUR"                                               ID="0xFE6B" /> 
+            <DataID Name="VCU_CLOCK_MIN"                                                ID="0xFE6C" /> 
+            <DataID Name="VCU_CLOCK_MONTH"                                              ID="0xFE6D" /> 
+            <DataID Name="VCU_CLOCK_YEAR"                                               ID="0xFE6E" /> 
+            <DataID Name="BMS_ModuleActiveDischarge"                                    ID="0xFE59" /> 
+            <DataID Name="HVDCVoltageMeasurement"                                       ID="0xFE61" /> 
+            <DataID Name="InverterPhaseCurrentU"                                        ID="0xFE62" /> 
+            <DataID Name="InverterPhaseCurrentV"                                        ID="0xFE63" /> 
+            <DataID Name="InverterPhaseCurrentW"                                        ID="0xFE64" /> 
+            <DataID Name="InletCoolantTemperature"                                      ID="0xFE65" /> 
+            <DataID Name="DischargeRawCurrent"                                          ID="0xFE66" /> 
+            <DataID Name="InternalFinalTorqueRequest"                                   ID="0xFE67" /> 
+            <DataID Name="KL15Voltage"                                                  ID="0xFE68" />
+            <DataID Name="UDSVersion"                                                   ID="0xFF00" />
+        </Service>
+        <Service Name="IOControlByIdentifier"            ID="0x6F" DataType="uint8_t"> </Service>
+        <Service Name="RoutineControl"                   ID="0x71" DataType="uint8_t"> 
+            <SubFunc Name="Start"                        ID="0x01"> 
+				<DataID Name="Set Boot Flag"             ID="0x0200"> 
+				</DataID>
+				<DataID Name="Update HistoryZone"       ID="0x0201"> 
+				</DataID>
+				<DataID Name="ResolverAutoCalibration"    ID="0x0295"> 
+				</DataID>
+				<DataID Name="ActiveDischarge"       ID="0x0296"> 
+				</DataID>
+				<DataID Name="Check Memory"       ID="0x07E0"> 
+				</DataID>
+				<DataID Name="Validate Appl"       ID="0x07E1"> 
+				</DataID>
+				<DataID Name="Erase Flash"               ID="0xFF00"> 
+				</DataID>
+				<DataID Name="Compare CS"               ID="0xFF01"> 
+				</DataID>
+			</SubFunc>
+            <SubFunc Name="Stop"                         ID="0x02">
+				<DataID Name="ResolverAutoCalibration"    ID="0x0295"> 
+				</DataID>
+				<DataID Name="ActiveDischarge"       ID="0x0296"> 
+				</DataID>
+			</SubFunc>
+            <SubFunc Name="Request Results"              ID="0x03">
+				<DataID Name="Update HistoryZone" ID="0x0201"> 
+					<Field Name="NumberInFlash"   DataType="uint8_t" 	Value="00" />
+					<Field Name="TesterVersion"   DataType="uint16_t" 	Value="01,02" />
+					<Field Name="PrevApplSWID"    DataType="string[8]" 	Value="MCUACT00" />   <!-- MCU, Application, Common, Test, 00 -->
+					<Field Name="PrevApplDataID"  DataType="string[8]" 	Value="MCUACT00" />   <!-- MCU, Application, Common, Test, 00 -->
+					<Field Name="Date"            DataType="uint32_t" 	Value="1C,0A,07,E8" /> <!-- 28 Oct. 2024 -->
+					<Field Name="Time"            DataType="uint16_t" 	Value="0A,1E" />      <!-- 10:30 -->
+				</DataID>
+				<DataID Name="ResolverAutoCalibration" ID="0x0295">
+					<Field Name="calibrationStartFlag"   DataType="uint8_t" 	Value="00" />
+				</DataID>
+				<DataID Name="ActiveDischarge" ID="0x0296"> 
+					<Field Name="dischargeState"   DataType="uint8_t" 	Value="00" />
+				</DataID>
+				<DataID Name="Compare CS" ID="0xFF01">
+					<Field Name="CSResult"   DataType="uint8_t" 	Value="00" />
+				</DataID>
+			</SubFunc>
+		</Service>
+        <Service Name="RequestDownload"                  ID="0x74" DataType="uint8_t"> 
+            <Field Name="lengthFormatIdentifier" DataType="uint8_t" />
+            <Field Name="maxNumberOfBlockLength" DataType="uint16_t" />
+		</Service>
+        <Service Name="RequestUpload"                    ID="0x75" DataType="uint8_t"> </Service>
+        <Service Name="TransferData"                     ID="0x76" DataType="uint8_t"> 
+            <Field Name="SeqNum"             DataType="uint8_t" />
+		</Service>
+        <Service Name="RequestTransferExit"              ID="0x77" DataType="uint8_t"> </Service>
+        <Service Name="RequestFileTransfer"              ID="0x78" DataType="uint8_t"> </Service>
+        <Service Name="WriteMemoryByAddress"             ID="0x7D" DataType="uint8_t"> </Service>    
+        <Service Name="TesterPresent"                    ID="0x7E" DataType="uint8_t"> </Service>
+        <Service Name="NegativeResponse"                 ID="0x7F" DataType="uint8_t"> </Service>
+        <Service Name="AccessTimingParameter"            ID="0xC3" DataType="uint8_t"> 
+            <SubFunc Name="Read Currently Active Timing Parameters"  ID="0x03"> 
+                <Field Name="P2Min" DataType="uint16_t" />
+                <Field Name="P2Max" DataType="uint16_t" />
+                <Field Name="P3Min" DataType="uint8_t"  />
+                <Field Name="P3Max" DataType="uint8_t"  />
+                <Field Name="STMin" DataType="uint8_t"  />
+			</SubFunc>
+            <SubFunc Name="Set Timing Parameters To Given Values"    ID="0x04" />
+		</Service>
+        <Service Name="SecuredDataTransmission"          ID="0xC4" DataType="uint8_t"> </Service>
+        <Service Name="ControlDTCSetting"                ID="0xC5" DataType="uint8_t"> </Service>
+        <Service Name="ResponseOnEvent"                  ID="0xC6" DataType="uint8_t"> </Service>
+        <Service Name="LinkControl"                      ID="0xC7" DataType="uint8_t"> </Service>
+    </Responses>
+</UDS>

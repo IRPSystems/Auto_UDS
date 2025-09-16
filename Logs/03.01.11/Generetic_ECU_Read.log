@@ -1,0 +1,9 @@
+2025-07-29 15:10:08 [DEBUG] - Creating folder at: Logs\03.01.11
+2025-07-29 15:10:08 [INFO] - F195 System Supplier ECU Software Version Number  Read Data By Identifier, Converted result: 03.01.11, Raw Values: 30 33 2E 30 31 2E 31 31
+2025-07-29 15:10:08 [INFO] - F1B0 Odometer  Read Data By Identifier, Converted result: 0, Raw Values: 00 00 00
+2025-07-29 15:10:08 [INFO] - F1B1 Battery Voltage  Read Data By Identifier, Converted result: 234, Raw Values: 00 EA
+2025-07-29 15:10:08 [INFO] - F1B2 Vehicle Speed  Read Data By Identifier, Converted result: 0, Raw Values: 00 00
+2025-07-29 15:10:08 [INFO] - F1B3 Motor speed  Read Data By Identifier, Converted result: 0, Raw Values: 00 00
+2025-07-29 15:10:08 [INFO] - F1B4 Reset Reason  Read Data By Identifier, Converted result: 1 1 1 1 1, Raw Values: 01 01 01 01 01
+2025-07-29 15:10:08 [INFO] - F1B5 Reset Counter  Read Data By Identifier, Converted result: 0, Raw Values: 00 00
+2025-07-29 15:10:08 [INFO] - F1B6 Ignition Counter  Read Data By Identifier, Converted result: 1, Raw Values: 00 01
