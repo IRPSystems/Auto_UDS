@@ -3,7 +3,7 @@
 ## This is the first main that should run each every UDS log file separately, also it's using fix_routine and logger
 
 
-import fix_routine_log
+from Archive import fix_routine_log
 from Condition import (id_conditions_F1D2, id_conditions_F1D3, id_conditions_Fault_Config,
                        id_conditions_TrueDrive, id_conditions_Routine, id_conditions_F1D5, id_conditions_CanConfig_103, id_Standart_Generetic)
 from logger import setup_logger

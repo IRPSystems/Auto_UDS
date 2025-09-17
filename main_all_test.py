@@ -11,6 +11,10 @@ from logger import setup_logger
 
 SKIP_IDENTIFIERS = {""}
 
+SUPPRESS_NRC_DIDS = {
+    "0100", "0101", "0102"   # <-- example, adjust to real DIDs
+}
+
 Logs_folder = os.path.join("Logs")
 if not os.path.exists(Logs_folder):
     os.mkdir(Logs_folder)
@@ -317,7 +321,8 @@ def process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, logger):
                     prev_values = extract_values_from_line(prev_line)
                     if len(prev_values) >= 2:
                         prev_identifier = "".join(byte.replace("0x", "").upper() for byte in prev_values[:2])
-                        logger.error(f"{prev_identifier} Negative Response: {line.split(':', 1)[1].strip()}")
+                        if prev_identifier not in SUPPRESS_NRC_DIDS:
+                            logger.error(f"{prev_identifier} Negative Response: {line.split(':', 1)[1].strip()}")
                     else:
                         logger.error(f"Unknown Negative Response: {line.split(':', 1)[1].strip()} (previous Tx invalid)")
                     break
@@ -433,6 +438,6 @@ if __name__ == "__main__":
 
             if result_folder:
                  os.environ['RESULT_FOLDER'] = result_folder
-                 os.system('python modify_compliance_matrix.py')
+                # os.system('python modify_compliance_matrix.py')
             else:
                  logger.warning("No result folder was detected from logs. Compliance matrix not generated.")

@@ -1,6 +1,0 @@
-2025-07-16 11:10:08 [INFO] - Critical CAN Signal Invalid Time , Converted result: 5  Pass 
-2025-07-16 11:10:08 [INFO] - Main CAN Bus Off Healing Time, Converted result: 100  Pass 
-2025-07-16 11:10:08 [INFO] - CAN Timeout Since Powerup, Converted result: 100  Pass 
-2025-07-16 11:10:08 [DEBUG] - Creating folder at: Logs\03.01.06
-2025-07-16 11:10:08 [WARNING] - 0375 Diagnostic Session Control 
-2025-07-16 11:10:08 [WARNING] - 016D Security Access 

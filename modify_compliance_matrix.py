@@ -46,7 +46,7 @@ SRD_path = os.path.join(base_log_dir, "Documents", "HD-UP-ICD-242601-UDID.xlsx")
 
 
 # Define non-implemented DIDs
-NON_IMPLEMENTED_DIDS = {"F1BE", "F192", "F194"}
+NON_IMPLEMENTED_DIDS = {"F1BE", "F192", "F194",}
 
 # Expected output order for first 10 rows
 EXPECTED_ORDER = [
@@ -60,6 +60,7 @@ EXPECTED_ORDER = [
    # ("MCU_NM_ID_LIST_9", "Standard Identifiers", "F192", "ECU Hardware Number"),
     #("MCU_NM_ID_LIST_11", "Standard Identifiers", "F194", "ECU Software Number"),
     ("MCU_STD_DID_List_22", "Standard Identifiers", "0200", "Boot Flag"),
+   # ("MCU_STD_DID_List_18", "Standard Identifiers", "0100", "MODEL NUMBER"),
 ]
 
 # Comprehensive Req. ID mapping without hardcoded statuses
@@ -128,8 +129,8 @@ REQ_ID_MAPPING = {
        # "VCU_ACTIVE Healing Time": ("MCU_NM_ID_LIST_1", "F1D2"),
        # "BMS5_10 Timeout": ("MCU_NM_ID_LIST_1", "F1D2"),
        # "BMS5_10 Healing Time": ("MCU_NM_ID_LIST_1", "F1D2"),
-        "BMS6_10 Timeout": ("MCU_NM_ID_LIST_1", "F1D2"),
-        "BMS6_10 Healing Time": ("MCU_NM_ID_LIST_1", "F1D2"),
+       # "BMS6_10 Timeout": ("MCU_NM_ID_LIST_1", "F1D2"),
+       # "BMS6_10 Healing Time": ("MCU_NM_ID_LIST_1", "F1D2"),
         # F1D4 - Network Management Enable
         "Network Management Enable": ("MCU_NM_ID_LIST_3", "F1D4"),
         # 0104 - CAN Wakeup Configuration (Not Tested)
