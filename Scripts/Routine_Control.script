@@ -29,7 +29,8 @@ send 22 03 03
 send 10 02
 send 31 01 02 00 01
 send 31 01 FF 01
-send 11 01
+sleep 500
+send 11 03
 
 
 

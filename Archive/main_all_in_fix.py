@@ -17,7 +17,7 @@ from logger import setup_logger
 
 SKIP_IDENTIFIERS = {""}
 
-Logs_folder = os.path.join("Logs")
+Logs_folder = os.path.join("../Logs")
 if not os.path.exists(Logs_folder):
     os.mkdir(Logs_folder)
 
@@ -394,7 +394,7 @@ def process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, logger):
         if rx_identifier == "F195":
             result = convert(rx_values[2:])
             if result and result != "0" and result != "wrong output":
-                result_folder = os.path.join("Logs", result)
+                result_folder = os.path.join("../Logs", result)
                 os.makedirs(result_folder, exist_ok=True)
                 logger.debug(f"Creating folder at: {result_folder}")
         if rx_identifier in SKIP_IDENTIFIERS:

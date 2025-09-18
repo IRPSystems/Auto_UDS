@@ -278,3 +278,227 @@
 2025-09-17 16:37:02 [INFO] - [94mTester Present: ON [0m
 2025-09-17 16:37:02 [DEBUG] - Saved script section: Standard_Identifiers with 54 Tx lines and 59 Rx lines
 2025-09-17 16:37:02 [INFO] - Processing script section: Standard_Identifiers
+2025-09-17 16:53:24 [INFO] - Processing file: C:\\temp3\STR-202509161517.uds.txt
+2025-09-17 16:53:24 [DEBUG] - Script start marker found: # 16/09/2025 15:17:47 WARNING: >>> Script Start:C:\Users\ilyar\PycharmProjects\UDS\Scripts\Standard_Identifiers.script, Script name: Standard_Identifiers
+2025-09-17 16:53:24 [INFO] - [94mTester Present: ON [0m
+2025-09-17 16:53:24 [DEBUG] - Saved script section: Standard_Identifiers with 54 Tx lines and 59 Rx lines
+2025-09-17 16:53:24 [INFO] - Processing script section: Standard_Identifiers
+2025-09-17 16:53:37 [INFO] - Processing file: C:\\temp3\STR-202509161517.uds.txt
+2025-09-17 16:53:37 [DEBUG] - Script start marker found: # 16/09/2025 15:17:47 WARNING: >>> Script Start:C:\Users\ilyar\PycharmProjects\UDS\Scripts\Standard_Identifiers.script, Script name: Standard_Identifiers
+2025-09-17 16:53:37 [INFO] - [94mTester Present: ON [0m
+2025-09-17 16:53:37 [DEBUG] - Saved script section: Standard_Identifiers with 54 Tx lines and 59 Rx lines
+2025-09-17 16:53:37 [INFO] - Processing script section: Standard_Identifiers
+2025-09-17 16:57:52 [INFO] - Processing file: C:\\temp3\STR-202509161517.uds.txt
+2025-09-17 16:57:52 [DEBUG] - Script start marker found: # 16/09/2025 15:17:47 WARNING: >>> Script Start:C:\Users\ilyar\PycharmProjects\UDS\Scripts\Standard_Identifiers.script, Script name: Standard_Identifiers
+2025-09-17 16:57:52 [INFO] - [94mTester Present: ON [0m
+2025-09-17 16:57:52 [DEBUG] - Saved script section: Standard_Identifiers with 54 Tx lines and 59 Rx lines
+2025-09-17 16:57:52 [INFO] - Processing script section: Standard_Identifiers
+2025-09-17 17:03:14 [INFO] - Processing file: C:\\temp3\STR-202509161517.uds.txt
+2025-09-17 17:03:14 [DEBUG] - Script start marker found: # 16/09/2025 15:17:47 WARNING: >>> Script Start:C:\Users\ilyar\PycharmProjects\UDS\Scripts\Standard_Identifiers.script, Script name: Standard_Identifiers
+2025-09-17 17:03:14 [INFO] - [94mTester Present: ON [0m
+2025-09-17 17:03:14 [DEBUG] - Saved script section: Standard_Identifiers with 54 Tx lines and 59 Rx lines
+2025-09-17 17:03:14 [INFO] - Processing script section: Standard_Identifiers
+2025-09-17 17:05:34 [INFO] - Processing file: C:\\temp3\STR-202509161517.uds.txt
+2025-09-17 17:05:34 [DEBUG] - Script start marker found: # 16/09/2025 15:17:47 WARNING: >>> Script Start:C:\Users\ilyar\PycharmProjects\UDS\Scripts\Standard_Identifiers.script, Script name: Standard_Identifiers
+2025-09-17 17:05:34 [INFO] - [94mTester Present: ON [0m
+2025-09-17 17:05:34 [DEBUG] - Saved script section: Standard_Identifiers with 54 Tx lines and 59 Rx lines
+2025-09-17 17:05:34 [INFO] - Processing script section: Standard_Identifiers
+2025-09-17 17:17:00 [INFO] - Processing file: C:\\temp3\STR-202509161517.uds.txt
+2025-09-17 17:17:00 [DEBUG] - Script start marker found: # 16/09/2025 15:17:47 WARNING: >>> Script Start:C:\Users\ilyar\PycharmProjects\UDS\Scripts\Standard_Identifiers.script, Script name: Standard_Identifiers
+2025-09-17 17:17:00 [INFO] - [94mTester Present: ON [0m
+2025-09-17 17:17:00 [DEBUG] - Saved script section: Standard_Identifiers with 54 Tx lines and 59 Rx lines
+2025-09-17 17:17:00 [INFO] - Processing script section: Standard_Identifiers
+2025-09-18 08:49:47 [INFO] - Processing file: C:\\temp3\STR-202509161517.uds.txt
+2025-09-18 08:49:47 [DEBUG] - Script start marker found: # 16/09/2025 15:17:47 WARNING: >>> Script Start:C:\Users\ilyar\PycharmProjects\UDS\Scripts\Standard_Identifiers.script, Script name: Standard_Identifiers
+2025-09-18 08:49:47 [INFO] - [94mTester Present: ON [0m
+2025-09-18 08:49:47 [DEBUG] - Saved script section: Standard_Identifiers with 54 Tx lines and 59 Rx lines
+2025-09-18 08:49:47 [INFO] - Processing script section: Standard_Identifiers
+2025-09-18 08:55:21 [INFO] - Processing file: C:\\temp3\Test1-202509042050.uds.txt
+2025-09-18 08:55:21 [DEBUG] - Script start marker found: # 04/09/2025 20:50:19 WARNING: >>> Script Start:C:\Users\ilyar\PycharmProjects\UDS\Scripts\CanConfig_103.script, Script name: CanConfig_103
+2025-09-18 08:55:21 [INFO] - [94mTester Present: ON [0m
+2025-09-18 08:55:21 [DEBUG] - Saved script section: CanConfig_103 with 20 Tx lines and 20 Rx lines
+2025-09-18 08:55:21 [DEBUG] - Script start marker found: # 04/09/2025 20:51:10 WARNING: >>> Script Start:C:\Users\ilyar\PycharmProjects\UDS\Scripts\Faults_Configuration.script, Script name: Faults_Configuration
+2025-09-18 08:55:21 [DEBUG] - Saved script section: Faults_Configuration with 120 Tx lines and 120 Rx lines
+2025-09-18 08:55:21 [DEBUG] - Script start marker found: # 04/09/2025 20:57:22 WARNING: >>> Script Start:C:\Users\ilyar\PycharmProjects\UDS\Scripts\Generetic_ECU_Read.script, Script name: Generetic_ECU_Read
+2025-09-18 08:55:21 [DEBUG] - Saved script section: Generetic_ECU_Read with 8 Tx lines and 8 Rx lines
+2025-09-18 08:55:21 [DEBUG] - Script start marker found: # 04/09/2025 20:57:44 WARNING: >>> Script Start:C:\Users\ilyar\PycharmProjects\UDS\Scripts\Network_F1D5.script, Script name: Network_F1D5
+2025-09-18 08:55:21 [DEBUG] - Saved script section: Network_F1D5 with 10 Tx lines and 10 Rx lines
+2025-09-18 08:55:21 [DEBUG] - Script start marker found: # 04/09/2025 20:57:58 WARNING: >>> Script Start:C:\Users\ilyar\PycharmProjects\UDS\Scripts\Network_Missmatch_F1D3.script, Script name: Network_Missmatch_F1D3
+2025-09-18 08:55:21 [DEBUG] - Saved script section: Network_Missmatch_F1D3 with 76 Tx lines and 76 Rx lines
+2025-09-18 08:55:21 [DEBUG] - Script start marker found: # 04/09/2025 21:00:14 WARNING: >>> Script Start:C:\Users\ilyar\PycharmProjects\UDS\Scripts\Standard_Identifiers.script, Script name: Standard_Identifiers
+2025-09-18 08:55:21 [DEBUG] - Saved script section: Standard_Identifiers with 54 Tx lines and 54 Rx lines
+2025-09-18 08:55:21 [DEBUG] - Script start marker found: # 04/09/2025 21:01:22 WARNING: >>> Script Start:C:\Users\ilyar\PycharmProjects\UDS\Scripts\TrueDriveManager.script, Script name: TrueDriveManager
+2025-09-18 08:55:21 [DEBUG] - Saved script section: TrueDriveManager with 62 Tx lines and 62 Rx lines
+2025-09-18 08:55:21 [DEBUG] - Script start marker found: # 04/09/2025 21:02:38 WARNING: >>> Script Start:C:\Users\ilyar\PycharmProjects\UDS\Scripts\Routine_Control.script, Script name: Routine_Control
+2025-09-18 08:55:21 [DEBUG] - Saved script section: Routine_Control with 15 Tx lines and 16 Rx lines
+2025-09-18 08:55:21 [DEBUG] - Script start marker found: # 04/09/2025 21:03:05 WARNING: >>> Script Start:C:\Users\ilyar\PycharmProjects\UDS\Scripts\Network_TimeOut_F1D2.script, Script name: Network_TimeOut_F1D2
+2025-09-18 08:55:21 [DEBUG] - Saved script section: Network_TimeOut_F1D2 with 32 Tx lines and 32 Rx lines
+2025-09-18 08:55:21 [INFO] - Processing script section: CanConfig_103
+2025-09-18 09:05:21 [INFO] - Processing file: C:\\temp3\serialNumber-202509180904.uds.txt
+2025-09-18 09:05:21 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Faults_Configuration.script, Script name: Faults_Configuration
+2025-09-18 09:05:21 [DEBUG] - Saved script section: Faults_Configuration with 121 Tx lines and 120 Rx lines
+2025-09-18 09:05:21 [INFO] - Processing script section: Faults_Configuration
+2025-09-18 09:05:48 [INFO] - Processing file: C:\\temp3\serialNumber-202509180904.uds.txt
+2025-09-18 09:05:48 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Faults_Configuration.script, Script name: Faults_Configuration
+2025-09-18 09:05:48 [DEBUG] - Saved script section: Faults_Configuration with 121 Tx lines and 120 Rx lines
+2025-09-18 09:05:48 [INFO] - Processing script section: Faults_Configuration
+2025-09-18 09:13:18 [INFO] - Processing file: C:\\temp3\Test1-202509180912.uds.txt
+2025-09-18 09:13:18 [WARNING] - No script sections found in file: C:\\temp3\Test1-202509180912.uds.txt
+2025-09-18 09:13:18 [WARNING] - No script sections to process in C:\\temp3\Test1-202509180912.uds.txt
+2025-09-18 09:14:52 [INFO] - Processing file: C:\\temp3\serialNumber-202509180914.uds.txt
+2025-09-18 09:14:52 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Faults_Configuration.script, Script name: Faults_Configuration
+2025-09-18 09:14:52 [DEBUG] - Saved script section: Faults_Configuration with 121 Tx lines and 120 Rx lines
+2025-09-18 09:14:52 [INFO] - Processing script section: Faults_Configuration
+2025-09-18 09:17:04 [INFO] - Processing file: C:\\temp3\serialNumber-202509180915.uds.txt
+2025-09-18 09:17:04 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\CanConfig_103.script, Script name: CanConfig_103
+2025-09-18 09:17:04 [DEBUG] - Saved script section: CanConfig_103 with 21 Tx lines and 21 Rx lines
+2025-09-18 09:17:04 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Faults_Configuration.script, Script name: Faults_Configuration
+2025-09-18 09:17:04 [DEBUG] - Saved script section: Faults_Configuration with 118 Tx lines and 115 Rx lines
+2025-09-18 09:17:04 [INFO] - Processing script section: CanConfig_103
+2025-09-18 09:18:18 [INFO] - Processing file: C:\\temp3\serialNumber-202509180917.uds.txt
+2025-09-18 09:18:18 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Faults_Configuration.script, Script name: Faults_Configuration
+2025-09-18 09:18:18 [DEBUG] - Saved script section: Faults_Configuration with 121 Tx lines and 121 Rx lines
+2025-09-18 09:18:18 [INFO] - Processing script section: Faults_Configuration
+2025-09-18 09:20:42 [INFO] - Processing file: C:\\temp3\serialNumber-202509180918.uds.txt
+2025-09-18 09:20:42 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\CanConfig_103.script, Script name: CanConfig_103
+2025-09-18 09:20:42 [DEBUG] - Saved script section: CanConfig_103 with 21 Tx lines and 21 Rx lines
+2025-09-18 09:20:42 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Faults_Configuration.script, Script name: Faults_Configuration
+2025-09-18 09:20:42 [DEBUG] - Saved script section: Faults_Configuration with 118 Tx lines and 116 Rx lines
+2025-09-18 09:20:42 [INFO] - Processing script section: CanConfig_103
+2025-09-18 09:32:18 [INFO] - Processing file: C:\\temp3\serialNumber-202509180930.uds.txt
+2025-09-18 09:32:18 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Faults_Configuration.script, Script name: Faults_Configuration
+2025-09-18 09:32:18 [DEBUG] - Saved script section: Faults_Configuration with 121 Tx lines and 120 Rx lines
+2025-09-18 09:32:18 [INFO] - Processing script section: Faults_Configuration
+2025-09-18 09:38:12 [INFO] - Processing file: C:\\temp3\Test1-202509180936.uds.txt
+2025-09-18 09:38:12 [DEBUG] - Script start marker found: # 18/09/2025 9:37:19 WARNING: >>> Script Start:C:\Users\ilyar\PycharmProjects\UDS\Scripts\Faults_Configuration.script, Script name: Faults_Configuration
+2025-09-18 09:38:12 [INFO] - [94mTester Present: ON [0m
+2025-09-18 09:38:12 [DEBUG] - Saved final script section: Faults_Configuration with 61 Tx lines and 61 Rx lines
+2025-09-18 09:38:12 [INFO] - Processing script section: Faults_Configuration
+2025-09-18 09:39:19 [INFO] - Processing file: C:\\temp3\Test1-202509180936.uds.txt
+2025-09-18 09:39:19 [DEBUG] - Script start marker found: # 18/09/2025 9:37:19 WARNING: >>> Script Start:C:\Users\ilyar\PycharmProjects\UDS\Scripts\Faults_Configuration.script, Script name: Faults_Configuration
+2025-09-18 09:39:19 [INFO] - [94mTester Present: ON [0m
+2025-09-18 09:39:19 [DEBUG] - Saved final script section: Faults_Configuration with 110 Tx lines and 110 Rx lines
+2025-09-18 09:39:19 [INFO] - Processing script section: Faults_Configuration
+2025-09-18 09:44:07 [INFO] - Processing file: C:\\temp3\Test1-202509180936.uds.txt
+2025-09-18 09:44:07 [DEBUG] - Script start marker found: # 18/09/2025 9:37:19 WARNING: >>> Script Start:C:\Users\ilyar\PycharmProjects\UDS\Scripts\Faults_Configuration.script, Script name: Faults_Configuration
+2025-09-18 09:44:07 [INFO] - [94mTester Present: ON [0m
+2025-09-18 09:44:07 [DEBUG] - Saved script section: Faults_Configuration with 120 Tx lines and 120 Rx lines
+2025-09-18 09:44:07 [DEBUG] - Script start marker found: # 18/09/2025 9:40:01 WARNING: >>> Script Start:C:\Users\ilyar\PycharmProjects\UDS\Scripts\CanConfig_103.script, Script name: CanConfig_103
+2025-09-18 09:44:07 [DEBUG] - Saved script section: CanConfig_103 with 20 Tx lines and 20 Rx lines
+2025-09-18 09:44:07 [DEBUG] - Script start marker found: # 18/09/2025 9:40:48 WARNING: >>> Script Start:C:\Users\ilyar\PycharmProjects\UDS\Scripts\Generetic_ECU_Read.script, Script name: Generetic_ECU_Read
+2025-09-18 09:44:07 [DEBUG] - Saved script section: Generetic_ECU_Read with 8 Tx lines and 8 Rx lines
+2025-09-18 09:44:07 [DEBUG] - Script start marker found: # 18/09/2025 9:40:59 WARNING: >>> Script Start:C:\Users\ilyar\PycharmProjects\UDS\Scripts\Network_F1D5.script, Script name: Network_F1D5
+2025-09-18 09:44:07 [DEBUG] - Saved script section: Network_F1D5 with 10 Tx lines and 10 Rx lines
+2025-09-18 09:44:07 [DEBUG] - Script start marker found: # 18/09/2025 9:41:33 WARNING: >>> Script Start:C:\Users\ilyar\PycharmProjects\UDS\Scripts\Network_Missmatch_F1D3.script, Script name: Network_Missmatch_F1D3
+2025-09-18 09:44:07 [DEBUG] - Saved script section: Network_Missmatch_F1D3 with 76 Tx lines and 75 Rx lines
+2025-09-18 09:44:07 [INFO] - Processing script section: Faults_Configuration
+2025-09-18 09:49:09 [INFO] - Processing file: C:\\temp3\serialNumber-202509180946.uds.txt
+2025-09-18 09:49:09 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Network_F1D5.script, Script name: Network_F1D5
+2025-09-18 09:49:09 [DEBUG] - Saved script section: Network_F1D5 with 11 Tx lines and 11 Rx lines
+2025-09-18 09:49:09 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Network_Missmatch_F1D3.script, Script name: Network_Missmatch_F1D3
+2025-09-18 09:49:09 [DEBUG] - Saved script section: Network_Missmatch_F1D3 with 74 Tx lines and 74 Rx lines
+2025-09-18 09:49:09 [INFO] - Processing script section: Network_F1D5
+2025-09-18 09:54:05 [INFO] - Processing file: C:\\temp3\serialNumber-202509180953.uds.txt
+2025-09-18 09:54:05 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Network_TimeOut_F1D2.script, Script name: Network_TimeOut_F1D2
+2025-09-18 09:54:05 [DEBUG] - Saved script section: Network_TimeOut_F1D2 with 30 Tx lines and 29 Rx lines
+2025-09-18 09:54:05 [INFO] - Processing script section: Network_TimeOut_F1D2
+2025-09-18 10:01:39 [INFO] - Processing file: C:\\temp3\serialNumber-202509180954.uds.txt
+2025-09-18 10:01:39 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\CanConfig_103.script, Script name: CanConfig_103
+2025-09-18 10:01:39 [DEBUG] - Saved script section: CanConfig_103 with 21 Tx lines and 21 Rx lines
+2025-09-18 10:01:39 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Faults_Configuration.script, Script name: Faults_Configuration
+2025-09-18 10:01:39 [DEBUG] - Saved script section: Faults_Configuration with 118 Tx lines and 118 Rx lines
+2025-09-18 10:01:39 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Generetic_ECU_Read.script, Script name: Generetic_ECU_Read
+2025-09-18 10:01:39 [DEBUG] - Saved script section: Generetic_ECU_Read with 8 Tx lines and 8 Rx lines
+2025-09-18 10:01:39 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Network_F1D5.script, Script name: Network_F1D5
+2025-09-18 10:01:39 [DEBUG] - Saved script section: Network_F1D5 with 8 Tx lines and 8 Rx lines
+2025-09-18 10:01:39 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Network_Missmatch_F1D3.script, Script name: Network_Missmatch_F1D3
+2025-09-18 10:01:39 [DEBUG] - Saved script section: Network_Missmatch_F1D3 with 74 Tx lines and 74 Rx lines
+2025-09-18 10:01:39 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Network_TimeOut_F1D2.script, Script name: Network_TimeOut_F1D2
+2025-09-18 10:01:39 [DEBUG] - Saved script section: Network_TimeOut_F1D2 with 26 Tx lines and 26 Rx lines
+2025-09-18 10:01:39 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Standard_Identifiers.script, Script name: Standard_Identifiers
+2025-09-18 10:01:39 [DEBUG] - Saved script section: Standard_Identifiers with 52 Tx lines and 53 Rx lines
+2025-09-18 10:01:39 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\TrueDriveManager.script, Script name: TrueDriveManager
+2025-09-18 10:01:39 [DEBUG] - Saved script section: TrueDriveManager with 60 Tx lines and 60 Rx lines
+2025-09-18 10:01:39 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Routine_Control.script, Script name: Routine_Control
+2025-09-18 10:01:39 [DEBUG] - Saved script section: Routine_Control with 13 Tx lines and 13 Rx lines
+2025-09-18 10:01:39 [INFO] - Processing script section: CanConfig_103
+2025-09-18 10:11:49 [INFO] - Processing file: C:\\temp3\serialNumber-202509180954.uds.txt
+2025-09-18 10:11:49 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\CanConfig_103.script, Script name: CanConfig_103
+2025-09-18 10:11:49 [DEBUG] - Saved script section: CanConfig_103 with 21 Tx lines and 21 Rx lines
+2025-09-18 10:11:49 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Faults_Configuration.script, Script name: Faults_Configuration
+2025-09-18 10:11:49 [DEBUG] - Saved script section: Faults_Configuration with 118 Tx lines and 118 Rx lines
+2025-09-18 10:11:49 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Generetic_ECU_Read.script, Script name: Generetic_ECU_Read
+2025-09-18 10:11:49 [DEBUG] - Saved script section: Generetic_ECU_Read with 8 Tx lines and 8 Rx lines
+2025-09-18 10:11:49 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Network_F1D5.script, Script name: Network_F1D5
+2025-09-18 10:11:49 [DEBUG] - Saved script section: Network_F1D5 with 8 Tx lines and 8 Rx lines
+2025-09-18 10:11:49 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Network_Missmatch_F1D3.script, Script name: Network_Missmatch_F1D3
+2025-09-18 10:11:49 [DEBUG] - Saved script section: Network_Missmatch_F1D3 with 74 Tx lines and 74 Rx lines
+2025-09-18 10:11:49 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Network_TimeOut_F1D2.script, Script name: Network_TimeOut_F1D2
+2025-09-18 10:11:49 [DEBUG] - Saved script section: Network_TimeOut_F1D2 with 26 Tx lines and 26 Rx lines
+2025-09-18 10:11:49 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Standard_Identifiers.script, Script name: Standard_Identifiers
+2025-09-18 10:11:49 [DEBUG] - Saved script section: Standard_Identifiers with 52 Tx lines and 53 Rx lines
+2025-09-18 10:11:49 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\TrueDriveManager.script, Script name: TrueDriveManager
+2025-09-18 10:11:49 [DEBUG] - Saved script section: TrueDriveManager with 60 Tx lines and 60 Rx lines
+2025-09-18 10:11:49 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Routine_Control.script, Script name: Routine_Control
+2025-09-18 10:11:49 [DEBUG] - Saved script section: Routine_Control with 13 Tx lines and 13 Rx lines
+2025-09-18 10:11:49 [INFO] - Processing script section: CanConfig_103
+2025-09-18 10:12:02 [INFO] - Processing file: C:\\temp3\serialNumber-202509180954.uds.txt
+2025-09-18 10:12:02 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\CanConfig_103.script, Script name: CanConfig_103
+2025-09-18 10:12:02 [DEBUG] - Saved script section: CanConfig_103 with 21 Tx lines and 21 Rx lines
+2025-09-18 10:12:02 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Faults_Configuration.script, Script name: Faults_Configuration
+2025-09-18 10:12:02 [DEBUG] - Saved script section: Faults_Configuration with 118 Tx lines and 118 Rx lines
+2025-09-18 10:12:02 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Generetic_ECU_Read.script, Script name: Generetic_ECU_Read
+2025-09-18 10:12:02 [DEBUG] - Saved script section: Generetic_ECU_Read with 8 Tx lines and 8 Rx lines
+2025-09-18 10:12:02 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Network_F1D5.script, Script name: Network_F1D5
+2025-09-18 10:12:02 [DEBUG] - Saved script section: Network_F1D5 with 8 Tx lines and 8 Rx lines
+2025-09-18 10:12:02 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Network_Missmatch_F1D3.script, Script name: Network_Missmatch_F1D3
+2025-09-18 10:12:02 [DEBUG] - Saved script section: Network_Missmatch_F1D3 with 74 Tx lines and 74 Rx lines
+2025-09-18 10:12:02 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Network_TimeOut_F1D2.script, Script name: Network_TimeOut_F1D2
+2025-09-18 10:12:02 [DEBUG] - Saved script section: Network_TimeOut_F1D2 with 26 Tx lines and 26 Rx lines
+2025-09-18 10:12:02 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Standard_Identifiers.script, Script name: Standard_Identifiers
+2025-09-18 10:12:02 [DEBUG] - Saved script section: Standard_Identifiers with 52 Tx lines and 53 Rx lines
+2025-09-18 10:12:02 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\TrueDriveManager.script, Script name: TrueDriveManager
+2025-09-18 10:12:02 [DEBUG] - Saved script section: TrueDriveManager with 60 Tx lines and 60 Rx lines
+2025-09-18 10:12:02 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Routine_Control.script, Script name: Routine_Control
+2025-09-18 10:12:02 [DEBUG] - Saved script section: Routine_Control with 13 Tx lines and 13 Rx lines
+2025-09-18 10:12:02 [INFO] - Processing script section: CanConfig_103
+2025-09-18 10:12:43 [INFO] - Processing file: C:\\temp3\serialNumber-202509180954.uds.txt
+2025-09-18 10:12:43 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\CanConfig_103.script, Script name: CanConfig_103
+2025-09-18 10:12:43 [DEBUG] - Saved script section: CanConfig_103 with 21 Tx lines and 21 Rx lines
+2025-09-18 10:12:43 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Faults_Configuration.script, Script name: Faults_Configuration
+2025-09-18 10:12:43 [DEBUG] - Saved script section: Faults_Configuration with 118 Tx lines and 118 Rx lines
+2025-09-18 10:12:43 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Generetic_ECU_Read.script, Script name: Generetic_ECU_Read
+2025-09-18 10:12:43 [DEBUG] - Saved script section: Generetic_ECU_Read with 8 Tx lines and 8 Rx lines
+2025-09-18 10:12:43 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Network_F1D5.script, Script name: Network_F1D5
+2025-09-18 10:12:43 [DEBUG] - Saved script section: Network_F1D5 with 8 Tx lines and 8 Rx lines
+2025-09-18 10:12:43 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Network_Missmatch_F1D3.script, Script name: Network_Missmatch_F1D3
+2025-09-18 10:12:43 [DEBUG] - Saved script section: Network_Missmatch_F1D3 with 74 Tx lines and 74 Rx lines
+2025-09-18 10:12:43 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Network_TimeOut_F1D2.script, Script name: Network_TimeOut_F1D2
+2025-09-18 10:12:43 [DEBUG] - Saved script section: Network_TimeOut_F1D2 with 26 Tx lines and 26 Rx lines
+2025-09-18 10:12:43 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Standard_Identifiers.script, Script name: Standard_Identifiers
+2025-09-18 10:12:43 [DEBUG] - Saved script section: Standard_Identifiers with 52 Tx lines and 53 Rx lines
+2025-09-18 10:12:43 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\TrueDriveManager.script, Script name: TrueDriveManager
+2025-09-18 10:12:43 [DEBUG] - Saved script section: TrueDriveManager with 60 Tx lines and 60 Rx lines
+2025-09-18 10:12:43 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Routine_Control.script, Script name: Routine_Control
+2025-09-18 10:12:43 [DEBUG] - Saved script section: Routine_Control with 13 Tx lines and 13 Rx lines
+2025-09-18 10:12:43 [INFO] - Processing script section: CanConfig_103
+2025-09-18 10:13:13 [INFO] - Processing file: C:\\temp3\serialNumber-202509180954.uds.txt
+2025-09-18 10:13:13 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\CanConfig_103.script, Script name: CanConfig_103
+2025-09-18 10:13:13 [DEBUG] - Saved script section: CanConfig_103 with 21 Tx lines and 21 Rx lines
+2025-09-18 10:13:13 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Faults_Configuration.script, Script name: Faults_Configuration
+2025-09-18 10:13:13 [DEBUG] - Saved script section: Faults_Configuration with 118 Tx lines and 118 Rx lines
+2025-09-18 10:13:13 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Generetic_ECU_Read.script, Script name: Generetic_ECU_Read
+2025-09-18 10:13:13 [DEBUG] - Saved script section: Generetic_ECU_Read with 8 Tx lines and 8 Rx lines
+2025-09-18 10:13:13 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Network_F1D5.script, Script name: Network_F1D5
+2025-09-18 10:13:13 [DEBUG] - Saved script section: Network_F1D5 with 8 Tx lines and 8 Rx lines
+2025-09-18 10:13:13 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Network_Missmatch_F1D3.script, Script name: Network_Missmatch_F1D3
+2025-09-18 10:13:13 [DEBUG] - Saved script section: Network_Missmatch_F1D3 with 74 Tx lines and 74 Rx lines
+2025-09-18 10:13:13 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Network_TimeOut_F1D2.script, Script name: Network_TimeOut_F1D2
+2025-09-18 10:13:13 [DEBUG] - Saved script section: Network_TimeOut_F1D2 with 26 Tx lines and 26 Rx lines
+2025-09-18 10:13:13 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Standard_Identifiers.script, Script name: Standard_Identifiers
+2025-09-18 10:13:13 [DEBUG] - Saved script section: Standard_Identifiers with 52 Tx lines and 53 Rx lines
+2025-09-18 10:13:13 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\TrueDriveManager.script, Script name: TrueDriveManager
+2025-09-18 10:13:13 [DEBUG] - Saved script section: TrueDriveManager with 60 Tx lines and 60 Rx lines
+2025-09-18 10:13:13 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Routine_Control.script, Script name: Routine_Control
+2025-09-18 10:13:13 [DEBUG] - Saved script section: Routine_Control with 13 Tx lines and 13 Rx lines
+2025-09-18 10:13:13 [INFO] - Processing script section: CanConfig_103

@@ -12,7 +12,7 @@ from logger import setup_logger
 SKIP_IDENTIFIERS = {""}
 
 SUPPRESS_NRC_DIDS = {
-    "0100", "0101", "0102"   # <-- example, adjust to real DIDs
+     "0100", "0101", "0102"
 }
 
 Logs_folder = os.path.join("Logs")
@@ -315,26 +315,54 @@ def process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, logger):
 
     for i, (line, line_type) in enumerate(all_lines):
         if line_type == "Rx" and ("Negative Response" in line or "NRC=Sub Function Not Supported" in line):
+            # Try to find the previous Tx
             for j in range(i - 1, -1, -1):
                 prev_line, prev_type = all_lines[j]
                 if prev_type == "Tx":
                     prev_values = extract_values_from_line(prev_line)
                     if len(prev_values) >= 2:
-                        prev_identifier = "".join(byte.replace("0x", "").upper() for byte in prev_values[:2])
+                        prev_identifier = "".join(b.replace("0x", "").upper() for b in prev_values[:2])
+                        msg = line.split(':', 1)[1].strip()
+
+                        # 0x78: Request Correctly Received - Response Pending
+                        if "Request Correctly Received - Response Pending" in line:
+                            if prev_identifier in SUPPRESS_NRC_DIDS:
+                                # suppress 0x78 for configured DIDs
+                                pass
+                            else:
+                                logger.error(f"{prev_identifier} Negative Response: {msg}")
+                            break
+
+                        # 0x12: Sub Function Not Supported — always show
+                        if "NRC=Sub Function Not Supported" in line:
+                            logger.error(f"{prev_identifier} Negative Response: {msg}")
+                            break
+
+                        # Any other Negative Response: suppress only if DID is listed
                         if prev_identifier not in SUPPRESS_NRC_DIDS:
-                            logger.error(f"{prev_identifier} Negative Response: {line.split(':', 1)[1].strip()}")
+                            logger.error(f"{prev_identifier} Negative Response: {msg}")
+                        break
                     else:
-                        logger.error(f"Unknown Negative Response: {line.split(':', 1)[1].strip()} (previous Tx invalid)")
-                    break
+                        # We have a Tx line but couldn't parse an identifier
+                        msg = line.split(':', 1)[1].strip()
+                        # Suppress orphaned 0x78 to avoid noise
+                        if "Request Correctly Received - Response Pending" not in line:
+                            logger.error(f"Unknown Negative Response: {msg} (previous Tx invalid)")
+                        break
             else:
-                logger.error(f"Unknown Negative Response: {line.split(':', 1)[1].strip()} (no previous Tx found)")
+                # No previous Tx found
+                msg = line.split(':', 1)[1].strip()
+                # Suppress orphaned 0x78 to avoid noise
+                if "Request Correctly Received - Response Pending" not in line:
+                    logger.error(f"Unknown Negative Response: {msg} (no previous Tx found)")
+
         elif line_type == "Error":
             for j in range(i - 1, -1, -1):
                 prev_line, prev_type = all_lines[j]
                 if prev_type == "Tx":
                     prev_values = extract_values_from_line(prev_line)
                     if len(prev_values) >= 2:
-                        prev_identifier = "".join(byte.replace("0x", "").upper() for byte in prev_values[:2])
+                        prev_identifier = "".join(b.replace("0x", "").upper() for b in prev_values[:2])
                         timestamp = line[:21] if len(line) >= 19 else "Unknown timestamp"
                         logger.error(f"{prev_identifier} No response from ECU detected at {timestamp}")
                     else:
@@ -362,8 +390,22 @@ def process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, logger):
         if rx_identifier in passed_identifiers:
             continue
         seen_identifiers.add(rx_identifier)
-        if "Negative Response" in rx_line or "NRC=Sub Function Not Supported" in rx_line:
+        if "Request Correctly Received - Response Pending" in rx_line:
+            # 0x78: suppress only for configured DIDs
+            if rx_identifier in SUPPRESS_NRC_DIDS:
+                continue
+            else:
+                logger.error(f"{rx_identifier}\033[91m Negative Response detected \033[0m")
+            continue
+        if "NRC=Sub Function Not Supported" in rx_line:
+            # Always show this NRC
             logger.error(f"{rx_identifier}\033[91m Negative Response detected \033[0m")
+            continue
+        elif "Negative Response" in rx_line:
+            # Other NRCs can be suppressed per DID
+            if rx_identifier not in SUPPRESS_NRC_DIDS:
+                logger.error(f"{rx_identifier}\033[91m Negative Response detected \033[0m")
+
             continue
         if "Diagnostic Session Control " in rx_line:
             logger.warning(f"{rx_identifier}\033[94m Diagnostic Session Control \033[0m")
@@ -438,6 +480,8 @@ if __name__ == "__main__":
 
             if result_folder:
                  os.environ['RESULT_FOLDER'] = result_folder
-                # os.system('python modify_compliance_matrix.py')
+                 os.system('python modify_compliance_matrix.py')
             else:
                  logger.warning("No result folder was detected from logs. Compliance matrix not generated.")
+
+

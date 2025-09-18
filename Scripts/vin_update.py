@@ -1,4 +1,4 @@
-###python bump_vin_byte.py --script "Standard_Identifiers.script"
+###python vin_update.py --script "Standard_Identifiers.script"
 
 
 
