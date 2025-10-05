@@ -502,3 +502,16 @@
 2025-09-18 10:13:13 [DEBUG] - Script start marker found: # WARNING: >>> Script Start: C:\Users\ilyar\PycharmProjects\UDS\Scripts\Routine_Control.script, Script name: Routine_Control
 2025-09-18 10:13:13 [DEBUG] - Saved script section: Routine_Control with 13 Tx lines and 13 Rx lines
 2025-09-18 10:13:13 [INFO] - Processing script section: CanConfig_103
+2025-10-05 17:56:00 [INFO] - Processing file: C:\\temp3\Test1-202510051754.uds.txt
+2025-10-05 17:56:00 [WARNING] - No script sections found in file: C:\\temp3\Test1-202510051754.uds.txt
+2025-10-05 17:56:00 [WARNING] - No script sections to process in C:\\temp3\Test1-202510051754.uds.txt
+2025-10-05 17:56:59 [INFO] - Processing file: C:\\temp3\Test1-202510051756.uds.txt
+2025-10-05 17:56:59 [DEBUG] - Script start marker found: # 05/10/2025 17:56:29 WARNING: >>> Script Start:C:\Users\ilyar\PycharmProjects\UDS\Scripts\Routine_Control.script, Script name: Routine_Control
+2025-10-05 17:56:59 [INFO] - [94mTester Present: ON [0m
+2025-10-05 17:56:59 [DEBUG] - Saved script section: Routine_Control with 18 Tx lines and 19 Rx lines
+2025-10-05 17:56:59 [INFO] - Processing script section: Routine_Control
+2025-10-05 18:09:43 [INFO] - Processing file: C:\\temp3\Test1-202510051809.uds.txt
+2025-10-05 18:09:43 [DEBUG] - Script start marker found: # 05/10/2025 18:09:25 WARNING: >>> Script Start:C:\Users\ilyar\PycharmProjects\UDS\Scripts\Routine_Control.script, Script name: Routine_Control
+2025-10-05 18:09:43 [INFO] - [94mTester Present: ON [0m
+2025-10-05 18:09:43 [DEBUG] - Saved script section: Routine_Control with 10 Tx lines and 11 Rx lines
+2025-10-05 18:09:43 [INFO] - Processing script section: Routine_Control

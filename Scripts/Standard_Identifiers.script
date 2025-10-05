@@ -21,14 +21,13 @@ send 22 F18A
 sleep 500
 
 #ECU Manufacturing Date F18B
-send 2E F18B 1E 0C 08 E9 00 00
-sleep 500
+#send 2E F18B 1E 0C 08 E9 00 00
 send 22 F18B
 
 
 #ECU Serial Number F18C
-send 2E F18C 49 52 50 53 59 53 54 45 4D 53 31 32 37
-sleep 500
+#send 2E F18C 49 52 50 53 59 53 54 45 4D 53 31 32 37
+
 send 22 F18C
 
 #Access Timing Parameter 0x83
