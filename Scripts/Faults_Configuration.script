@@ -1,6 +1,6 @@
 #System Supplier ECU Software Version Number F195
 send 22 F195
-linedelay 500
+#linedelay 500
 
 tester on
 send 10 03
@@ -246,7 +246,6 @@ send 22 078F
 #60  Sensors5vFaultDetection (Default 1 , Scale 10) scaled
 send 2E 078F 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 0A
 send 22 078F
-
 
 
 
