@@ -64,6 +64,14 @@ send 22 F1D2
 send 2E F1D2 00 00 00 00 00 00 00 00 00 00 00 00 00 64 00 00 00 00 00 00 00 00
 send 22 F1D2
 
+#BMS5_10 Timeout (Default 500, scale 10)
+send 2E F1D2 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 32 00 00 00
+send 22 F1D2
+
+#BMS5_10 Timeout Healing Time  (Default 100, scale 10)
+send 2E F1D2 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 0A 00 00
+send 22 F1D2
+
 #BMS6_10 TimeOut (Default 50, scale 10)
 #send 2E F1D2 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 05 00
 #send 22 F1D2

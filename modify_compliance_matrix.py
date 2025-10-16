@@ -127,8 +127,9 @@ REQ_ID_MAPPING = {
        # "VCU5_100 Timeout": ("MCU_NM_ID_LIST_1", "F1D2"),
        # "VCU_ACTIVE Timeout": ("MCU_NM_ID_LIST_1", "F1D2"),
        # "VCU_ACTIVE Healing Time": ("MCU_NM_ID_LIST_1", "F1D2"),
-       # "BMS5_10 Timeout": ("MCU_NM_ID_LIST_1", "F1D2"),
-       # "BMS5_10 Healing Time": ("MCU_NM_ID_LIST_1", "F1D2"),
+        "BMS5_10 Timeout": ("MCU_NM_ID_LIST_1", "F1D2"),
+
+        "BMS5_10 Healing Time": ("MCU_NM_ID_LIST_1", "F1D2"),
        # "BMS6_10 Timeout": ("MCU_NM_ID_LIST_1", "F1D2"),
        # "BMS6_10 Healing Time": ("MCU_NM_ID_LIST_1", "F1D2"),
         # F1D4 - Network Management Enable

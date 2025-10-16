@@ -25,6 +25,10 @@ def bit_to_hex(bit_number):
     # Return hex without 0x prefix
     return hex_result
 
+62 24 9C 00 00 00 1F EC 00 00 02 10 01 80 00 40 00 00 40
+         00 00 00 00 00 00 00 02 0000000000000000
+send 2E 24 9C 00 00 00 1F EC 00 00 02 10 01 80 00 40 00 00 40
+
 
 # Main program
 while True:
