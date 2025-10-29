@@ -1,0 +1,18 @@
+
+#burn **Bootloader** C:\Users\ilyar\Desktop\UPP\UPP_v2.05.26\FW_Merged\HD_Gen2_Merge_Boot_UPP_v2.05.26.brn.hex
+#sleep 1000
+
+##upgrade
+burn UPP C:\Users\ilyar\Desktop\UPP\UPP_v3.00.00\HD_Gen2_Merge_App_UPP_v3.00.00.brn.hex
+sleep 1000
+
+send 22 F181
+
+burn UPP C:\Users\ilyar\Desktop\UPP\UPP_v3.00.00\HD_Gen2_Merge_App_UPP_v3.00.00.brn.hex
+sleep 1000
+
+send 22 F195
+
+
+burn UPP C:\Users\ilyar\Desktop\UPP\UPP_v3.00.00\HD_Gen2_Merge_App_UPP_v3.00.00.brn.hex
+sleep 1000
