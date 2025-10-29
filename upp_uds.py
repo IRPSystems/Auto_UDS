@@ -262,7 +262,7 @@ def process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, logger):
 
             # 0x78: always Pass/ignored
             if "Request Correctly Received - Response Pending" in line:
-                logger.info(f"Info: Response Pending (0x78) ignored -> {msg}")
+                #logger.info(f"Info: Response Pending (0x78) ignored -> {msg}")
                 continue
 
             # Locate previous Tx to get DID, if any

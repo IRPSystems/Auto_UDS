@@ -5,6 +5,7 @@ tester on
 send 10 03
 security 1
 sleep 500
+linedelay 500
 
 #Network Manager
 
