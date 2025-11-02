@@ -45,15 +45,15 @@ CHANNEL = "51"
 DEVICE = "UPP"
 
 SCRIPTS = [
-    r"C:\Users\ilyar\PycharmProjects\UDS\Scripts\CanConfig_103.script",
-    r"C:\Users\ilyar\PycharmProjects\UDS\Scripts\Faults_Configuration.script",
-    r"C:\Users\ilyar\PycharmProjects\UDS\Scripts\Network_F1D5.script",
-    r"C:\Users\ilyar\PycharmProjects\UDS\Scripts\Network_Missmatch_F1D3.script",
-    r"C:\Users\ilyar\PycharmProjects\UDS\Scripts\Network_TimeOut_F1D2.script",
-    r"C:\Users\ilyar\PycharmProjects\UDS\Scripts\Routine_Control.script",
-    r"C:\Users\ilyar\PycharmProjects\UDS\Scripts\Standard_Identifiers.script",
-    r"C:\Users\ilyar\PycharmProjects\UDS\Scripts\TrueDriveManager.script",
-    r"C:\Users\ilyar\PycharmProjects\UDS\Scripts\Generetic_ECU_Read.script",
+     r"C:\Users\ilyar\PycharmProjects\UDS\Project\UPP\Scripts\Standard_Identifiers.script",
+   # r"C:\Users\ilyar\PycharmProjects\UDS\Project\UPP\Scripts\CanConfig_103.script",
+    r"C:\Users\ilyar\PycharmProjects\UDS\Project\UPP\Scripts\Faults_Configuration.script",
+   # r"C:\Users\ilyar\PycharmProjects\UDS\Project\UPP\Scripts\Network_F1D5.script",
+   #  r"C:\Users\ilyar\PycharmProjects\UDS\Project\UPP\Scripts\Network_Missmatch_F1D3.script",
+   # r"C:\Users\ilyar\PycharmProjects\UDS\Project\UPP\Scripts\Network_TimeOut_F1D2.script",
+   # r"C:\Users\ilyar\PycharmProjects\UDS\Project\UPP\Scripts\Routine_Control.script",
+   #  r"C:\Users\ilyar\PycharmProjects\UDS\Project\UPP\Scripts\TrueDriveManager.script",
+   # r"C:\Users\ilyar\PycharmProjects\UDS\Project\UPP\Scripts\Generetic_ECU_Read.script",
 ]
 
 PARSER = [

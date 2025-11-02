@@ -7,7 +7,7 @@ from datetime import datetime
 from Condition import (id_conditions_F1D2, id_conditions_F1D3, id_conditions_Fault_Config,
                        id_conditions_TrueDrive, id_conditions_Routine, id_conditions_F1D5,
                        id_conditions_CanConfig_103, id_Standart_Generetic)
-from logger import setup_logger
+from Project.UPP.logger import setup_logger
 
 SKIP_IDENTIFIERS = {""}
 
@@ -380,7 +380,8 @@ def process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, logger):
         if rx_identifier == "F195":
             result = convert(rx_values[2:])
             if result and result != "0" and result != "wrong output":
-                result_folder = os.path.join("Logs", result)
+                result_folder = os.path.join("../../Logs", result)
+                print(result_folder)
                 os.makedirs(result_folder, exist_ok=True)
                 logger.debug(f"Creating folder at: {result_folder}")
 

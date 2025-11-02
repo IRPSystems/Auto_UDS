@@ -17,15 +17,18 @@ from datetime import datetime
 from Condition import (id_conditions_Network_Management,id_Standard_Generetic)
 from logger import setup_logger
 
-username = os.environ.get('USERNAME', 'unknown')
-if username == 'unknown':
-    raise EnvironmentError("USERNAME environment variable not set.")
-
-base_log_dir = os.path.join('C:\\', 'Users', username, 'PycharmProjects', 'Auto_UDS', 'Projects', 'NG')
-
 SKIP_IDENTIFIERS = {""}
 
-Logs_folder = os.path.join(base_log_dir+"//Logs")
+# Leave empty (or use only for NRCs other than 0x78); 0x78 is always ignore7d.
+SUPPRESS_NRC_DIDS = set()
+
+#Logs_folder = os.path.join("Logs")
+###############################
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+Logs_folder = os.path.join(SCRIPT_DIR, "Logs")
+os.makedirs(Logs_folder, exist_ok=True)
+#####################################
+
 if not os.path.exists(Logs_folder):
     os.mkdir(Logs_folder)
 

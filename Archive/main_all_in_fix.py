@@ -13,7 +13,7 @@ from datetime import datetime
 from Condition import (id_conditions_F1D2, id_conditions_F1D3, id_conditions_Fault_Config,
                        id_conditions_TrueDrive, id_conditions_Routine, id_conditions_F1D5,
                        id_conditions_CanConfig_103, id_Standart_Generetic)
-from logger import setup_logger
+from Project.UPP.logger import setup_logger
 
 SKIP_IDENTIFIERS = {""}
 
