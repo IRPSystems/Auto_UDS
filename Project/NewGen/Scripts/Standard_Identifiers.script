@@ -1,0 +1,267 @@
+tester on
+send 10 03
+security 3
+linedelay 400
+
+sleep 500
+# Read Active Diagnostic Session F186
+send 22 F186
+
+#System Supplier ECU Software Number F194
+send 22 F194
+
+
+#Boot Software  Identification F180
+send 22 F180
+
+#Application Software  Identification F181
+send 22 F181
+
+#Application Data Identification F182
+send 22 F182
+
+sleep 500
+
+
+#System Supplier Identifier F18A
+send 22 F18A
+
+#ECU Manufacturing Date F18B
+send 2E F18B "25.04.07"
+send 22 F18B
+
+#ECU Serial Number F18C
+send 2E F18C "V1111111"
+send 22 F18C
+
+
+# Write&Read VIN identifier number F190
+send 2E F190 31 32 33 41 42 43 34 35 36 44 45 46 37 38 39 47 44
+send 22 F190
+
+# vehicle Manufacturer ECU Hardware Number Data Identifier F191
+send 22 F191
+
+# System Supplier ECU Hardware Number Data Identifier F192
+send 22 F192
+
+#System Supplier ECU Hardware Version Number F193
+send 22 F193
+
+
+
+#System Supplier ECU Software Version Number F195
+send 22 F195
+
+#Write&Read SystemNameorEnginetype F197
+send 2E F197 11 12 33
+send 22 F197
+
+#Repair Shop Code/Tester Serial Number F198
+send 2E F198 69 20 61 6D 20 61 20 74 65 73 74 65 72 00 00 00
+send 22 F198
+
+#Programing  Date F199   101224 1E 0C 07 E9 00 00
+send 2E F199 "25.04.07"
+send 22 F199
+
+#Calibration Date Data Identifier F19B
+send 2E F19B "25.04.07"
+send 22 F19B
+
+#Calibration Equipment Software Number Data Identifier F19C
+send 2E F19C "IRPCAL02"
+send 22 F19C
+
+#ECU Installation Date F19D 1E 0C 07 E9 00 00
+send 2E F19D "25.04.07"
+send 22 F19D
+
+#ODX File Data Identifier
+send 22 F19E
+
+#LMM specific
+send 22 F101
+
+#BOOT Flag
+send 22 0200
+
+#History Zone
+send 22 0201
+
+#MotorTempMaxStart B100 (default 10)
+send 2E B100 00 00 00 82
+send 22 B100
+
+#MotorTempMaxCut B101,
+send 2E B101 00 00 00 96
+send 22 B101
+
+#BusVoltageMaxStart B102
+send 2E B102 00 00 00 44
+send 22 B102
+
+
+
+#BusVoltageMaxCut B103
+send 2E B103 00 00 00 46
+send 22 B103
+
+#BusVoltageMinStart B104
+send 2E B104 00 00 00 28
+send 22 B104
+
+#BusVoltageMinCut B105
+send 2E B105 00 00 00 23
+send 22 B105
+
+#HillAssisstActivation B106
+send 2E B106 01
+send 22 B106
+
+#AssistHillHoldtimeout B107
+send 2E B107 23 28
+send 22 B107
+
+#AssistRollbackspeed B108
+send 2E B108 00 C8
+send 22 B108
+
+#AssistBrakeHoldtime B109
+send 2E B109 02 58
+send 22 B109
+
+#AssistMinimumTorque B10A
+send 2E B10A 00 05
+send 22 B10A
+
+#AssistBrakePressDebouncetime B10B
+send 2E B10B 00 64
+send 22 B10B
+
+#AssistDrivetimeouttime B10C
+send 2E B10C 00 05
+send 22 B10C
+
+#AngleOffset B10D
+send 2E B10D 00 C8
+send 22 B10D
+
+#Forward Max Speed Limit Value B10E
+send 2E B10E 00 64
+send 22 B10E
+
+#Reverse Max Speed Limit Value B10F
+send 2E B10F 00 64
+send 22 B10F
+
+#Actual Motor Speed B110
+send 22 B110
+
+#Actual Torque B111
+send 22 B111
+
+#MCU_Counter1_20 B112
+send 22 B112
+
+#Motor_Current _Measured B113
+send 22 B113
+
+#MCU_Board_temp B114
+send 22 B114
+
+#MCU_IP_DCBus_Voltage B116
+send 22 B116
+
+#MCUOperatingMode B117
+send 22 B117
+
+#MotorPowerMeasured B118
+send 22 B118
+
+#MotorWindingTemp B119
+send 22 B119
+
+#MCUIPDCCurrent B11A
+send 22 B11A
+
+#IdAct B11B
+send 22 B11B
+
+#IqAct B11C
+send 22 B11C
+
+#MotorOverSpeedThreshold B11E
+send 22 B11E
+
+#MotorMaxCurrentCommand  B11F
+send 22 B11F
+
+#ControllerTempMaxStart  B120
+send 22 B120
+
+#ControllerTempMaxCut    B121
+send 22 B121
+
+#ControllerTempMinStart  B122
+send 22 B122
+
+#ControllerTempMinCut    B123
+send 22 B123
+
+#MotorTempMinStart       B124
+send 22 B124
+
+#MotorTempMinCut         B125
+send 22 B125
+
+#MaxBusDriveCurrentLimitValue B126
+send 22 B126
+
+#MaxBusRegenCurrentLimitValue B127
+send 22 B127
+
+#ADCCurrentFactorPhaseU B128
+send 22 B128
+
+#ADCCurrentFactorPhaseV B129
+send 22 B129
+
+#ADCCurrentFactorBus B12A
+send 22 B12A
+
+#RampUpDrive B12B
+send 22 B12B
+
+#RampUpregen B12C
+send 22 B12C
+
+#RampDown    B12D
+send 22 B12D
+
+#PowerMax    B12E
+send 22 B12E
+
+#RotorPosition B12F
+send 22 B12F
+
+#Frequency B130
+send 22 B130
+
+#Access Timing Parameter 0x83
+
+#Tester on
+send 10 03
+#security 1
+sleep 500
+
+#Access Timing Parameters
+send 83 04 04 D2 11 D7 0C 22 56
+send 83 03
+
+
+
+
+
+
+

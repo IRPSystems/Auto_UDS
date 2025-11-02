@@ -11,11 +11,16 @@ from logger import setup_logger
 
 SKIP_IDENTIFIERS = {""}
 
-SUPPRESS_NRC_DIDS = {
-     "0100", "0101", "0102"
-}
+# Leave empty (or use only for NRCs other than 0x78); 0x78 is always ignore7d.
+SUPPRESS_NRC_DIDS = set()
 
-Logs_folder = os.path.join("Logs")
+#Logs_folder = os.path.join("Logs")
+###############################
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+Logs_folder = os.path.join(SCRIPT_DIR, "Logs")
+os.makedirs(Logs_folder, exist_ok=True)
+#####################################
+
 if not os.path.exists(Logs_folder):
     os.mkdir(Logs_folder)
 
@@ -212,10 +217,9 @@ def process_uds_file(file_path, logger):
                 if (line.startswith("Tx)") and "Routine Control" in line and
                         current_script_name == "Routine_Control" and len(values) >= 3 and
                         values[:3] == ["0x01", "0x02", "0x01"]):
-                    # Extract payload after the first 3 values, limit to 25 more (total 27)
                     payload_values = values[3:] if len(values) > 3 else []
-                    if len(payload_values) >= 25:  # 2 prefix + 25 payload = 27 total
-                        payload_values = payload_values[:25]  # Truncate to 25
+                    if len(payload_values) >= 25:
+                        payload_values = payload_values[:25]
                     payload = " ".join(payload_values) if payload_values else ""
                     fixed_tx = f"{timestamp} Tx) Routine Control               : 0x02 0x01 {payload}"
                     fixed_lines.append(fixed_tx)
@@ -226,7 +230,6 @@ def process_uds_file(file_path, logger):
                     fixed_lines.append(fixed_line)
                 else:
                     fixed_lines.append(f"{timestamp} {line}")
-            # Reprocess fixed lines to update tx_lines, rx_lines, all_lines
             current_tx_lines, current_rx_lines, current_all_lines = [], [], []
             for fixed_line in fixed_lines:
                 if fixed_line.startswith(f"{timestamp} Tx)"):
@@ -258,6 +261,56 @@ def process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, logger):
     passed_identifiers = set()
     result_folder = None
 
+    # ---------- SINGLE pass over all lines for Negative Response handling ----------
+    for i, (line, line_type) in enumerate(all_lines):
+        if line_type == "Rx" and "Negative Response" in line:
+            msg = line.split(':', 1)[1].strip()
+
+            # 0x78: always Pass/ignored
+            if "Request Correctly Received - Response Pending" in line:
+                #logger.info(f"Info: Response Pending (0x78) ignored -> {msg}")
+                continue
+
+            # Locate previous Tx to get DID, if any
+            prev_identifier = None
+            for j in range(i - 1, -1, -1):
+                prev_line, prev_type = all_lines[j]
+                if prev_type == "Tx":
+                    prev_values = extract_values_from_line(prev_line)
+                    if len(prev_values) >= 2:
+                        prev_identifier = "".join(b.replace("0x", "").upper() for b in prev_values[:2])
+                    break
+
+            # 0x12: always error
+            if "NRC=Sub Function Not Supported" in line:
+                logger.error(f"{prev_identifier or 'Unknown'} Negative Response: {msg}")
+                continue
+
+            # Other NRCs: suppress only if DID is configured
+            if prev_identifier and prev_identifier in SUPPRESS_NRC_DIDS:
+                continue
+            else:
+                logger.error(f"{prev_identifier or 'Unknown'} Negative Response: {msg}")
+
+        elif line_type == "Error":
+            # Existing error logic
+            for j in range(i - 1, -1, -1):
+                prev_line, prev_type = all_lines[j]
+                if prev_type == "Tx":
+                    prev_values = extract_values_from_line(prev_line)
+                    if len(prev_values) >= 2:
+                        prev_identifier = "".join(b.replace("0x", "").upper() for b in prev_values[:2])
+                        timestamp = line[:21] if len(line) >= 19 else "Unknown timestamp"
+                        logger.error(f"{prev_identifier} No response from ECU detected at {timestamp}")
+                    else:
+                        timestamp = line[:21] if len(line) >= 19 else "Unknown timestamp"
+                        logger.error(f"Unknown No response from ECU detected at {timestamp} (previous Tx invalid)")
+                    break
+            else:
+                timestamp = line[:21] if len(line) >= 19 else "Unknown timestamp"
+                logger.error(f"Unknown No response from ECU detected at {timestamp} (no previous Tx found)")
+
+    # ---------- Tx/Rx matching and value checks ----------
     for tx_line in tx_lines:
         tx_values = extract_values_from_line(tx_line)
         if len(tx_values) == 2:
@@ -313,71 +366,17 @@ def process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, logger):
                     else:
                         logger.error(f"{condition}, Mismatch Tx and Rx {tx_identifier}, Fail")
 
-    for i, (line, line_type) in enumerate(all_lines):
-        if line_type == "Rx" and ("Negative Response" in line or "NRC=Sub Function Not Supported" in line):
-            # Try to find the previous Tx
-            for j in range(i - 1, -1, -1):
-                prev_line, prev_type = all_lines[j]
-                if prev_type == "Tx":
-                    prev_values = extract_values_from_line(prev_line)
-                    if len(prev_values) >= 2:
-                        prev_identifier = "".join(b.replace("0x", "").upper() for b in prev_values[:2])
-                        msg = line.split(':', 1)[1].strip()
-
-                        # 0x78: Request Correctly Received - Response Pending
-                        if "Request Correctly Received - Response Pending" in line:
-                            if prev_identifier in SUPPRESS_NRC_DIDS:
-                                # suppress 0x78 for configured DIDs
-                                pass
-                            else:
-                                logger.error(f"{prev_identifier} Negative Response: {msg}")
-                            break
-
-                        # 0x12: Sub Function Not Supported — always show
-                        if "NRC=Sub Function Not Supported" in line:
-                            logger.error(f"{prev_identifier} Negative Response: {msg}")
-                            break
-
-                        # Any other Negative Response: suppress only if DID is listed
-                        if prev_identifier not in SUPPRESS_NRC_DIDS:
-                            logger.error(f"{prev_identifier} Negative Response: {msg}")
-                        break
-                    else:
-                        # We have a Tx line but couldn't parse an identifier
-                        msg = line.split(':', 1)[1].strip()
-                        # Suppress orphaned 0x78 to avoid noise
-                        if "Request Correctly Received - Response Pending" not in line:
-                            logger.error(f"Unknown Negative Response: {msg} (previous Tx invalid)")
-                        break
-            else:
-                # No previous Tx found
-                msg = line.split(':', 1)[1].strip()
-                # Suppress orphaned 0x78 to avoid noise
-                if "Request Correctly Received - Response Pending" not in line:
-                    logger.error(f"Unknown Negative Response: {msg} (no previous Tx found)")
-
-        elif line_type == "Error":
-            for j in range(i - 1, -1, -1):
-                prev_line, prev_type = all_lines[j]
-                if prev_type == "Tx":
-                    prev_values = extract_values_from_line(prev_line)
-                    if len(prev_values) >= 2:
-                        prev_identifier = "".join(b.replace("0x", "").upper() for b in prev_values[:2])
-                        timestamp = line[:21] if len(line) >= 19 else "Unknown timestamp"
-                        logger.error(f"{prev_identifier} No response from ECU detected at {timestamp}")
-                    else:
-                        timestamp = line[:21] if len(line) >= 19 else "Unknown timestamp"
-                        logger.error(f"Unknown No response from ECU detected at {timestamp} (previous Tx invalid)")
-                    break
-            else:
-                timestamp = line[:21] if len(line) >= 19 else "Unknown timestamp"
-                logger.error(f"Unknown No response from ECU detected at {timestamp} (no previous Tx found)")
-
+    # ---------- RX-only processing (skip Negative Responses here to avoid double logging) ----------
     for rx_line in rx_lines:
+        # Skip any Negative Response lines here—they were already processed above
+        if "Negative Response" in rx_line:
+            continue
+
         rx_values = extract_values_from_line(rx_line)
         if len(rx_values) < 3:
             continue
         rx_identifier = "".join(byte.replace("0x", "").upper() for byte in rx_values[:2])
+
         if rx_identifier == "F195":
             result = convert(rx_values[2:])
             if result and result != "0" and result != "wrong output":
@@ -390,29 +389,14 @@ def process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, logger):
         if rx_identifier in passed_identifiers:
             continue
         seen_identifiers.add(rx_identifier)
-        if "Request Correctly Received - Response Pending" in rx_line:
-            # 0x78: suppress only for configured DIDs
-            if rx_identifier in SUPPRESS_NRC_DIDS:
-                continue
-            else:
-                logger.error(f"{rx_identifier}\033[91m Negative Response detected \033[0m")
-            continue
-        if "NRC=Sub Function Not Supported" in rx_line:
-            # Always show this NRC
-            logger.error(f"{rx_identifier}\033[91m Negative Response detected \033[0m")
-            continue
-        elif "Negative Response" in rx_line:
-            # Other NRCs can be suppressed per DID
-            if rx_identifier not in SUPPRESS_NRC_DIDS:
-                logger.error(f"{rx_identifier}\033[91m Negative Response detected \033[0m")
 
-            continue
         if "Diagnostic Session Control " in rx_line:
             logger.warning(f"{rx_identifier}\033[94m Diagnostic Session Control \033[0m")
             continue
         if "Security Access " in rx_line:
             logger.warning(f"{rx_identifier}\033[94m Security Access \033[0m")
             continue
+
         Standart_Generetic_condition = id_Standart_Generetic.ID_CONDITIONS.get(rx_identifier, "Unknown DID")
         result = convert(rx_values[2:])
         raw_values = " ".join(val.replace("0x", "") for val in rx_values[2:])
@@ -453,6 +437,7 @@ def process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, logger):
     elif os.path.exists(original_log_file):
         strip_ansi_codes(original_log_file)
     return result_folder
+
 if __name__ == "__main__":
     folder_path = r"C:\\temp3"
     files = glob.glob(os.path.join(folder_path, "*.uds.txt"))
@@ -473,15 +458,12 @@ if __name__ == "__main__":
                 script_logger = setup_logger(script_name, Logs_folder)
                 script_logger.setLevel(logging.DEBUG)
                 if tx_lines or rx_lines:
-                    result=process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, script_logger)
-
+                    result = process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, script_logger)
                     if result:  # only overwrite if we actually got a result
                         result_folder = os.path.basename(result)
 
             if result_folder:
-                 os.environ['RESULT_FOLDER'] = result_folder
-                 os.system('python modify_compliance_matrix.py')
+                os.environ['RESULT_FOLDER'] = result_folder
+            #    os.system('python modify_compliance_matrix.py')
             else:
-                 logger.warning("No result folder was detected from logs. Compliance matrix not generated.")
-
-
+                logger.warning("No result folder was detected from logs. Compliance matrix not generated.")

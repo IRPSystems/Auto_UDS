@@ -1,8 +1,9 @@
-linedelay 500
+#linedelay 500
 tester on
 send 10 03
+#linedelay 600
 security 1
-#linedelay 500
+
 
 #Boot  Software  Identification F180
 send 22 F180

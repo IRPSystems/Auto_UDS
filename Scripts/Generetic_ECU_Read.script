@@ -1,11 +1,14 @@
 #System Supplier ECU Software Version Number F195
 send 22 F195
 
+
 #Odometer F1B0
 send 22 F1B0
 
+
 #Battery Voltage F1B1
 send 22 F1B1
+
 
 #Vehicle Speed F1B2
 send 22 F1B2

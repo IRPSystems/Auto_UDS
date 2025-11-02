@@ -23,6 +23,25 @@ send 11 03
 
 
 
+UdsClient_CL.exe 51 UPP /s "C:\Users\ilyar\PycharmProjects\UDS\Scripts\Standard_Identifiers.script"
+"C:\Users\ilyar\PycharmProjects\UDS\Scripts\CanConfig_103.script"
+"C:\Users\ilyar\PycharmProjects\UDS\Scripts\Faults_Configuration.script"
+"C:\Users\ilyar\PycharmProjects\UDS\Scripts\Network_F1D5.script"
+"C:\Users\ilyar\PycharmProjects\UDS\Scripts\Network_Missmatch_F1D3.script"
+"C:\Users\ilyar\PycharmProjects\UDS\Scripts\Network_TimeOut_F1D2.script"
+"C:\Users\ilyar\PycharmProjects\UDS\Scripts\Routine_Control.script"
+"C:\Users\ilyar\PycharmProjects\UDS\Scripts\Standard_Identifiers.script"
+"C:\Users\ilyar\PycharmProjects\UDS\Scripts\TrueDriveManager.script"
+"C:\Users\ilyar\PycharmProjects\UDS\Scripts\Generetic_ECU_Read.script"
+
+
+UdsClient_CL.exe 51 UPP /s "C:\Users\ilyar\PycharmProjects\UDS\Scripts\Generetic_ECU_Read.script" "C:\Users\ilyar\PycharmProjects\UDS\Scripts\CanConfig_103.script" "C:\Users\ilyar\PycharmProjects\UDS\Scripts\Faults_Configuration.script" "C:\Users\ilyar\PycharmProjects\UDS\Scripts\Network_F1D5.script" "C:\Users\ilyar\PycharmProjects\UDS\Scripts\Network_Missmatch_F1D3.script" "C:\Users\ilyar\PycharmProjects\UDS\Scripts\Network_TimeOut_F1D2.script" "C:\Users\ilyar\PycharmProjects\UDS\Scripts\Routine_Control.script" "C:\Users\ilyar\PycharmProjects\UDS\Scripts\Standard_Identifiers.script" "C:\Users\ilyar\PycharmProjects\UDS\Scripts\TrueDriveManager.script"
+
+UdsClient_CL.exe 51 UPP /f "C:\Users\ilyar\Desktop\UPP\UPP_v3.02.02\FW Merged\HD_Gen2_Merge_App_UPP_v3.02.02.brn.hex"
+
+UdsClient_CL.exe 51 **Bootloader** /f "C:\Users\ilyar\Desktop\UPP\UPP_v3.02.02\FW Merged\HD_Gen2_Merge_Boot_UPP_v3.02.02.brn.hex"
+
+
 
 
 
