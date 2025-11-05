@@ -1,5 +1,5 @@
 import os
-import time
+import re
 import sys
 import subprocess
 import time
@@ -88,21 +88,67 @@ def run_flash(exe: Path, channel: str, target: str, file_path: Path) -> None:
     list_xmls_in_target()
 
     env = os.environ.copy()
-    # helpful if the EXE loads sidecar DLLs/configs by PATH
     env["PATH"] = str(TARGET_DIR) + os.pathsep + env.get("PATH", "")
 
-    # run in the folder where the XML lives, and stream output
-    completed = subprocess.run(
+    # Start process and stream output so we can rewrite percentages live
+    process = subprocess.Popen(
         cmd,
-        check=False,
         cwd=str(TARGET_DIR),
         env=env,
-        text=True,
-        stdout=sys.stdout,
+        stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
+        text=True,
+        encoding="utf-8",
+        errors="replace",     # tolerate odd console encodings
+        bufsize=1,
+        universal_newlines=True
     )
-    if completed.returncode != 0:
-        raise RuntimeError(f"Flash command failed with exit code {completed.returncode}")
+
+    pct_re = re.compile(r"^\s*(\d{1,3})%\s*$")
+    last_pct = None
+    line_len = 0             # length of the last rendered progress line
+
+    def render_progress(pct_text: str):
+        nonlocal line_len
+        msg = f"Flashing progress: {pct_text}%"
+        # overwrite previous line safely even if \r doesn't erase the tail:
+        pad = " " * max(0, line_len - len(msg))
+        sys.stdout.write("\r" + msg + pad)
+        sys.stdout.flush()
+        line_len = len(msg)
+
+    for raw in process.stdout:
+        line = raw.rstrip("\r\n")
+        m = pct_re.match(line)
+        if m:
+            pct = int(m.group(1))
+            # detect sequence reset (tool starts a new chunk)
+            if last_pct is not None and pct < last_pct:
+                # end the previous progress line
+                sys.stdout.write("\n")
+                sys.stdout.flush()
+                line_len = 0
+            render_progress(str(pct))
+            last_pct = pct
+            continue
+
+        # Non-percent line: finish progress line (if any), then print the message
+        if last_pct is not None:
+            sys.stdout.write("\n")
+            sys.stdout.flush()
+            last_pct = None
+            line_len = 0
+        print(line)
+
+    process.wait()
+
+    # If we ended on a progress line, close it nicely
+    if last_pct is not None:
+        sys.stdout.write("\n")
+        sys.stdout.flush()
+
+    if process.returncode != 0:
+        raise RuntimeError(f"Flash command failed with exit code {process.returncode}")
 
 def main() -> int:
     try:

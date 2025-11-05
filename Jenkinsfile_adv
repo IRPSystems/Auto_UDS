@@ -161,13 +161,44 @@ PS
           scp -r "${DEST_FOLDER}/${PREVIOUS_FOLDER}" ${REMOTE_USER}@${REMOTE_IP}:"C:/Jenkins/NewVersion"
 
           ssh ${REMOTE_USER}@${REMOTE_IP} "cmd /c dir C:\\Jenkins\\NewVersion"
+          echo "🎉 Firmware files copied successfully to: ${REMOTE_TARGET} on ${REMOTE_IP}"
+        """
+      }
+    }
+        stage('Run Flash Script') {
+      steps {
+        echo "⚡ Starting firmware flashing on remote Windows machine..."
+
+        // Execute the Python script remotely using PowerShell
+        sh """
+          ssh ${REMOTE_USER}@${REMOTE_IP} powershell -NoProfile -Command - <<'PS'
+          Write-Host "📂 Switching to Jenkins workspace"
+          Set-Location 'C:\\Jenkins\\workspace\\Auto_UDS'
+
+          # Ensure the flash file exists
+          $flashPath = 'C:\\Jenkins\\workspace\\Auto_UDS\\UPP_flash.py'
+          if (-Not (Test-Path $flashPath)) {
+              Write-Host "❌ Flash script not found at $flashPath"
+              exit 1
+          }
+
+          Write-Host "🐍 Running UPP_flash.py ..."
+          & 'C:\\Jenkins\\workspace\\Auto_UDS\\venv\\Scripts\\python.exe' $flashPath
+          if ($LASTEXITCODE -ne 0) {
+              Write-Host "❌ Flash script failed with exit code $LASTEXITCODE"
+              exit $LASTEXITCODE
+          } else {
+              Write-Host "✅ Flash script completed successfully!"
+          }
+          PS
         """
       }
     }
 
+
     stage('Done') {
       steps {
-        echo "🎉 Firmware files copied successfully to: ${REMOTE_TARGET} on ${REMOTE_IP}"
+        echo "🎉 Firmware files copied and flashed successfully."
       }
     }
   }
