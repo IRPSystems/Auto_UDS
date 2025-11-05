@@ -82,17 +82,28 @@ def list_xmls_in_target():
             print("   -", x.name)
 
 def run_flash(exe: Path, channel: str, target: str, file_path: Path) -> None:
-    """Run the flashing CLI and render 'N%' progress on a single updating line."""
+    def require_exists(path: Path, desc: str) -> None:
+        if not path.exists():
+            raise FileNotFoundError(f"{desc} not found: {path}")
+
+    def list_xmls_in_target(target_dir: Path):
+        xmls = list(target_dir.glob("*.xml"))
+        if not xmls:
+            print(f"[WARN] No XML files found in {target_dir}")
+        else:
+            print("[INFO] XML files visible to tool:")
+            for x in xmls:
+                print("   -", x.name)
+
     require_exists(exe, "UdsClient_CL.exe")
     require_exists(file_path, f"hex file for {target}")
 
     cmd = [str(exe), channel, target, "/f", str(file_path)]
     print(f'\n==> Running: {Path(exe).name} {channel} {target} /f "{file_path}"')
     print(f"[INFO] Working directory for process: {TARGET_DIR}")
-    list_xmls_in_target()
+    list_xmls_in_target(TARGET_DIR)
 
     env = os.environ.copy()
-    # if the EXE loads sidecar DLLs/configs by PATH, help it:
     env["PATH"] = str(TARGET_DIR) + os.pathsep + env.get("PATH", "")
 
     process = subprocess.Popen(
@@ -103,21 +114,24 @@ def run_flash(exe: Path, channel: str, target: str, file_path: Path) -> None:
         stderr=subprocess.STDOUT,
         text=True,
         encoding="utf-8",
-        errors="replace",     # tolerate odd console encodings
+        errors="replace",
         bufsize=1,
-        universal_newlines=True
+        universal_newlines=True,
     )
 
     pct_re = re.compile(r"^\s*(\d{1,3})%\s*$")
     last_pct = None
-    line_len = 0  # length of the last rendered progress line
+    line_len = 0
 
-    def render_progress(pct_text: str):
-        nonlocal line_len
-        msg = f"Flashing progress: {pct_text}%"
-        # overwrite previous line safely even if \r doesn't erase the tail:
-        pad = " " * max(0, line_len - len(msg))
-        sys.stdout.write("\r" + msg + pad)
+    def render_progress(pct: int):
+        nonlocal last_pct, line_len
+        if last_pct == pct:
+            return  # suppress duplicates (Jenkins prints each line)
+        last_pct = pct
+        msg = f"Flashing progress: {pct}%"
+        # Try to overwrite the same line (ANSI clear-line + CR). If console
+        # doesn't honor ANSI, you'll still get one line per changed % only.
+        sys.stdout.write("\x1b[2K\r" + msg)
         sys.stdout.flush()
         line_len = len(msg)
 
@@ -126,21 +140,13 @@ def run_flash(exe: Path, channel: str, target: str, file_path: Path) -> None:
         m = pct_re.match(line)
         if m:
             pct = int(m.group(1))
-            # detect sequence reset (tool starts a new chunk)
-            if last_pct is not None and pct < last_pct:
-                # end the previous progress line
-                sys.stdout.write("\n")
-                sys.stdout.flush()
-                line_len = 0
-            render_progress(str(pct))
-            last_pct = pct
+            render_progress(pct)
             continue
 
-        # Non-percent line: finish progress line (if any), then print the message
+        # Non-percent output: end the progress line cleanly once
         if last_pct is not None:
             sys.stdout.write("\n")
             sys.stdout.flush()
-            last_pct = None
             line_len = 0
         print(line)
 
