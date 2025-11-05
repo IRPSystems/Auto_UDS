@@ -1,6 +1,22 @@
 pipeline {
   agent { label 'master' }
 
+  options {
+  ansiColor('xterm')
+  }
+  parameters {
+    choice(
+      name: 'DEVICE',
+      choices: ['UPP', 'NewGen'],
+      description: 'Select the project you want to run'
+    )
+    choice(
+      name: 'FLASH_LOOPS',
+      choices: ['1','2','3','4','5','6','7','8','9','10'],
+      description: 'How many flash rounds to run'
+    )
+  }
+
   environment {
     RCLONE_BASE      = 'irp:General/releases'
     DEST_FOLDER      = "${env.HOME}/workspace/NewVersion"
@@ -15,7 +31,8 @@ pipeline {
     stage('Environment') {
       steps {
         script {
-          switch (env.DEVICE) {
+          // Use params.DEVICE, not env.DEVICE
+          switch (params.DEVICE) {
             case 'UPP':
               env.REMOTE_IP    = '192.168.10.31'
               env.REMOTE_USER  = 'dyno'
@@ -40,7 +57,6 @@ pipeline {
       steps {
         sh """
           echo "🚀 Running remote clone + setup (PowerShell via stdin)..."
-
           ssh ${REMOTE_USER}@${REMOTE_IP} powershell -NoProfile -Command - <<'PS'
 if (-not (Test-Path 'C:\\Jenkins\\workspace')) {
   New-Item -ItemType Directory -Path 'C:\\Jenkins\\workspace' -Force | Out-Null
@@ -58,7 +74,7 @@ Set-Location 'C:\\Jenkins\\workspace\\Auto_UDS'
 # Temporarily disabled:
 if (Test-Path 'venv') { Remove-Item -Recurse -Force 'venv' }
 python -m venv venv
-#& 'venv\\Scripts\\pip.exe' install -r '${REQUIREMENTS}'
+#& 'venv\\Scripts\\pip.exe' install -r 'requirements.txt'
 #& 'venv\\Scripts\\pip.exe' freeze | Tee-Object -FilePath 'freeze.txt'
 PS
         """
@@ -77,7 +93,7 @@ PS
 
           def previousFolder = sh(
             script: """
-              rclone lsd "${RCLONE_BASE}/${MAIN_VER_DIR}" | sort -k2,3 | tail -n2 | head -n1  | awk '{\$1=\$2=\$3=\$4=""; print \$0}' | sed 's/^ *//'
+              rclone lsd "${RCLONE_BASE}/${MAIN_VER_DIR}" | sort -k2,3 | tail -n2 | head -n1 | awk '{\$1=\$2=\$3=\$4=""; print \$0}' | sed 's/^ *//'
             """,
             returnStdout: true
           ).trim()
@@ -99,7 +115,6 @@ PS
 
     stage('Copy Previous/Latest Firmware') {
       steps {
-        // 1) Local prep & copy from rclone
         sh """
           echo "🧹 Cleaning destination folder: ${DEST_FOLDER}"
           rm -rf "${DEST_FOLDER}"
@@ -112,7 +127,6 @@ PS
           rclone copy "${RCLONE_BASE}/${MAIN_VER_DIR}/${PREVIOUS_FOLDER}/" "${DEST_FOLDER}/${PREVIOUS_FOLDER}"
         """
 
-        // 2) Delete remote folder completely and recreate it EMPTY (robust), then verify
         sh """
           echo "🖥️ Deleting and recreating remote NewVersion folder on ${REMOTE_USER}@${REMOTE_IP}..."
           ssh ${REMOTE_USER}@${REMOTE_IP} powershell -NoProfile -Command - <<'PS'
@@ -154,47 +168,52 @@ if (\$items.Count -gt 0) {
 PS
         """
 
-        // 3) Push the freshly copied firmware (both) to the remote
         sh """
           echo "📤 Sending files to remote host"
           scp -r "${DEST_FOLDER}/${LATEST_FOLDER}"   ${REMOTE_USER}@${REMOTE_IP}:"C:/Jenkins/NewVersion"
           scp -r "${DEST_FOLDER}/${PREVIOUS_FOLDER}" ${REMOTE_USER}@${REMOTE_IP}:"C:/Jenkins/NewVersion"
-
           ssh ${REMOTE_USER}@${REMOTE_IP} "cmd /c dir C:\\Jenkins\\NewVersion"
           echo "🎉 Firmware files copied successfully to: ${REMOTE_TARGET} on ${REMOTE_IP}"
         """
       }
     }
-        stage('Run Flash Script') {
+
+    stage('Flash Loops') {
       steps {
-        echo "⚡ Starting firmware flashing on remote Windows machine..."
+        script {
+          int loops = params.FLASH_LOOPS as Integer
+          for (int i = 1; i <= loops; i++) {
+            echo "⚡ Starting flash round ${i} of ${loops}"
+            sh """
+              ssh \${REMOTE_USER}@\${REMOTE_IP} powershell -NoProfile -Command - <<'PS'
+              # UTF-8 everything (prevents charmap issues)
+              chcp 65001 | Out-Null
+              [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+              \$env:PYTHONIOENCODING = 'utf-8'
+              \$env:PYTHONUTF8 = '1'
+              \$env:ROUND_INDEX = '${i}/${loops}'
 
-        // Execute the Python script remotely using PowerShell
-        sh """
-          ssh ${REMOTE_USER}@${REMOTE_IP} powershell -NoProfile -Command - <<'PS'
-          Write-Host "📂 Switching to Jenkins workspace"
-          Set-Location 'C:\\Jenkins\\workspace\\Auto_UDS'
+              Set-Location 'C:\\Jenkins\\workspace\\Auto_UDS'
+              \$flashPath = 'C:\\Jenkins\\workspace\\Auto_UDS\\1UPP_flash.py'
+              if (-Not (Test-Path \$flashPath)) {
+                Write-Host "❌ Flash script not found at \$flashPath"
+                exit 1
+              }
 
-          # Ensure the flash file exists
-          $flashPath = 'C:\\Jenkins\\workspace\\Auto_UDS\\UPP_flash.py'
-          if (-Not (Test-Path $flashPath)) {
-              Write-Host "❌ Flash script not found at $flashPath"
-              exit 1
+              Write-Host "🐍 Running UPP_flash.py (round ${i}/${loops}) ..."
+              & 'C:\\Jenkins\\workspace\\Auto_UDS\\venv\\Scripts\\python.exe' -X utf8 -u \$flashPath
+              if (\$LASTEXITCODE -ne 0) {
+                Write-Host "❌ Flash script failed with exit code \$LASTEXITCODE (round ${i}/${loops})"
+                exit \$LASTEXITCODE
+              } else {
+                Write-Host "✅ Flash script completed successfully (round ${i}/${loops})"
+              }
+              PS
+            """
           }
-
-          Write-Host "🐍 Running UPP_flash.py ..."
-          & 'C:\\Jenkins\\workspace\\Auto_UDS\\venv\\Scripts\\python.exe' $flashPath
-          if ($LASTEXITCODE -ne 0) {
-              Write-Host "❌ Flash script failed with exit code $LASTEXITCODE"
-              exit $LASTEXITCODE
-          } else {
-              Write-Host "✅ Flash script completed successfully!"
-          }
-          PS
-        """
+        }
       }
     }
-
 
     stage('Done') {
       steps {
