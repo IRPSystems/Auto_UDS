@@ -1,4 +1,3 @@
-
 pipeline {
   agent { label 'master' }
 
@@ -24,7 +23,7 @@ pipeline {
               env.REQUIREMENTS = 'requirements.txt'
               break
             case 'NewGen':
-              env.REMOTE_IP    = '192.168.10.80'
+              env.REMOTE_IP    = '192.168.10.85'
               env.REMOTE_USER  = 'dyno'
               env.MAIN_VER_DIR = 'dynamic 6/newGen'   // contains space
               env.REQUIREMENTS = 'requirements.txt'
@@ -47,21 +46,20 @@ if (-not (Test-Path 'C:\\Jenkins\\workspace')) {
   New-Item -ItemType Directory -Path 'C:\\Jenkins\\workspace' -Force | Out-Null
 }
 
-#if (-not (Test-Path 'C:\\Jenkins\\workspace\\Auto_UDS')) {
-#  git clone https://github.com/IRPSystems/Auto_UDS.git 'C:\\Jenkins\\workspace\\Auto_UDS'
-#} else {
-##  Write-Host 'Repo exists, pulling latest...'
-#  Set-Location 'C:\\Jenkins\\workspace\\Auto_UDS'
-#  git pull
-#}
+if (-not (Test-Path 'C:\\Jenkins\\workspace\\Auto_UDS')) {
+  git clone https://github.com/IRPSystems/Auto_UDS.git 'C:\\Jenkins\\workspace\\Auto_UDS'
+} else {
+  Set-Location 'C:\\Jenkins\\workspace\\Auto_UDS'
+  git pull
+}
 
 Set-Location 'C:\\Jenkins\\workspace\\Auto_UDS'
 
 # Temporarily disabled:
 if (Test-Path 'venv') { Remove-Item -Recurse -Force 'venv' }
 python -m venv venv
-& 'venv\\Scripts\\pip.exe' install -r '${REQUIREMENTS}'
-& 'venv\\Scripts\\pip.exe' freeze | Tee-Object -FilePath 'freeze.txt'
+#& 'venv\\Scripts\\pip.exe' install -r '${REQUIREMENTS}'
+#& 'venv\\Scripts\\pip.exe' freeze | Tee-Object -FilePath 'freeze.txt'
 PS
         """
       }
@@ -77,32 +75,47 @@ PS
             returnStdout: true
           ).trim()
 
+          def previousFolder = sh(
+            script: """
+              rclone lsd "${RCLONE_BASE}/${MAIN_VER_DIR}" | sort -k2,3 | tail -n2 | head -n1  | awk '{\$1=\$2=\$3=\$4=""; print \$0}' | sed 's/^ *//'
+            """,
+            returnStdout: true
+          ).trim()
+
           if (!latestFolder) {
             error "❌ Could not find the latest folder in ${RCLONE_BASE}/${MAIN_VER_DIR}"
           }
+          if (!previousFolder) {
+            error "❌ Could not find the previous folder in ${RCLONE_BASE}/${MAIN_VER_DIR} (need at least two releases)"
+          }
+
           echo "✅ Latest firmware folder: ${latestFolder}"
           env.LATEST_FOLDER = latestFolder
+          echo "✅ Previous firmware folder: ${previousFolder}"
+          env.PREVIOUS_FOLDER = previousFolder
         }
       }
     }
 
-   stage('Copy Latest Firmware') {
-  steps {
-    // 1) Local prep & copy from rclone
-    sh """
-      echo "🧹 Cleaning destination folder: ${DEST_FOLDER}"
-      #rm -rf "${DEST_FOLDER}/${LATEST_FOLDER}"
-      rm -rf "${DEST_FOLDER}"
-      mkdir -p "${DEST_FOLDER}"
+    stage('Copy Previous/Latest Firmware') {
+      steps {
+        // 1) Local prep & copy from rclone
+        sh """
+          echo "🧹 Cleaning destination folder: ${DEST_FOLDER}"
+          rm -rf "${DEST_FOLDER}"
+          mkdir -p "${DEST_FOLDER}"
 
-      echo "📦 Copying from: ${RCLONE_BASE}/${MAIN_VER_DIR}/${LATEST_FOLDER}/"
-      rclone copy "${RCLONE_BASE}/${MAIN_VER_DIR}/${LATEST_FOLDER}/" "${DEST_FOLDER}/${LATEST_FOLDER}"
-    """
+          echo "📦 Copying from: ${RCLONE_BASE}/${MAIN_VER_DIR}/${LATEST_FOLDER}/"
+          rclone copy "${RCLONE_BASE}/${MAIN_VER_DIR}/${LATEST_FOLDER}/" "${DEST_FOLDER}/${LATEST_FOLDER}"
 
-    // 2) Delete remote folder completely and recreate it EMPTY (robust), then verify
-    sh """
-      echo "🖥️ Deleting and recreating remote NewVersion folder on ${REMOTE_USER}@${REMOTE_IP}..."
-      ssh ${REMOTE_USER}@${REMOTE_IP} powershell -NoProfile -Command - <<'PS'
+          echo "📦 Copying from: ${RCLONE_BASE}/${MAIN_VER_DIR}/${PREVIOUS_FOLDER}/"
+          rclone copy "${RCLONE_BASE}/${MAIN_VER_DIR}/${PREVIOUS_FOLDER}/" "${DEST_FOLDER}/${PREVIOUS_FOLDER}"
+        """
+
+        // 2) Delete remote folder completely and recreate it EMPTY (robust), then verify
+        sh """
+          echo "🖥️ Deleting and recreating remote NewVersion folder on ${REMOTE_USER}@${REMOTE_IP}..."
+          ssh ${REMOTE_USER}@${REMOTE_IP} powershell -NoProfile -Command - <<'PS'
 \$root = 'C:\\Jenkins\\NewVersion'
 Write-Host "➡️ Target:" \$root
 
@@ -126,7 +139,7 @@ if (\$rc -gt 7) {
   Get-ChildItem -LiteralPath \$root -Force | Remove-Item -Recurse -Force -ErrorAction Continue
 }
 
-# (Re)create the root (robocopy /MIR keeps it, but ensure presence)
+# (Re)create the root
 if (-not (Test-Path \$root)) { New-Item -ItemType Directory -Path \$root -Force | Out-Null }
 
 # Verify empty; fail if not
@@ -139,17 +152,19 @@ if (\$items.Count -gt 0) {
   Write-Host '✅ Folder is empty.'
 }
 PS
-    """
+        """
 
-    // 3) Push the freshly copied firmware to the slave
-    sh """
-      echo "📤 Sending files to remote host"
-      scp -r "${DEST_FOLDER}/${LATEST_FOLDER}" ${REMOTE_USER}@${REMOTE_IP}:"C:/Jenkins/NewVersion"
-      ssh ${REMOTE_USER}@${REMOTE_IP} "cmd /c dir C:\\Jenkins\\NewVersion"
+        // 3) Push the freshly copied firmware (both) to the remote
+        sh """
+          echo "📤 Sending files to remote host"
+          scp -r "${DEST_FOLDER}/${LATEST_FOLDER}"   ${REMOTE_USER}@${REMOTE_IP}:"C:/Jenkins/NewVersion"
+          scp -r "${DEST_FOLDER}/${PREVIOUS_FOLDER}" ${REMOTE_USER}@${REMOTE_IP}:"C:/Jenkins/NewVersion"
 
-    """
-  }
-}
+          ssh ${REMOTE_USER}@${REMOTE_IP} "cmd /c dir C:\\Jenkins\\NewVersion"
+        """
+      }
+    }
+
     stage('Done') {
       steps {
         echo "🎉 Firmware files copied successfully to: ${REMOTE_TARGET} on ${REMOTE_IP}"

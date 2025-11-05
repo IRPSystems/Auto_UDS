@@ -4,7 +4,6 @@ from openpyxl.styles import PatternFill, Font
 import os
 import sys
 import re
-import  output_with_raw
 
 # Define file paths
 SRD_path = r"C:\Users\ilyar\Downloads\HD-UP-ICD-242601-UDID.xlsx"

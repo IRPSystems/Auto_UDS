@@ -1,12 +1,20 @@
+
+
+##Version 1.0.3
+## This is the third main that should run all UDS logs, also it's using and logger, routine should be run separately
+#Can go over all uds commands in one log
+
 import logging
 import os
 import re
 import glob
 import shutil
 from datetime import datetime
-from Condition import (id_conditions_F1D2, id_conditions_F1D3, id_conditions_Fault_Config,
-                       id_conditions_TrueDrive, id_conditions_Routine, id_conditions_F1D5,
-                       id_conditions_CanConfig_103, id_Standart_Generetic)
+
+
+
+
+from Condition import (id_conditions_Network_Management,id_Standard_Generetic)
 from logger import setup_logger
 
 SKIP_IDENTIFIERS = {""}
@@ -14,7 +22,13 @@ SKIP_IDENTIFIERS = {""}
 # Leave empty (or use only for NRCs other than 0x78); 0x78 is always ignore7d.
 SUPPRESS_NRC_DIDS = set()
 
-Logs_folder = os.path.join("Logs")
+#Logs_folder = os.path.join("Logs")
+###############################
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+Logs_folder = os.path.join(SCRIPT_DIR, "Logs")
+os.makedirs(Logs_folder, exist_ok=True)
+#####################################
+
 if not os.path.exists(Logs_folder):
     os.mkdir(Logs_folder)
 
@@ -72,20 +86,9 @@ def get_condition_from_position(position, script_name):
     if isinstance(script_name, tuple):
         script_name = script_name[0]
     conditions = []
-    if script_name == "Network_TimeOut_F1D2":
-        condition_dict = id_conditions_F1D2.ID_CONDITIONS
-    elif script_name == "Network_Missmatch_F1D3":
-        condition_dict = id_conditions_F1D3.ID_CONDITIONS
-    elif script_name == "Faults_Configuration":
-        condition_dict = id_conditions_Fault_Config.ID_CONDITIONS
-    elif script_name == "TrueDriveManager":
-        condition_dict = id_conditions_TrueDrive.ID_CONDITIONS
-    elif script_name == "Routine_Control":
-        condition_dict = id_conditions_Routine.ID_CONDITIONS
-    elif script_name == "Network_F1D5":
-        condition_dict = id_conditions_F1D5.ID_CONDITIONS
-    elif script_name == "CanConfig_103":
-        condition_dict = id_conditions_CanConfig_103.ID_CONDITIONS
+    if script_name == "Network_Management":
+        condition_dict = id_conditions_Network_Management.ID_CONDITIONS
+
     else:
         condition_dict = {}
     for key, value in condition_dict.items():
@@ -110,7 +113,47 @@ def process_uds_file(file_path, logger):
             # Check for script start marker using regex
             if re.search(r">>>\s*Script Start", line):
                 if script_started and current_script_name:
-                    # Save the previous script section
+                    # Process Routine_Control lines before saving
+                    if current_script_name == "Routine_Control":
+                        fixed_lines = []
+                        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                        for line in current_lines:
+                            if re.search(r">>> Script Start", line):
+                                match = re.search(r">>> Script Start:(.*\\Scripts\\([^\\]+)\.script)", line)
+                                fixed_lines.append(f"{timestamp} >>> Script Start:{match.group(1)}")
+                                continue
+                            if re.search(r"<<< Script End", line, re.IGNORECASE):
+                                fixed_lines.append(f"{timestamp} <<< Script End")
+                                continue
+                            values = extract_values_from_line(line)
+                            if (line.startswith("Tx)") and "Routine Control" in line and
+                                    current_script_name == "Routine_Control" and len(values) >= 3 and
+                                    values[:3] == ["0x01", "0x02", "0x01"]):
+                                # Extract payload after the first 3 values, limit to 25 more (total 28)
+                                payload_values = values[3:] if len(values) > 3 else []
+                                if len(payload_values) >= 25:  # 2 prefix + 25 payload = 27 total
+                                    payload_values = payload_values[:25]  # Truncate to 25
+                                payload = " ".join(payload_values) if payload_values else ""
+                                fixed_tx = f"{timestamp} Tx) Routine Control               : 0x02 0x01 {payload}"
+                                fixed_lines.append(fixed_tx)
+                                continue
+                            if values and len(values) > 27:
+                                truncated_values = " ".join(values[:27])
+                                fixed_line = f"{timestamp} {line.split(':', 1)[0]}: {truncated_values}"
+                                fixed_lines.append(fixed_line)
+                            else:
+                                fixed_lines.append(f"{timestamp} {line}")
+                        # Reprocess fixed lines to update tx_lines, rx_lines, all_lines
+                        current_tx_lines, current_rx_lines, current_all_lines = [], [], []
+                        for fixed_line in fixed_lines:
+                            if fixed_line.startswith(f"{timestamp} Tx)"):
+                                current_tx_lines.append(fixed_line)
+                                current_all_lines.append((fixed_line, "Tx"))
+                            elif fixed_line.startswith(f"{timestamp} Rx)"):
+                                current_rx_lines.append(fixed_line)
+                                current_all_lines.append((fixed_line, "Rx"))
+                            else:
+                                current_all_lines.append((fixed_line, "Other"))
                     script_sections.append((current_script_name, current_tx_lines, current_rx_lines, current_all_lines))
                     logger.debug(f"Saved script section: {current_script_name} with {len(current_tx_lines)} Tx lines and {len(current_rx_lines)} Rx lines")
                 # Start a new script section
@@ -143,7 +186,7 @@ def process_uds_file(file_path, logger):
                             if (line.startswith("Tx)") and "Routine Control" in line and
                                     current_script_name == "Routine_Control" and len(values) >= 3 and
                                     values[:3] == ["0x01", "0x02", "0x01"]):
-                                # Extract payload after the first 3 values, limit to 25 more (total 27)
+                                # Extract payload after the first 3 values, limit to 25 more (total 28)
                                 payload_values = values[3:] if len(values) > 3 else []
                                 if len(payload_values) >= 25:  # 2 prefix + 25 payload = 27 total
                                     payload_values = payload_values[:25]  # Truncate to 25
@@ -211,9 +254,10 @@ def process_uds_file(file_path, logger):
                 if (line.startswith("Tx)") and "Routine Control" in line and
                         current_script_name == "Routine_Control" and len(values) >= 3 and
                         values[:3] == ["0x01", "0x02", "0x01"]):
+                    # Extract payload after the first 3 values, limit to 25 more (total 28)
                     payload_values = values[3:] if len(values) > 3 else []
-                    if len(payload_values) >= 25:
-                        payload_values = payload_values[:25]
+                    if len(payload_values) >= 25:  # 2 prefix + 25 payload = 27 total
+                        payload_values = payload_values[:25]  # Truncate to 25
                     payload = " ".join(payload_values) if payload_values else ""
                     fixed_tx = f"{timestamp} Tx) Routine Control               : 0x02 0x01 {payload}"
                     fixed_lines.append(fixed_tx)
@@ -224,6 +268,7 @@ def process_uds_file(file_path, logger):
                     fixed_lines.append(fixed_line)
                 else:
                     fixed_lines.append(f"{timestamp} {line}")
+            # Reprocess fixed lines to update tx_lines, rx_lines, all_lines
             current_tx_lines, current_rx_lines, current_all_lines = [], [], []
             for fixed_line in fixed_lines:
                 if fixed_line.startswith(f"{timestamp} Tx)"):
@@ -255,56 +300,6 @@ def process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, logger):
     passed_identifiers = set()
     result_folder = None
 
-    # ---------- SINGLE pass over all lines for Negative Response handling ----------
-    for i, (line, line_type) in enumerate(all_lines):
-        if line_type == "Rx" and "Negative Response" in line:
-            msg = line.split(':', 1)[1].strip()
-
-            # 0x78: always Pass/ignored
-            if "Request Correctly Received - Response Pending" in line:
-                #logger.info(f"Info: Response Pending (0x78) ignored -> {msg}")
-                continue
-
-            # Locate previous Tx to get DID, if any
-            prev_identifier = None
-            for j in range(i - 1, -1, -1):
-                prev_line, prev_type = all_lines[j]
-                if prev_type == "Tx":
-                    prev_values = extract_values_from_line(prev_line)
-                    if len(prev_values) >= 2:
-                        prev_identifier = "".join(b.replace("0x", "").upper() for b in prev_values[:2])
-                    break
-
-            # 0x12: always error
-            if "NRC=Sub Function Not Supported" in line:
-                logger.error(f"{prev_identifier or 'Unknown'} Negative Response: {msg}")
-                continue
-
-            # Other NRCs: suppress only if DID is configured
-            if prev_identifier and prev_identifier in SUPPRESS_NRC_DIDS:
-                continue
-            else:
-                logger.error(f"{prev_identifier or 'Unknown'} Negative Response: {msg}")
-
-        elif line_type == "Error":
-            # Existing error logic
-            for j in range(i - 1, -1, -1):
-                prev_line, prev_type = all_lines[j]
-                if prev_type == "Tx":
-                    prev_values = extract_values_from_line(prev_line)
-                    if len(prev_values) >= 2:
-                        prev_identifier = "".join(b.replace("0x", "").upper() for b in prev_values[:2])
-                        timestamp = line[:21] if len(line) >= 19 else "Unknown timestamp"
-                        logger.error(f"{prev_identifier} No response from ECU detected at {timestamp}")
-                    else:
-                        timestamp = line[:21] if len(line) >= 19 else "Unknown timestamp"
-                        logger.error(f"Unknown No response from ECU detected at {timestamp} (previous Tx invalid)")
-                    break
-            else:
-                timestamp = line[:21] if len(line) >= 19 else "Unknown timestamp"
-                logger.error(f"Unknown No response from ECU detected at {timestamp} (no previous Tx found)")
-
-    # ---------- Tx/Rx matching and value checks ----------
     for tx_line in tx_lines:
         tx_values = extract_values_from_line(tx_line)
         if len(tx_values) == 2:
@@ -316,7 +311,7 @@ def process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, logger):
         if tx_position == -1:
             continue
         if script_name in ["Standard_Identifiers", "Generetic_ECU_Read"]:
-            Standart_Generetic_condition = id_Standart_Generetic.ID_CONDITIONS.get(tx_identifier, "Unknown DID")
+            Standart_Generetic_condition = id_Standard_Generetic.ID_CONDITIONS.get(tx_identifier, "Unknown DID")
         else:
             Standart_Generetic_condition = get_condition_from_position(tx_position, script_name)[0]
         expected_condition = get_condition_from_position(tx_position, script_name)
@@ -360,38 +355,63 @@ def process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, logger):
                     else:
                         logger.error(f"{condition}, Mismatch Tx and Rx {tx_identifier}, Fail")
 
-    # ---------- RX-only processing (skip Negative Responses here to avoid double logging) ----------
-    for rx_line in rx_lines:
-        # Skip any Negative Response lines here—they were already processed above
-        if "Negative Response" in rx_line:
-            continue
+    for i, (line, line_type) in enumerate(all_lines):
+        if line_type == "Rx" and ("Negative Response" in line or "NRC=Sub Function Not Supported" in line):
+            for j in range(i - 1, -1, -1):
+                prev_line, prev_type = all_lines[j]
+                if prev_type == "Tx":
+                    prev_values = extract_values_from_line(prev_line)
+                    if len(prev_values) >= 2:
+                        prev_identifier = "".join(byte.replace("0x", "").upper() for byte in prev_values[:2])
+                        logger.error(f"{prev_identifier} Negative Response: {line.split(':', 1)[1].strip()}")
+                    else:
+                        logger.error(f"Unknown Negative Response: {line.split(':', 1)[1].strip()} (previous Tx invalid)")
+                    break
+            else:
+                logger.error(f"Unknown Negative Response: {line.split(':', 1)[1].strip()} (no previous Tx found)")
+        elif line_type == "Error":
+            for j in range(i - 1, -1, -1):
+                prev_line, prev_type = all_lines[j]
+                if prev_type == "Tx":
+                    prev_values = extract_values_from_line(prev_line)
+                    if len(prev_values) >= 2:
+                        prev_identifier = "".join(byte.replace("0x", "").upper() for byte in prev_values[:2])
+                        timestamp = line[:21] if len(line) >= 19 else "Unknown timestamp"
+                        logger.error(f"{prev_identifier} No response from ECU detected at {timestamp}")
+                    else:
+                        timestamp = line[:21] if len(line) >= 19 else "Unknown timestamp"
+                        logger.error(f"Unknown No response from ECU detected at {timestamp} (previous Tx invalid)")
+                    break
+            else:
+                timestamp = line[:21] if len(line) >= 19 else "Unknown timestamp"
+                logger.error(f"Unknown No response from ECU detected at {timestamp} (no previous Tx found)")
 
+    for rx_line in rx_lines:
         rx_values = extract_values_from_line(rx_line)
         if len(rx_values) < 3:
             continue
         rx_identifier = "".join(byte.replace("0x", "").upper() for byte in rx_values[:2])
-
         if rx_identifier == "F195":
             result = convert(rx_values[2:])
             if result and result != "0" and result != "wrong output":
-                result_folder = os.path.join("Logs", result)
+                result_folder = os.path.join(base_log_dir+"//Logs", result)
                 os.makedirs(result_folder, exist_ok=True)
                 logger.debug(f"Creating folder at: {result_folder}")
-
         if rx_identifier in SKIP_IDENTIFIERS:
             continue
         if rx_identifier in passed_identifiers:
             continue
         seen_identifiers.add(rx_identifier)
-
+        if "Negative Response" in rx_line or "NRC=Sub Function Not Supported" in rx_line:
+            logger.error(f"{rx_identifier}\033[91m Negative Response detected \033[0m")
+            continue
         if "Diagnostic Session Control " in rx_line:
             logger.warning(f"{rx_identifier}\033[94m Diagnostic Session Control \033[0m")
             continue
         if "Security Access " in rx_line:
             logger.warning(f"{rx_identifier}\033[94m Security Access \033[0m")
             continue
-
-        Standart_Generetic_condition = id_Standart_Generetic.ID_CONDITIONS.get(rx_identifier, "Unknown DID")
+        Standart_Generetic_condition = id_Standard_Generetic.ID_CONDITIONS.get(rx_identifier, "Unknown DID")
         result = convert(rx_values[2:])
         raw_values = " ".join(val.replace("0x", "") for val in rx_values[2:])
         rx_position = get_tx_position(rx_values)
@@ -430,7 +450,6 @@ def process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, logger):
             logger.error(f"Failed to move or clean log file: {e}")
     elif os.path.exists(original_log_file):
         strip_ansi_codes(original_log_file)
-    return result_folder
 
 if __name__ == "__main__":
     folder_path = r"C:\\temp3"
@@ -446,18 +465,17 @@ if __name__ == "__main__":
         if not script_sections:
             logger.warning("No script sections to process in %s", newest_file)
         else:
-            result_folder = None
             for script_name, tx_lines, rx_lines, all_lines in script_sections:
                 logger.info(f"Processing script section: {script_name}")
                 script_logger = setup_logger(script_name, Logs_folder)
                 script_logger.setLevel(logging.DEBUG)
                 if tx_lines or rx_lines:
-                    result = process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, script_logger)
-                    if result:  # only overwrite if we actually got a result
-                        result_folder = os.path.basename(result)
-
-            if result_folder:
-                os.environ['RESULT_FOLDER'] = result_folder
-                os.system('python modify_compliance_matrix.py')
-            else:
-                logger.warning("No result folder was detected from logs. Compliance matrix not generated.")
+                    result_folder = process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, script_logger)
+                    if result_folder:
+                        os.environ['RESULT_FOLDER'] = result_folder
+                        logger.info(f"Compliance matrix processing required. Please run modify_compliance_matrix.py with RESULT_FOLDER={result_folder}")
+                    else:
+                        logger.warning("No result folder detected from logs. Compliance matrix not generated.")
+        #os.system(base_log_dir+'//modify_compliance_matrix.py')
+        script_path = os.path.join(base_log_dir, 'modify_compliance_matrix.py')
+        os.system(f'python "{script_path}"')

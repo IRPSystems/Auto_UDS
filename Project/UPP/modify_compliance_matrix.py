@@ -1,17 +1,50 @@
 import argparse
+
 import openpyxl
 from openpyxl.styles import PatternFill, Font
 import os
 import sys
 import re
-from Project.UPP import output_with_raw
-import subprocess
 
 # Define file paths
-SRD_path = r"C:\Users\ilyar\Downloads\HD-UP-ICD-242601-UDID.xlsx"
-UDS_path = r"C:\Users\ilyar\PycharmProjects\UDS\Logs\03.01.00\03.01.00_report.xlsx"
-OUTPUT_path = os.path.join(os.path.dirname(UDS_path), "UDS_Compliance_matrix_UPP_v3.00.00.xlsx")
-EXTRACTED_SRD_path = os.path.join(os.path.dirname(UDS_path), "extracted_srd_data.xlsx")
+# SRD_path = r"C:\Users\ilyar\Downloads\HD-UP-ICD-242601-UDID.xlsx"
+# UDS_path = r"C:\Users\ilyar\PycharmProjects\UDS\Logs\03.01.11\03.01.11_report.xlsx"
+# OUTPUT_path = os.path.join(os.path.dirname(UDS_path), "UDS_Compliance_matrix_UPP_v3.01.11.xlsx")
+# EXTRACTED_SRD_path = os.path.join(os.path.dirname(UDS_path), "extracted_srd_data.xlsx")
+
+
+username = os.environ.get('USERNAME', 'unknown')
+if username == 'unknown':
+    raise EnvironmentError("USERNAME environment variable not set.")
+
+base_log_dir = os.path.join('C:\\', 'Users', username, 'PycharmProjects', 'UDS', 'Project', 'UPP',)
+#base_log_dir = os.path.join('C:\\', 'Users', username, 'PycharmProjects', 'UDS')
+
+print(base_log_dir)
+
+result_folder = os.environ.get("RESULT_FOLDER")
+
+if not result_folder:
+    # Fallback: find the most recently created folder inside Logs
+    logs_base = os.path.join(base_log_dir, "Logs")
+    subfolders = [
+        os.path.join(logs_base, d) for d in os.listdir(logs_base)
+        if os.path.isdir(os.path.join(logs_base, d))
+    ]
+
+    if not subfolders:
+        raise ValueError("No subfolders found in Logs to infer RESULT_FOLDER")
+
+    latest_folder = max(subfolders, key=os.path.getctime)
+    result_folder = os.path.basename(latest_folder)
+    print(f"Fallback: Using latest created result folder → {result_folder}")
+####    raise ValueError("RESULT_FOLDER environment variable not set")
+
+UDS_path = os.path.join(base_log_dir,"Logs", result_folder,  f"{result_folder}_report.xlsx")
+OUTPUT_path = os.path.join(base_log_dir,"Logs", result_folder, f"UDS_Compliance_matrix_UPP_v{result_folder}.xlsx")
+EXTRACTED_SRD_path = os.path.join(base_log_dir,"Logs", result_folder,  "extracted_srd_data.xlsx")
+SRD_path = os.path.join(base_log_dir, "Documents", "HD-UP-ICD-242601-UDID.xlsx")
+
 
 # Define non-implemented DIDs
 NON_IMPLEMENTED_DIDS = {"F1BE", "F192", "F194"}
@@ -23,10 +56,10 @@ EXPECTED_ORDER = [
     ("MCU_NM_ID_LIST_1", "Network Mgmnt", "F1D2", "VCU3_100 Timeout"),
     ("MCU_NM_ID_LIST_4", "Can Configuration", "F1D5", "Critical CAN Signal Invalid Time"),
     ("MCU_Fun_ID_List_1", "Faults Configuration", "078F", "Motor Over Temp Fault Detection"),
-    ("Unknown", "Routine Control", "0x31", "Active Discharge"),
-    ("MCU_NM_ID_LIST_4", "Standard Identifiers", "F1BE", "Engine State"),
-    ("MCU_NM_ID_LIST_9", "Standard Identifiers", "F192", "ECU Hardware Number"),
-    ("MCU_NM_ID_LIST_11", "Standard Identifiers", "F194", "ECU Software Number"),
+#    ("Unknown", "Routine Control", "0296", "Active Discharge"),
+    #("MCU_NM_ID_LIST_4", "Standard Identifiers", "F1BE", "Engine State"),
+   # ("MCU_NM_ID_LIST_9", "Standard Identifiers", "F192", "ECU Hardware Number"),
+    #("MCU_NM_ID_LIST_11", "Standard Identifiers", "F194", "ECU Software Number"),
     ("MCU_STD_DID_List_22", "Standard Identifiers", "0200", "Boot Flag"),
 ]
 
@@ -45,6 +78,7 @@ REQ_ID_MAPPING = {
         "System Supplier ECU Software Version Number": ("MCU_STD_DID_List_12", "F195"),
         "System Name/Engine Type": ("MCU_STD_DID_List_13", "F197"),
         "Repair Shop Code/Tester Serial Number": ("MCU_STD_DID_List_14", "F198"),
+       # "Repair Shop Code/Tester Serial Number": ("MCU_STD_DID_List_13", "F197"),
         "Programming Date": ("MCU_STD_DID_List_15", "F199"),
         "ECU Installation Date": ("MCU_STD_DID_List_16", "F19D"),
         "System Supplier part number": ("MCU_STD_DID_List_17", "F1F0"),
@@ -53,10 +87,17 @@ REQ_ID_MAPPING = {
         "Feature Code": ("MCU_STD_DID_List_20", "0102"),
         "Active Diagnostic Session": ("MCU_STD_DID_List_21", "F186"),
         "HISTORY ZONE": ("MCU_STD_DID_List_23", "0201"),
-        "Engine State": ("MCU_NM_ID_LIST_4", "F1BE"),
-        "ECU Hardware Number": ("MCU_NM_ID_LIST_9", "F192"),
-        "ECU Software Number": ("MCU_NM_ID_LIST_11", "F194"),
+        #"BOOT FLAG": ("MCU_STD_DID_List_22", "0200"),
+      #  "Engine State": ("MCU_NM_ID_LIST_4", "F1BE"),
+         #"ECU Calibration Data": ("Unknown", "F1BE"),
+       # "ECU Hardware Number": ("MCU_NM_ID_LIST_9", "F192"),
+       # "ECU Software Number": ("MCU_NM_ID_LIST_11", "F194"),
         "Access Timing Parameters": ("Unknown", "0304"),
+        "Wakeup Wait Timer": ("Unknown", "23F9"),
+        "Wakeup Sync Timer": ("Unknown", "23FA"),
+        "Normal Min Timeout Timer": ("Unknown", "23FC"),
+        "Sleep Wait Timer": ("Unknown", "23FB"),
+        "DTC Enable/Disable": ("Unknown", "249C"),
     },
     "Generic ECU Read": {
         "Odometer": ("MCU_GenECU_Read_list_1", "F1B0"),
@@ -68,8 +109,9 @@ REQ_ID_MAPPING = {
         "Ignition Counter": ("MCU_GenECU_Read_list_8", "F1B6"),
     },
     "Network Mgmnt": {
-        "VCU_100 Timeout": ("MCU_NM_ID_LIST_1", "F1D2"),
-        "VCU_100 Timeout Healing Time": ("MCU_NM_ID_LIST_1", "F1D2"),
+        # F1D2 - Message Timeout and Heal
+        #"VCU_100 Timeout": ("MCU_NM_ID_LIST_1", "F1D2"),
+        #"VCU_100 Timeout Healing Time": ("MCU_NM_ID_LIST_1", "F1D2"),
         "VCU3_100 Timeout": ("MCU_NM_ID_LIST_1", "F1D2"),
         "VCU3_100 Healing Time Threshold": ("MCU_NM_ID_LIST_1", "F1D2"),
         "VCU5_500 Timeout": ("MCU_NM_ID_LIST_1", "F1D2"),
@@ -82,25 +124,28 @@ REQ_ID_MAPPING = {
         "VCU14_20 Healing Time": ("MCU_NM_ID_LIST_1", "F1D2"),
         "VCU17_500 Timeout": ("MCU_NM_ID_LIST_1", "F1D2"),
         "VCU17_500 Healing Time": ("MCU_NM_ID_LIST_1", "F1D2"),
-        "VCU5_100 Timeout": ("MCU_NM_ID_LIST_1", "F1D2"),
-        "VCU_ACTIVE Timeout": ("MCU_NM_ID_LIST_1", "F1D2"),
-        "VCU_ACTIVE Healing Time": ("MCU_NM_ID_LIST_1", "F1D2"),
-        "BMS5_10 Timeout": ("MCU_NM_ID_LIST_1", "F1D2"),
-        "BMS5_10 Healing Time": ("MCU_NM_ID_LIST_1", "F1D2"),
+       # "VCU5_100 Timeout": ("MCU_NM_ID_LIST_1", "F1D2"),
+       # "VCU_ACTIVE Timeout": ("MCU_NM_ID_LIST_1", "F1D2"),
+       # "VCU_ACTIVE Healing Time": ("MCU_NM_ID_LIST_1", "F1D2"),
+       # "BMS5_10 Timeout": ("MCU_NM_ID_LIST_1", "F1D2"),
+       # "BMS5_10 Healing Time": ("MCU_NM_ID_LIST_1", "F1D2"),
         "BMS6_10 Timeout": ("MCU_NM_ID_LIST_1", "F1D2"),
         "BMS6_10 Healing Time": ("MCU_NM_ID_LIST_1", "F1D2"),
+        # F1D4 - Network Management Enable
         "Network Management Enable": ("MCU_NM_ID_LIST_3", "F1D4"),
-        "CAN Wakeup Msg Count": ("MCU_NM_ID_LIST_5", "0104"),
-        "Quick Recovery time out period (in WAKEUP)": ("MCU_NM_ID_LIST_5", "0104"),
-        "Quick Recovery retry limit (in WAKEUP)": ("MCU_NM_ID_LIST_5", "0104"),
-        "Slow Recovery timeout period (in WAKEUP)": ("MCU_NM_ID_LIST_5", "0104"),
-        "Slow Recovery retry limit (in WAKEUP)": ("MCU_NM_ID_LIST_5", "0104"),
+        # 0104 - CAN Wakeup Configuration (Not Tested)
+        #"CAN Wakeup Msg Count": ("MCU_NM_ID_LIST_5", "0104"),
+        #"Quick Recovery time out period (in WAKEUP)": ("MCU_NM_ID_LIST_5", "0104"),
+        #"Quick Recovery retry limit (in WAKEUP)": ("MCU_NM_ID_LIST_5", "0104"),
+        #"Slow Recovery timeout period (in WAKEUP)": ("MCU_NM_ID_LIST_5", "0104"),
+        #"Slow Recovery retry limit (in WAKEUP)": ("MCU_NM_ID_LIST_5", "0104"),
     },
     "Network Mismatch": {
-        "VCU_100 DLC Mismatch Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
-        "VCU_100 Parity Mismatch Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
-        "VCU_100 DLC Mismatch Healing Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
-        "VCU_100 Parity Mismatch Healing Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
+        # F1D3 - Message Mismatch Threshold and Heal
+       # "VCU_100 DLC Mismatch Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
+       # "VCU_100 Parity Mismatch Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
+       # "VCU_100 DLC Mismatch Healing Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
+       # "VCU_100 Parity Mismatch Healing Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
         "VCU3_100 DLC Mismatch Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
         "VCU3_100 CRC Mismatch Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
         "VCU3_100 Parity Mismatch Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
@@ -137,32 +182,33 @@ REQ_ID_MAPPING = {
         "VCU9_10 Alive Counter Healing Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
         "VCU17_500 Alive Counter Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
         "VCU17_500 Alive Counter Healing Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
-        "VCU_Active DLC Mismatch Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
-        "VCU_Active Parity Mismatch Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
-        "VCU_Active DLC Mismatch Healing Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
-        "VCU_Active Parity Mismatch Healing Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
+        #"VCU_Active DLC Mismatch Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
+        #"VCU_Active Parity Mismatch Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
+        #"VCU_Active DLC Mismatch Healing Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
+        #"VCU_Active Parity Mismatch Healing Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
         "VCU5_500 DLC Mismatch Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
         "VCU5_500 Parity Mismatch Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
         "VCU5_500 DLC Mismatch Healing Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
         "VCU5_500 Parity Mismatch Healing Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
-        "BMS5_10 DLC Mismatch Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
-        "BMS5_10 CRC Mismatch Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
-        "BMS5_10 Parity Mismatch Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
-        "BMS5_10 DLC Mismatch Healing Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
-        "BMS5_10 CRC Mismatch Healing Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
-        "BMS5_10 Parity Mismatch Healing Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
-        "BMS5_10 Alive Counter Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
-        "BMS5_10 Alive Counter Healing Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
-        "BMS6_10 DLC Mismatch Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
-        "BMS6_10 CRC Mismatch Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
-        "BMS6_10 Parity Mismatch Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
-        "BMS6_10 DLC Mismatch Healing Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
-        "BMS6_10 CRC Mismatch Healing Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
-        "BMS6_10 Parity Mismatch Healing Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
-        "BMS6_10 Alive Counter Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
-        "BMS6_10 Alive Counter Healing Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
+        #"BMS5_10 DLC Mismatch Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
+        #"BMS5_10 CRC Mismatch Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
+        #"BMS5_10 Parity Mismatch Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
+        #"BMS5_10 DLC Mismatch Healing Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
+        #"BMS5_10 CRC Mismatch Healing Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
+        #"BMS5_10 Parity Mismatch Healing Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
+        #"BMS5_10 Alive Counter Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
+        #"BMS5_10 Alive Counter Healing Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
+        #"BMS6_10 DLC Mismatch Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
+        #"BMS6_10 CRC Mismatch Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
+        #"BMS6_10 Parity Mismatch Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
+        #"BMS6_10 DLC Mismatch Healing Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
+        #"BMS6_10 CRC Mismatch Healing Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
+        #"BMS6_10 Parity Mismatch Healing Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
+        #"BMS6_10 Alive Counter Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
+        #"BMS6_10 Alive Counter Healing Threshold": ("MCU_NM_ID_LIST_2", "F1D3"),
     },
     "Can Configuration": {
+        # F1D5 - Can Configuration
         "Critical CAN Signal Invalid Time": ("MCU_NM_ID_LIST_4", "F1D5"),
         "Main CAN Bus Off Healing Time": ("MCU_NM_ID_LIST_4", "F1D5"),
         "CAN Timeout Since Powerup": ("MCU_NM_ID_LIST_4", "F1D5"),
@@ -171,13 +217,14 @@ REQ_ID_MAPPING = {
         "Busoff Fast Recovery Time": ("MCU_NM_ID_LIST_4", "0103"),
         "Fast Bus off Recovery Count": ("MCU_NM_ID_LIST_4", "0103"),
         "Busoff Slow Recovery Time": ("MCU_NM_ID_LIST_4", "0103"),
-        "NM IGN On Startup Delay": ("MCU_NM_ID_LIST_4", "0103"),
+       # "NM IGN On Startup Delay": ("MCU_NM_ID_LIST_4", "0103"),
         "NM Restart Dly Time After Under Vol Recovery": ("MCU_NM_ID_LIST_4", "0103"),
         "NM Restart Dly Time After Over Vol Recovery": ("MCU_NM_ID_LIST_4", "0103"),
         "NM Restart Dly Time After Bus Off recovery": ("MCU_NM_ID_LIST_4", "0103"),
-        "NM Restart Dly Time After Cranking": ("MCU_NM_ID_LIST_4", "0103"),
+        #"NM Restart Dly Time After Cranking": ("MCU_NM_ID_LIST_4", "0103"),
     },
     "Faults Configuration": {
+        # All use MCU_Fun_ID_List_1
         "Motor Over Temp Fault Detection": ("MCU_Fun_ID_List_1", "078F"),
         "Low Temperature Faults Healing Hysteresis": ("MCU_Fun_ID_List_1", "078F"),
         "Motor Low Temp Fault Detection Time": ("MCU_Fun_ID_List_1", "078F"),
@@ -206,7 +253,7 @@ REQ_ID_MAPPING = {
         "BAT Current Sensor Invalid Fault Detection Time": ("MCU_Fun_ID_List_1", "078F"),
         "BAT Low Voltage Fault Detection Time": ("MCU_Fun_ID_List_1", "078F"),
         "BAT High Voltage Detection Time": ("MCU_Fun_ID_List_1", "078F"),
-        "BAT Under Voltage Fault Declaration Threshold": ("MCU_Fun_ID_List_1", "078F"),
+       # "BAT Under Voltage Fault Declaration Threshold": ("MCU_Fun_ID_List_1", "078F"),
         "BAT Under Voltage Detection Time": ("MCU_Fun_ID_List_1", "078F"),
         "Battery_Overvoltage": ("MCU_Fun_ID_List_1", "078F"),
         "BAT Over Voltage Detection Time": ("MCU_Fun_ID_List_1", "078F"),
@@ -238,6 +285,7 @@ REQ_ID_MAPPING = {
         "Sensors 5V Fault Detection Time": ("MCU_Fun_ID_List_1", "078F"),
     },
     "True Drive Parameters": {
+        # All use MCU_Fun_ID_List_2
         "Angle Offset": ("MCU_Fun_ID_List_2", "0790"),
         "Angle Offset Delay": ("MCU_Fun_ID_List_2", "0790"),
         "Motor Temp - Min Cut": ("MCU_Fun_ID_List_2", "0790"),
@@ -276,8 +324,16 @@ REQ_ID_MAPPING = {
         "Snapshot Data": ("MCU_FF_ID_List_2", "F1B9"),
     },
     "Routine Control": {
-        "Active Discharge": ("Unknown", "0296"),
-        "Resolver Autocalibration": ("Unknown", "0295"),
+        "Start Active Discharge": ("Unknown", "0296"),
+        "Start Resolver Autocalibration": ("Unknown", "0295"),
+        "Start History Zone Update": ("Unknown", "0201"),
+        "Start Compare CS": ("Unknown", "FF01"),
+        "Stop Active Discharge": ("Unknown", "0296"),
+        "Stop Resolver Autocalibration": ("Unknown", "0295"),
+        "Result Active Discharge": ("Unknown", "0296"),
+        "Result Resolver Autocalibration": ("Unknown", "0295"),
+        "Result History Zone Update": ("Unknown", "0201"),
+        "Result Compare CS": ("Unknown", "FF01"),
     }
 }
 
@@ -293,13 +349,37 @@ def ensure_output_directory(output_file):
         print(f"Created directory: {output_dir}")
 
 def normalize_service_name(service):
-    service = str(service).strip().upper() if service else ""
-    return service
+    if not service:
+        return ""
+    service = str(service).strip()
+    # Remove common prefixes and suffixes
+    prefixes = [
+        r'^MISMATCH TX AND RX\s+',  # Remove "Mismatch Tx and Rx"
+        r'^\s*[0-9A-F]{3,4}\s+'    # Remove leading DID
+    ]
+    suffixes = [
+        r'\s+WRONG OUTPUT FAIL$',   # Remove "wrong output Fail"
+        r'\s+FAIL$'                 # Remove trailing "Fail"
+    ]
+    for prefix in prefixes:
+        service = re.sub(prefix, '', service, flags=re.IGNORECASE)
+    for suffix in suffixes:
+        service = re.sub(suffix, '', service, flags=re.IGNORECASE)
+    service = service.strip().upper()
+    # Map known service name variations to standard names
+    service_mapping = {
+        "NORMAL MIN TIMEOUT TIMER": "NORMAL MIN TIMEOUT TIMER",
+        "SLEEP WAIT TIMER": "SLEEP WAIT TIMER"
+    }
+    return service_mapping.get(service, service)
 
 def strip_prefix(service):
     service = str(service).strip()
-    match = re.match(r'^([0-9A-Fa-f]{3,4})\s+(.+)$', service)
-    return (match.group(1).upper(), match.group(2).strip()) if match else (None, service)
+    # Match DID followed by service name, considering possible prefixes
+    match = re.match(r'^(?:MISMATCH TX AND RX\s+)?([0-9A-Fa-f]{3,4})\s+(.+)$', service, re.IGNORECASE)
+    if match:
+        return (match.group(1).upper(), match.group(2).strip())
+    return (None, service)
 
 def is_valid_did(did):
     did = str(did).strip().upper()
@@ -458,12 +538,30 @@ def extract_log_data(log_file_path, sheet_name=None):
             log_data[normalized_service] = status
             log_original_names[normalized_service] = service_name or service
             log_dids[normalized_service] = did or ""
-            log_groups[normalized_service] = group
+            log_groups[normalized_service] = normalize_group_name(group)
         else:
             print(f"Log Row {row_count + 1}: Skipped empty normalized service")
 
     print(f"Processed {row_count} row(s) in log sheet '{sheet_name}'")
     return log_data, log_original_names, log_dids, log_groups
+
+def normalize_group_name(group):
+    if not group:
+        return None
+    group = str(group).strip()
+    # Map inconsistent group names from log report to standard names
+    group_mapping = {
+        "Generoid_ECU_F": "Generic ECU Read",
+        "Network_Mismatch_F1D3": "Network Mismatch",
+        "Network_Timeout_F1D2": "Network Mgmnt",
+        "Network_F1D5": "Can Configuration",
+        "Network_103": "Can Configuration",
+        "TrueDrive_M": "True Drive Parameters",
+        "Faults_C": "Faults Configuration",
+        "Standard_I": "Standard Identifiers",
+        "Routine_C": "Routine Control",
+    }
+    return group_mapping.get(group, group)
 
 def compare_and_generate_report(srd_services, srd_original_names, srd_details, log_data, log_original_names, log_dids, log_groups, output_file):
     try:
@@ -481,6 +579,7 @@ def compare_and_generate_report(srd_services, srd_original_names, srd_details, l
         not_impl_fill = PatternFill(start_color="FFFF00", end_color="FFFF00", fill_type="solid")
 
         row_idx = 2
+        # Process EXPECTED_ORDER
         processed_services = set()
         for req_id, group_name, did, service_name in EXPECTED_ORDER:
             normalized_service = normalize_service_name(service_name)
@@ -489,17 +588,20 @@ def compare_and_generate_report(srd_services, srd_original_names, srd_details, l
             status = log_data.get(normalized_service, "Not Tested")
             if did.upper() in NON_IMPLEMENTED_DIDS or did.upper() == "0104":
                 status = "Not Tested"
+            # Map 'Fail' to 'Failed' for output
+            display_status = "Failed" if status.lower() == "fail" else status
 
             sheet.cell(row=row_idx, column=1).value = req_id
             sheet.cell(row=row_idx, column=2).value = group_name
             sheet.cell(row=row_idx, column=3).value = did
             sheet.cell(row=row_idx, column=4).value = service_name
-            sheet.cell(row=row_idx, column=5).value = status
-            sheet.cell(row=row_idx, column=5).fill = pass_fill if status.lower() == "pass" else fail_fill if status.lower() == "failed" else not_impl_fill
+            sheet.cell(row=row_idx, column=5).value = display_status
+            sheet.cell(row=row_idx, column=5).fill = pass_fill if status.lower() == "pass" else fail_fill if status.lower() == "fail" else not_impl_fill
 
-            print(f"Output row {row_idx}: Req. ID={req_id}, Group={group_name}, LID/DID={did}, Service={service_name}, Status={status}")
+            print(f"Output row {row_idx}: Req. ID={req_id}, Group={group_name}, LID/DID={did}, Service={service_name}, Status={display_status}")
             row_idx += 1
 
+        # Process REQ_ID_MAPPING entries
         for group_name, services in sorted(REQ_ID_MAPPING.items(), key=lambda x: x[0]):
             for service_name, (req_id, did) in sorted(services.items(), key=lambda x: x[1][0]):
                 normalized_service = normalize_service_name(service_name)
@@ -510,18 +612,21 @@ def compare_and_generate_report(srd_services, srd_original_names, srd_details, l
                 status = log_data.get(normalized_service, "Not Tested")
                 if did.upper() in NON_IMPLEMENTED_DIDS or did.upper() == "0104":
                     status = "Not Tested"
+                # Map 'Fail' to 'Failed' for output
+                display_status = "Failed" if status.lower() == "fail" else status
 
                 sheet.cell(row=row_idx, column=1).value = req_id
                 sheet.cell(row=row_idx, column=2).value = group_name
                 sheet.cell(row=row_idx, column=3).value = did
                 sheet.cell(row=row_idx, column=4).value = service_name
-                sheet.cell(row=row_idx, column=5).value = status
-                sheet.cell(row=row_idx, column=5).fill = pass_fill if status.lower() == "pass" else fail_fill if status.lower() == "failed" else not_impl_fill
+                sheet.cell(row=row_idx, column=5).value = display_status
+                sheet.cell(row=row_idx, column=5).fill = pass_fill if status.lower() == "pass" else fail_fill if status.lower() == "fail" else not_impl_fill
 
-                print(f"Output row {row_idx}: Req. ID={req_id}, Group={group_name}, LID/DID={did}, Service={service_name}, Status={status}")
+                print(f"Output row {row_idx}: Req. ID={req_id}, Group={group_name}, LID/DID={did}, Service={service_name}, Status={display_status}")
                 processed_services.add(normalized_service)
                 row_idx += 1
 
+        # Process unmatched SRD services
         srd_by_did = {str(identifier).upper(): (group, service, req_id, lid) for group, lid, service, _, req_id, identifier in srd_details if identifier}
         unmatched_services = []
         for group, lid, service_name, s_name, req_id, identifier in sorted(srd_details, key=lambda x: (str(x[4]) or "", str(x[0]) or "", str(x[2]) or "")):
@@ -537,18 +642,22 @@ def compare_and_generate_report(srd_services, srd_original_names, srd_details, l
             status = log_data.get(normalized_service, "Not Tested")
             if identifier in NON_IMPLEMENTED_DIDS or identifier == "0104":
                 status = "Not Tested"
+            # Map 'Fail' to 'Failed' for output
+            display_status = "Failed" if status.lower() == "fail" else status
 
-            unmatched_services.append((req_id or "", group or "Unknown", identifier or lid, service_name, status))
-            print(f"Unmatched SRD in {s_name}: Service={service_name}, DID={identifier or lid}, Status={status}")
+            unmatched_services.append((req_id or "", group or "Unknown", identifier or lid, service_name, display_status))
+            print(f"Unmatched SRD in {s_name}: Service={service_name}, DID={identifier or lid}, Status={display_status}")
 
-        for req_id, group, did, service_name, status in sorted(unmatched_services, key=lambda x: x[2]):
+        # Add unmatched SRD services
+        for req_id, group, did, service_name, display_status in sorted(unmatched_services, key=lambda x: x[2]):
+            status = "Fail" if display_status.lower() == "failed" else display_status  # Convert back for fill logic
             sheet.cell(row=row_idx, column=1).value = req_id
             sheet.cell(row=row_idx, column=2).value = group
             sheet.cell(row=row_idx, column=3).value = did
             sheet.cell(row=row_idx, column=4).value = service_name
-            sheet.cell(row=row_idx, column=5).value = status
-            sheet.cell(row=row_idx, column=5).fill = pass_fill if status.lower() == "pass" else fail_fill if status.lower() == "failed" else not_impl_fill
-            print(f"SRD Row {row_idx}: Req. ID={req_id}, Group={group}, LID/DID={did}, Service={service_name}, Status={status}")
+            sheet.cell(row=row_idx, column=5).value = display_status
+            sheet.cell(row=row_idx, column=5).fill = pass_fill if status.lower() == "pass" else fail_fill if status.lower() == "fail" else not_impl_fill
+            print(f"SRD Row {row_idx}: Req. ID={req_id}, Group={group}, LID/DID={did}, Service={service_name}, Status={display_status}")
             row_idx += 1
 
         for col_idx in range(1, len(headers) + 1):
@@ -564,9 +673,10 @@ def compare_and_generate_report(srd_services, srd_original_names, srd_details, l
         raise
 
 def main():
+    os.system('python output_with_raw.py')
     parser = argparse.ArgumentParser(description="Generate UDS compliance report")
     parser.add_argument("--srd-file", default=SRD_path, help="SRD Excel file path")
-    parser.add_argument("--log-file", default=None, help="Log Excel file path")
+    parser.add_argument("--log-file", default=UDS_path, help="Log Excel file path")
     parser.add_argument("--output-file", default=OUTPUT_path, help="Output Excel report")
     parser.add_argument("--extracted-srd-file", default=EXTRACTED_SRD_path, help="Extracted SRD data path")
     parser.add_argument("--srd-sheets", default="DID,NM,Functional Identifiers", help="Comma-separated SRD sheet names")
@@ -574,45 +684,8 @@ def main():
     args = parser.parse_args()
 
     try:
-        # Run output_with_raw.py unless --log-file is provided
-        log_file = args.log_file
-        if not log_file:
-            print("\nRunning output_with_raw.py to generate log report...")
-            try:
-                log_file = output_with_raw.main()
-                if log_file and not os.path.isfile(log_file):
-                    print(f"Warning: output_with_raw.main() returned {log_file}, but file does not exist")
-                    log_file = None
-            except Exception as e:
-                print(f"Failed to run output_with_raw.main(): {e}")
-                log_file = None
-
-            if not log_file:
-                print("Falling back to subprocess execution of output_with_raw.py...")
-                try:
-                    result = subprocess.run(
-                        [sys.executable, "output_with_raw.py"],
-                        capture_output=True,
-                        text=True,
-                        check=True
-                    )
-                    print("output_with_raw.py output:", result.stdout)
-                    if result.stderr:
-                        print("output_with_raw.py errors:", result.stderr)
-                except subprocess.CalledProcessError as e:
-                    print(f"Subprocess failed: {e}")
-                    print("Subprocess output:", e.output)
-                    print("Subprocess errors:", e.stderr)
-
-            # Check default path
-            log_file = log_file or UDS_path
-            if not os.path.isfile(log_file):
-                raise FileNotFoundError(
-                    f"Log file not found at {log_file}. Ensure output_with_raw.py generates the file or provide --log-file."
-                )
-
         srd_file = validate_file_path(args.srd_file, "SRD file")
-        log_file = validate_file_path(log_file, "Log file")
+        log_file = validate_file_path(args.log_file, "Log file")
 
         print("\nExtracting SRD services...")
         srd_services, srd_original, srd_details = extract_services_from_srd(srd_file, args.extracted_srd_file, args.srd_sheets.split(","))
