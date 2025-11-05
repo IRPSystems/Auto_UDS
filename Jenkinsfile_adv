@@ -18,6 +18,8 @@ pipeline {
   }
 
   environment {
+    LANG = 'en_US.UTF-8'
+    LC_ALL = 'en_US.UTF-8'
     RCLONE_BASE      = 'irp:General/releases'
     DEST_FOLDER      = "${env.HOME}/workspace/NewVersion"
     REMOTE_TARGET    = 'C:\\Jenkins\\NewVersion'
@@ -56,7 +58,7 @@ pipeline {
     stage('Clone Project on Remote Windows') {
       steps {
         sh """
-          echo "🚀 Running remote clone + setup (PowerShell via stdin)..."
+          echo " Running remote clone + setup (PowerShell via stdin)..."
           ssh ${REMOTE_USER}@${REMOTE_IP} powershell -NoProfile -Command - <<'PS'
 if (-not (Test-Path 'C:\\Jenkins\\workspace')) {
   New-Item -ItemType Directory -Path 'C:\\Jenkins\\workspace' -Force | Out-Null
@@ -99,15 +101,15 @@ PS
           ).trim()
 
           if (!latestFolder) {
-            error "❌ Could not find the latest folder in ${RCLONE_BASE}/${MAIN_VER_DIR}"
+            error "[FAIL Could not find the latest folder in ${RCLONE_BASE}/${MAIN_VER_DIR}"
           }
           if (!previousFolder) {
-            error "❌ Could not find the previous folder in ${RCLONE_BASE}/${MAIN_VER_DIR} (need at least two releases)"
+            error "[FAIL] Could not find the previous folder in ${RCLONE_BASE}/${MAIN_VER_DIR} (need at least two releases)"
           }
 
-          echo "✅ Latest firmware folder: ${latestFolder}"
+          echo " [OK] Latest firmware folder: ${latestFolder}"
           env.LATEST_FOLDER = latestFolder
-          echo "✅ Previous firmware folder: ${previousFolder}"
+          echo " [OK] Previous firmware folder: ${previousFolder}"
           env.PREVIOUS_FOLDER = previousFolder
         }
       }
@@ -116,22 +118,22 @@ PS
     stage('Copy Previous/Latest Firmware') {
       steps {
         sh """
-          echo "🧹 Cleaning destination folder: ${DEST_FOLDER}"
+          echo " Cleaning destination folder: ${DEST_FOLDER}"
           rm -rf "${DEST_FOLDER}"
           mkdir -p "${DEST_FOLDER}"
 
-          echo "📦 Copying from: ${RCLONE_BASE}/${MAIN_VER_DIR}/${LATEST_FOLDER}/"
+          echo " Copying from: ${RCLONE_BASE}/${MAIN_VER_DIR}/${LATEST_FOLDER}/"
           rclone copy "${RCLONE_BASE}/${MAIN_VER_DIR}/${LATEST_FOLDER}/" "${DEST_FOLDER}/${LATEST_FOLDER}"
 
-          echo "📦 Copying from: ${RCLONE_BASE}/${MAIN_VER_DIR}/${PREVIOUS_FOLDER}/"
+          echo " Copying from: ${RCLONE_BASE}/${MAIN_VER_DIR}/${PREVIOUS_FOLDER}/"
           rclone copy "${RCLONE_BASE}/${MAIN_VER_DIR}/${PREVIOUS_FOLDER}/" "${DEST_FOLDER}/${PREVIOUS_FOLDER}"
         """
 
         sh """
-          echo "🖥️ Deleting and recreating remote NewVersion folder on ${REMOTE_USER}@${REMOTE_IP}..."
+          echo " Deleting and recreating remote NewVersion folder on ${REMOTE_USER}@${REMOTE_IP}..."
           ssh ${REMOTE_USER}@${REMOTE_IP} powershell -NoProfile -Command - <<'PS'
 \$root = 'C:\\Jenkins\\NewVersion'
-Write-Host "➡️ Target:" \$root
+Write-Host " Target:" \$root
 
 # Ensure parent exists
 \$parent = Split-Path -Parent \$root
@@ -159,21 +161,21 @@ if (-not (Test-Path \$root)) { New-Item -ItemType Directory -Path \$root -Force 
 # Verify empty; fail if not
 \$items = Get-ChildItem -LiteralPath \$root -Force
 if (\$items.Count -gt 0) {
-  Write-Host '❌ Folder not empty after cleanup:'
+  Write-Host '[FAIL] Folder not empty after cleanup:'
   \$items | Select-Object Name,Mode,Length | Format-Table -AutoSize
   exit 1
 } else {
-  Write-Host '✅ Folder is empty.'
+  Write-Host ' [OK] Folder is empty.'
 }
 PS
         """
 
         sh """
-          echo "📤 Sending files to remote host"
+          echo " Sending files to remote host"
           scp -r "${DEST_FOLDER}/${LATEST_FOLDER}"   ${REMOTE_USER}@${REMOTE_IP}:"C:/Jenkins/NewVersion"
           scp -r "${DEST_FOLDER}/${PREVIOUS_FOLDER}" ${REMOTE_USER}@${REMOTE_IP}:"C:/Jenkins/NewVersion"
           ssh ${REMOTE_USER}@${REMOTE_IP} "cmd /c dir C:\\Jenkins\\NewVersion"
-          echo "🎉 Firmware files copied successfully to: ${REMOTE_TARGET} on ${REMOTE_IP}"
+          echo " Firmware files copied successfully to: ${REMOTE_TARGET} on ${REMOTE_IP}"
         """
       }
     }
@@ -183,7 +185,7 @@ PS
         script {
           int loops = params.FLASH_LOOPS as Integer
           for (int i = 1; i <= loops; i++) {
-            echo "⚡ Starting flash round ${i} of ${loops}"
+            echo " Starting flash round ${i} of ${loops}"
             sh """
               ssh \${REMOTE_USER}@\${REMOTE_IP} powershell -NoProfile -Command - <<'PS'
               # UTF-8 everything (prevents charmap issues)
@@ -196,17 +198,17 @@ PS
               Set-Location 'C:\\Jenkins\\workspace\\Auto_UDS'
               \$flashPath = 'C:\\Jenkins\\workspace\\Auto_UDS\\1UPP_flash.py'
               if (-Not (Test-Path \$flashPath)) {
-                Write-Host "❌ Flash script not found at \$flashPath"
+                Write-Host "[FAIL]  Flash script not found at \$flashPath"
                 exit 1
               }
 
-              Write-Host "🐍 Running UPP_flash.py (round ${i}/${loops}) ..."
+              Write-Host " Running UPP_flash.py (round ${i}/${loops}) ..."
               & 'C:\\Jenkins\\workspace\\Auto_UDS\\venv\\Scripts\\python.exe' -X utf8 -u \$flashPath
               if (\$LASTEXITCODE -ne 0) {
-                Write-Host "❌ Flash script failed with exit code \$LASTEXITCODE (round ${i}/${loops})"
+                Write-Host "[FAIL] Flash script failed with exit code \$LASTEXITCODE (round ${i}/${loops})"
                 exit \$LASTEXITCODE
               } else {
-                Write-Host "✅ Flash script completed successfully (round ${i}/${loops})"
+                Write-Host "[OK] Flash script completed successfully (round ${i}/${loops})"
               }
               PS
             """
@@ -215,10 +217,83 @@ PS
       }
     }
 
-    stage('Done') {
-      steps {
-        echo "🎉 Firmware files copied and flashed successfully."
+stage('Flash Summary') {
+  steps {
+    script {
+      echo '----------------------------------------'
+      echo 'Collecting version details and generating summary...'
+      echo '----------------------------------------'
+
+      def result = sh(
+        script: """
+          ssh ${REMOTE_USER}@${REMOTE_IP} powershell -NoLogo -NoProfile -NonInteractive -Command - <<'PS'
+${'$'}ErrorActionPreference = 'Stop'
+${'$'}ProgressPreference    = 'SilentlyContinue'
+
+${'$'}root   = 'C:\\Jenkins\\NewVersion'
+${'$'}prev   = '${PREVIOUS_FOLDER}'
+${'$'}latest = '${LATEST_FOLDER}'
+
+function Get-HexPair([string]${'$'}dirPath) {
+  ${'$'}merged = Join-Path ${'$'}dirPath 'FW Merged'
+  if (-not (Test-Path -LiteralPath ${'$'}merged)) { return '|' }  # app|boot
+
+  ${'$'}app  = Get-ChildItem -LiteralPath ${'$'}merged -Filter '*Merge_App_*.hex'  -ErrorAction SilentlyContinue |
+               Sort-Object LastWriteTime | Select-Object -Last 1
+  ${'$'}boot = Get-ChildItem -LiteralPath ${'$'}merged -Filter '*Merge_Boot_*.hex' -ErrorAction SilentlyContinue |
+               Sort-Object LastWriteTime | Select-Object -Last 1
+
+  ${'$'}appName  = if (${'$'}app)  { ${'$'}app.Name }  else { '' }
+  ${'$'}bootName = if (${'$'}boot) { ${'$'}boot.Name } else { '' }
+  return "${'$'}appName|${'$'}bootName"
+}
+
+${'$'}prevPair   = Get-HexPair (Join-Path ${'$'}root ${'$'}prev)
+${'$'}latestPair = Get-HexPair (Join-Path ${'$'}root ${'$'}latest)
+Write-Output "${'$'}prevPair|${'$'}latestPair"
+PS
+        """,
+        returnStdout: true
+      ).trim()
+
+      def parts = result.split('\\|', -1)
+      if (parts.size() < 4) {
+        error "Could not parse flash metadata. Got: ${result}"
       }
+
+      def prevApp  = parts[0] ?: 'N/A'
+      def prevBoot = parts[1] ?: 'N/A'
+      def newApp   = parts[2] ?: 'N/A'
+      def newBoot  = parts[3] ?: 'N/A'
+
+      def loops = params.FLASH_LOOPS ?: '1'
+      def now   = sh(script: "date -u +'%Y-%m-%d %H:%M:%S UTC'", returnStdout: true).trim()
+
+def summary = """
+----------------------------------------
+FLASH SUMMARY REPORT
+----------------------------------------
+Device: ${params.DEVICE}
+Total loops flashed: ${loops}
+Timestamp: ${now}
+
+Previous version folder: ${env.PREVIOUS_FOLDER}
+  App : ${prevApp}
+  Boot: ${prevBoot}
+
+New version folder: ${env.LATEST_FOLDER}
+  App : ${newApp}
+  Boot: ${newBoot}
+----------------------------------------
+"""
+
+// Either:
+echo summary
+// Or, if you want to trim leading/trailing blank lines (allowed in sandbox):
+// echo summary.trim()
+
     }
+  }
+}
   }
 }
