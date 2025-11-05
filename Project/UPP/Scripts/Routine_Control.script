@@ -2,22 +2,29 @@
 send 22 F195
 linedelay 500
 
+tester on
+send 10 03
+security 1
+sleep 500
 
 # start Resolver Autocalibration
 send 31 01 02 95
 
+# start Resolver ActiveDischarge
+send 31 01 02 96
 
-
-tester on
 send 10 02
 security 3
 sleep 500
+
+#stop Autocalibration
+send 31 02 02 95
 
 #stop ActiveDischarge
 send 31 02 02 96
 
 #compare CS
-send 31 01 FF 01 FF FF
+#send 31 01 FF 01 FF FF
 
 #Update History zone
 send 31 01 02 01 00 01 02 4D 43 55 41 43 54 30 30 4D 43 55 41 43 54 30 30 1C 0A 07 E9 0A 1E    
@@ -26,9 +33,6 @@ send 22 02 01
 #boot flag
 send 31 01 02 00 01
 send 22 02 00
-
-send 31 01 02 00 01
-
 
 send 11 03
 sleep 500

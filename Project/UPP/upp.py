@@ -17,6 +17,7 @@ SUPPRESS_NRC_DIDS = set()
 #Logs_folder = os.path.join("Logs")
 ###############################
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+print((SCRIPT_DIR))
 Logs_folder = os.path.join(SCRIPT_DIR, "Logs")
 os.makedirs(Logs_folder, exist_ok=True)
 #####################################
@@ -115,6 +116,7 @@ def process_uds_file(file_path, logger):
 
             # Check for script start marker using regex
             if re.search(r">>>\s*Script Start", line):
+
                 if script_started and current_script_name:
                     # Save the previous script section
                     script_sections.append((current_script_name, current_tx_lines, current_rx_lines, current_all_lines))
@@ -380,8 +382,9 @@ def process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, logger):
         if rx_identifier == "F195":
             result = convert(rx_values[2:])
             if result and result != "0" and result != "wrong output":
-                result_folder = os.path.join("../../Logs", result)
-                print(result_folder)
+                #result_folder = os.path.join("../../Logs", result)
+                result_folder = os.path.join(Logs_folder, result)
+
                 os.makedirs(result_folder, exist_ok=True)
                 logger.debug(f"Creating folder at: {result_folder}")
 
@@ -465,6 +468,6 @@ if __name__ == "__main__":
 
             if result_folder:
                 os.environ['RESULT_FOLDER'] = result_folder
-            #    os.system('python modify_compliance_matrix.py')
+                #os.system('python modify_compliance_matrix.py')
             else:
                 logger.warning("No result folder was detected from logs. Compliance matrix not generated.")

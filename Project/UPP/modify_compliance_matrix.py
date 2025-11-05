@@ -17,7 +17,10 @@ username = os.environ.get('USERNAME', 'unknown')
 if username == 'unknown':
     raise EnvironmentError("USERNAME environment variable not set.")
 
-base_log_dir = os.path.join('C:\\', 'Users', username, 'PycharmProjects', 'UDS', 'Projects', 'UPP')
+base_log_dir = os.path.join('C:\\', 'Users', username, 'PycharmProjects', 'UDS', 'Project', 'UPP',)
+#base_log_dir = os.path.join('C:\\', 'Users', username, 'PycharmProjects', 'UDS')
+
+print(base_log_dir)
 
 result_folder = os.environ.get("RESULT_FOLDER")
 

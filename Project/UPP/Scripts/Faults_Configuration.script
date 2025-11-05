@@ -1,11 +1,11 @@
 #System Supplier ECU Software Version Number F195
 send 22 F195
-
+sleep 500
 tester on
 send 10 03
 security 1
-sleep 500
-linedelay 500
+sleep 1000
+#linedelay 500
 #1  MotorOverTempDetection (Default 100, Scale 10)
 send 2E 078F 00 64 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 send 22 078F
