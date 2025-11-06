@@ -180,44 +180,57 @@ PS
       }
     }
 
-    stage('Flash Loops') {
-      steps {
-        script {
-          int loops = params.FLASH_LOOPS as Integer
-          for (int i = 1; i <= loops; i++) {
-            echo " Starting flash round ${i} of ${loops}"
-            sh """
-              ssh \${REMOTE_USER}@\${REMOTE_IP} powershell -NoProfile -Command - <<'PS'
-              # UTF-8 everything (prevents charmap issues)
-              chcp 65001 | Out-Null
-              [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-              \$env:PYTHONIOENCODING = 'utf-8'
-              \$env:PYTHONUTF8 = '1'
-              \$env:ROUND_INDEX = '${i}/${loops}'
+   stage('Flash Loops') {
+  steps {
+    script {
+      int loops = params.FLASH_LOOPS as Integer
+      for (int i = 1; i <= loops; i++) {
+        echo " Starting flash round ${i} of ${loops}"
+        sh """
+          ssh ${REMOTE_USER}@${REMOTE_IP} powershell -NoProfile -Command - <<'PS'
+          # UTF-8 everything (prevents charmap issues)
+          chcp 65001 | Out-Null
+          [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+          \$env:PYTHONIOENCODING = 'utf-8'
+          \$env:PYTHONUTF8 = '1'
+          \$env:ROUND_INDEX = '${i}/${loops}'
 
-              Set-Location 'C:\\Jenkins\\workspace\\Auto_UDS'
-              \$flashPath = 'C:\\Jenkins\\workspace\\Auto_UDS\\1UPP_flash.py'
-              if (-Not (Test-Path \$flashPath)) {
-                Write-Host "[FAIL]  Flash script not found at \$flashPath"
-                exit 1
-              }
-
-              Write-Host " Running UPP_flash.py (round ${i}/${loops}) ..."
-              & 'C:\\Jenkins\\workspace\\Auto_UDS\\venv\\Scripts\\python.exe' -X utf8 -u $flashPath `
-              --old "C:\\Jenkins\\NewVersion\\${env:PREVIOUS_FOLDER}" `
-              --new "C:\\Jenkins\\NewVersion\\${env:LATEST_FOLDER}"
-              if (\$LASTEXITCODE -ne 0) {
-                Write-Host "[FAIL] Flash script failed with exit code \$LASTEXITCODE (round ${i}/${loops})"
-                exit \$LASTEXITCODE
-              } else {
-                Write-Host "[OK] Flash script completed successfully (round ${i}/${loops})"
-              }
-              PS
-            """
+          # Inject Jenkins values as literal strings (Groovy already expanded them)
+          \$prevFolder   = "${env.PREVIOUS_FOLDER}"
+          \$latestFolder = "${env.LATEST_FOLDER}"
+          if ([string]::IsNullOrWhiteSpace(\$prevFolder) -or [string]::IsNullOrWhiteSpace(\$latestFolder)) {
+            Write-Host "[FAIL] PREVIOUS_FOLDER or LATEST_FOLDER is empty. Aborting."
+            exit 1
           }
-        }
+          \$oldPath = "C:\\Jenkins\\NewVersion\\\$prevFolder"
+          \$newPath = "C:\\Jenkins\\NewVersion\\\$latestFolder"
+          Write-Host " Using --old=\$oldPath --new=\$newPath"
+
+          Set-Location 'C:\\Jenkins\\workspace\\Auto_UDS'
+          \$flashPath = 'C:\\Jenkins\\workspace\\Auto_UDS\\1UPP_flash.py'
+          if (-Not (Test-Path \$flashPath)) {
+            Write-Host "[FAIL]  Flash script not found at \$flashPath"
+            exit 1
+          }
+
+          Write-Host " Running UPP_flash.py (round ${i}/${loops}) ..."
+          & 'C:\\Jenkins\\workspace\\Auto_UDS\\venv\\Scripts\\python.exe' -X utf8 -u \$flashPath `
+            --old "\$oldPath" `
+            --new "\$newPath"
+
+          if (\$LASTEXITCODE -ne 0) {
+            Write-Host "[FAIL] Flash script failed with exit code \$LASTEXITCODE (round ${i}/${loops})"
+            exit \$LASTEXITCODE
+          } else {
+            Write-Host "[OK] Flash script completed successfully (round ${i}/${loops})"
+          }
+PS
+        """
       }
     }
+  }
+}
+
 
 stage('Flash Summary') {
   steps {

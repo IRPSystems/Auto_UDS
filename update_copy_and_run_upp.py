@@ -13,7 +13,10 @@ username = os.environ.get('USERNAME', 'unknown')
 if username == 'unknown':
     raise EnvironmentError("USERNAME environment variable not set.")
 
-#SOURCE_ROOT = os.path.join('C:\\', 'Users', username, 'Desktop','UPP')
+base_dir =  os.path.dirname((os.path.abspath(__file__)))
+SOURCE_UDS = os.path.join(base_dir, 'Project' )
+print(SOURCE_UDS)
+
 
 SOURCE_ROOT = Path(fr"C:\Users\{username}\Desktop\UPP")   # where new builds appear
 CLIENT_DIR_NAME = "UDS-Client"                       # subfolder to copy from
@@ -24,24 +27,27 @@ EXE = TARGET_DIR / "UdsClient_CL.exe"               # tool exe
 CHANNEL = "51"
 DEVICE = "UPP"
 
-# Run each script sequentially (more stable than one giant command)
+
 SCRIPTS: List[str] = [
-    r"C:\Users\ilyar\PycharmProjects\UDS\Project\UPP\Scripts\Standard_Identifiers.script",
-    r"C:\Users\ilyar\PycharmProjects\UDS\Project\UPP\Scripts\CanConfig_103.script",
-    r"C:\Users\ilyar\PycharmProjects\UDS\Project\UPP\Scripts\Faults_Configuration.script",
-    r"C:\Users\ilyar\PycharmProjects\UDS\Project\UPP\Scripts\Network_F1D5.script",
-    r"C:\Users\ilyar\PycharmProjects\UDS\Project\UPP\Scripts\Network_Missmatch_F1D3.script",
-    r"C:\Users\ilyar\PycharmProjects\UDS\Project\UPP\Scripts\Network_TimeOut_F1D2.script",
-    r"C:\Users\ilyar\PycharmProjects\UDS\Project\UPP\Scripts\Routine_Control.script",
-    r"C:\Users\ilyar\PycharmProjects\UDS\Project\UPP\Scripts\TrueDriveManager.script",
-    r"C:\Users\ilyar\PycharmProjects\UDS\Project\UPP\Scripts\Generetic_ECU_Read.script",
+    os.path.join(SOURCE_UDS,  'UPP', 'Scripts', 'Standard_Identifiers.script'),
+    os.path.join(SOURCE_UDS,  'UPP', 'Scripts', 'CanConfig_103.script'),
+    os.path.join(SOURCE_UDS,  'UPP',  'Scripts', 'Faults_Configuration.script'),
+    os.path.join(SOURCE_UDS,  'UPP',  'Scripts', 'Network_F1D5.script'),
+    os.path.join(SOURCE_UDS,  'UPP',  'Scripts', 'Network_Missmatch_F1D3.script'),
+    os.path.join(SOURCE_UDS,  'UPP',  'Scripts', 'Network_TimeOut_F1D2.script'),
+    os.path.join(SOURCE_UDS,  'UPP',  'Scripts', 'Routine_Control.script'),
+    os.path.join(SOURCE_UDS,  'UPP',  'Scripts', 'TrueDriveManager.script'),
+    os.path.join(SOURCE_UDS,  'UPP',  'Scripts', 'Generetic_ECU_Read.script'),
+
 ]
 
 # Run your parser AFTER EACH script:
 PARSER_CMD = [
-    r"C:\Users\ilyar\PycharmProjects\UDS\.venv\Scripts\python.exe",
-    r"C:\Users\ilyar\PycharmProjects\UDS\Project\UPP\upp.py",
+    # os.path.join(base_dir),'.venv\Scripts\python.exe',
+    os.path.join(base_dir,'.venv', 'Scripts', 'python.exe'),
+    os.path.join(SOURCE_UDS,  'UPP', 'upp.py'),
 ]
+# ]
 TIMEOUT_PER_SCRIPT = 900  # seconds
 
 # =========================
@@ -145,6 +151,7 @@ def main():
     print("\n✅ All scripts executed and parsed.")
 
 if __name__ == "__main__":
+
     try:
         main()
     except Exception as e:
