@@ -5,6 +5,7 @@ import subprocess
 import time
 from pathlib import Path
 from typing import Tuple, List
+import argparse
 
 # ---- Console safety: avoid charmap/encoding crashes everywhere ----
 try:
@@ -37,6 +38,12 @@ def require_exists(path: Path, desc: str) -> None:
     if not path.exists():
         raise FileNotFoundError(f"{desc} not found: {path}")
 
+def parse_args():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--old", type=str, help="Path to previous version folder")
+    ap.add_argument("--new", type=str, help="Path to latest version folder")
+    return ap.parse_args()
+
 def find_two_version_dirs(root: Path) -> Tuple[Path, Path]:
     """
     Returns (old_dir, new_dir) by modification time.
@@ -56,12 +63,7 @@ def pick_latest_file(candidates: List[Path]) -> Path:
     return max(candidates, key=lambda p: p.stat().st_mtime)
 
 def find_merged_files(version_dir: Path) -> Tuple[Path, Path]:
-    """
-    Inside <version_dir>\FW Merged\ find:
-      - *Merge_App_*UPP_v*.hex  (firmware/app)
-      - *Merge_Boot_*UPP_v*.hex (bootloader)
-    Returns (app_hex, boot_hex)
-    """
+
     merged_dir = version_dir / "FW Merged"
     require_exists(merged_dir, f"'FW Merged' directory for {version_dir.name}")
 
@@ -190,18 +192,18 @@ def flash_one_round(old_app: Path, old_boot: Path, new_app: Path, new_boot: Path
     sleep_with_countdown(20, "Waiting after old boot")
 
     # 3) new firmware
-    # print("\n[STEP 3] Flashing NEW firmware...")
-    # step_start = time.time()
-    # run_flash(EXE, CHANNEL, FIRMWARE_UPP, new_app)
-    # print(f"   -> Done in {int(time.time() - step_start)} sec")
-    # sleep_with_countdown(100, "Waiting after new firmware")
+    print("\n[STEP 3] Flashing NEW firmware...")
+    step_start = time.time()
+    run_flash(EXE, CHANNEL, FIRMWARE_UPP, new_app)
+    print(f"   -> Done in {int(time.time() - step_start)} sec")
+    sleep_with_countdown(100, "Waiting after new firmware")
 
     # 4) new boot
-    # print("\n[STEP 4] Flashing NEW bootloader...")
-    # step_start = time.time()
-    # run_flash(EXE, CHANNEL, BOOT_UPP, new_boot)
-    # print(f"   -> Done in {int(time.time() - step_start)} sec")
-    # sleep_with_countdown(20, "Waiting after new boot")
+    print("\n[STEP 4] Flashing NEW bootloader...")
+    step_start = time.time()
+    run_flash(EXE, CHANNEL, BOOT_UPP, new_boot)
+    print(f"   -> Done in {int(time.time() - step_start)} sec")
+    sleep_with_countdown(20, "Waiting after new boot")
 
     print(f"\n✅ Round completed in {int(time.time() - round_start)} sec\n")
 
@@ -210,25 +212,35 @@ def flash_one_round(old_app: Path, old_boot: Path, new_app: Path, new_boot: Path
 # =========================
 
 def main() -> int:
-    try:
-        old_dir, new_dir = find_two_version_dirs(SOURCE_ROOT)
-        old_app, old_boot = find_merged_files(old_dir)
-        new_app, new_boot = find_merged_files(new_dir)
+        try:
+            args = parse_args()
 
-        print(f"Old version: {old_dir.name}")
-        print(f"  FW: {old_app}")
-        print(f"  BOOT: {old_boot}")
-        print(f"New version: {new_dir.name}")
-        print(f"  FW: {new_app}")
-        print(f"  BOOT: {new_boot}")
+            if args.old and args.new:
+                old_dir = Path(args.old)
+                new_dir = Path(args.new)
+                require_exists(old_dir, "Old version folder")
+                require_exists(new_dir, "New version folder")
+            else:
+                # Fallback: auto-detect (kept for manual runs)
+                old_dir, new_dir = find_two_version_dirs(SOURCE_ROOT)
 
-        # Exactly ONE round per process
-        flash_one_round(old_app, old_boot, new_app, new_boot)
-        return 0
+            old_app, old_boot = find_merged_files(old_dir)
+            new_app, new_boot = find_merged_files(new_dir)
 
-    except Exception as e:
-        print(f"\nERROR: {e}", file=sys.stderr)
-        return 1
+            print(f"Old version: {old_dir.name}")
+            print(f"  FW: {old_app}")
+            print(f"  BOOT: {old_boot}")
+            print(f"New version: {new_dir.name}")
+            print(f"  FW: {new_app}")
+            print(f"  BOOT: {new_boot}")
+
+            flash_one_round(old_app, old_boot, new_app, new_boot)
+            return 0
+
+        except Exception as e:
+            print(f"\nERROR: {e}", file=sys.stderr)
+            return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

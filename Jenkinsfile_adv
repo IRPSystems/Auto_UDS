@@ -203,7 +203,9 @@ PS
               }
 
               Write-Host " Running UPP_flash.py (round ${i}/${loops}) ..."
-              & 'C:\\Jenkins\\workspace\\Auto_UDS\\venv\\Scripts\\python.exe' -X utf8 -u \$flashPath
+              & 'C:\\Jenkins\\workspace\\Auto_UDS\\venv\\Scripts\\python.exe' -X utf8 -u $flashPath `
+              --old "C:\\Jenkins\\NewVersion\\${env:PREVIOUS_FOLDER}" `
+              --new "C:\\Jenkins\\NewVersion\\${env:LATEST_FOLDER}"
               if (\$LASTEXITCODE -ne 0) {
                 Write-Host "[FAIL] Flash script failed with exit code \$LASTEXITCODE (round ${i}/${loops})"
                 exit \$LASTEXITCODE
