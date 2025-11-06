@@ -3,7 +3,6 @@ import sys
 import shutil
 import subprocess
 from pathlib import Path
-from selectors import SelectSelector
 from typing import List
 
 # =========================
@@ -14,45 +13,37 @@ username = os.environ.get('USERNAME', 'unknown')
 if username == 'unknown':
     raise EnvironmentError("USERNAME environment variable not set.")
 
-base_dir =  os.path.dirname((os.path.abspath(__file__)))
-SOURCE_UDS = os.path.join(base_dir, 'Project' )
+# repo root (folder that contains Project/)
+base_dir = Path(__file__).resolve().parent
+SOURCE_UDS = base_dir / 'Project'
 print(SOURCE_UDS)
 
-#SOURCE_ROOT = Path(fr"C:\Users\{username}\Desktop\UPP")   # where new builds appear
+# Where new builds appear
 home = Path.home()
 candidate = home / "Desktop" / "UPP"
 SOURCE_ROOT = candidate if candidate.exists() else Path(r"C:\Jenkins\NewVersion")
 
+CLIENT_DIR_NAME = "UDS-Client"                # subfolder to copy from
+TARGET_DIR = Path(r"C:\Jenkins\UdsClient_CL") # tool install dir (writable by Jenkins)
 
-CLIENT_DIR_NAME = "UDS-Client"                       # subfolder to copy from
-TARGET_DIR = Path(r"C:\Jenkins\UdsClient_CL")        # tool install dir (writable by Jenkins)
-
-EXE = TARGET_DIR / "UdsClient_CL.exe"               # tool exe
+EXE = TARGET_DIR / "UdsClient_CL.exe"         # tool exe
 
 CHANNEL = "51"
 DEVICE = "UPP"
 
-
-SCRIPTS: List[str] = [
-    os.path.join(SOURCE_UDS,  'UPP', 'Scripts', 'Standard_Identifiers.script'),
-    os.path.join(SOURCE_UDS,  'UPP', 'Scripts', 'CanConfig_103.script'),
-    os.path.join(SOURCE_UDS,  'UPP',  'Scripts', 'Faults_Configuration.script'),
-    os.path.join(SOURCE_UDS,  'UPP',  'Scripts', 'Network_F1D5.script'),
-    os.path.join(SOURCE_UDS,  'UPP',  'Scripts', 'Network_Missmatch_F1D3.script'),
-    os.path.join(SOURCE_UDS,  'UPP',  'Scripts', 'Network_TimeOut_F1D2.script'),
-    os.path.join(SOURCE_UDS,  'UPP',  'Scripts', 'Routine_Control.script'),
-    os.path.join(SOURCE_UDS,  'UPP',  'Scripts', 'TrueDriveManager.script'),
-    os.path.join(SOURCE_UDS,  'UPP',  'Scripts', 'Generetic_ECU_Read.script'),
-
+# Script list
+SCRIPTS: List[Path] = [
+    SOURCE_UDS / 'UPP' / 'Scripts' / 'Standard_Identifiers.script',
+    SOURCE_UDS / 'UPP' / 'Scripts' / 'CanConfig_103.script',
+    SOURCE_UDS / 'UPP' / 'Scripts' / 'Faults_Configuration.script',
+    SOURCE_UDS / 'UPP' / 'Scripts' / 'Network_F1D5.script',
+    SOURCE_UDS / 'UPP' / 'Scripts' / 'Network_Missmatch_F1D3.script',
+    SOURCE_UDS / 'UPP' / 'Scripts' / 'Network_TimeOut_F1D2.script',
+    SOURCE_UDS / 'UPP' / 'Scripts' / 'Routine_Control.script',
+    SOURCE_UDS / 'UPP' / 'Scripts' / 'TrueDriveManager.script',
+    SOURCE_UDS / 'UPP' / 'Scripts' / 'Generetic_ECU_Read.script',
 ]
 
-# Run your parser AFTER EACH script:
-PARSER_CMD = [
-    # os.path.join(base_dir),'.venv\Scripts\python.exe',
-    os.path.join(base_dir,'.venv', 'Scripts', 'python.exe'),
-    os.path.join(SOURCE_UDS,  'UPP', 'upp.py'),
-]
-# ]
 TIMEOUT_PER_SCRIPT = 900  # seconds
 
 # =========================
@@ -72,21 +63,21 @@ def find_client_dir(base: Path, name: str) -> Path:
                 return Path(cur) / d
     raise FileNotFoundError(f"'{name}' not found under {base}")
 
-def copy_all_files(src_dir: Path, dst_dir: Path) -> list[Path]:
+def copy_all_files(src_dir: Path, dst_dir: Path) -> List[Path]:
     dst_dir.mkdir(parents=True, exist_ok=True)
     files = [p for p in src_dir.iterdir() if p.is_file()]
     if not files:
         raise FileNotFoundError(f"No files in {src_dir}")
-    copied = []
+    copied: List[Path] = []
     for f in files:
         target = dst_dir / f.name
         shutil.copy2(f, target)
         copied.append(target)
     return copied
 
-def run_one_script(script_path: str):
+def run_one_script(script_path: Path):
     """Run a single .script via UdsClient_CL, stream output, with timeout."""
-    args = [str(EXE), CHANNEL, DEVICE, "/s", script_path]
+    args = [str(EXE), CHANNEL, DEVICE, "/s", str(script_path)]
     print(f"\n==> Running: {script_path}")
     proc = subprocess.Popen(
         args,
@@ -108,14 +99,21 @@ def run_one_script(script_path: str):
         proc.kill()
         raise RuntimeError(f"Timed out after {TIMEOUT_PER_SCRIPT}s: {script_path}")
 
-def run_parser_for(script_path: str):
-    """Run the parser right after one script, passing context."""
+def run_parser_for(script_path: Path):
+    """Run the parser right after one script, passing context.
+
+    IMPORTANT: we invoke upp.py as a module (-m Project.UPP.upp) and set cwd to repo root,
+    so 'from Project.UPP.logger import setup_logger' works on Jenkins.
+    """
     print("   -> Parsing logs for:", script_path)
     env = os.environ.copy()
-    env["LAST_UDS_SCRIPT"] = script_path  # in case upp.py wants to know
-    # If upp.py supports a CLI arg (optional), we provide it:
-    cmd = PARSER_CMD + [script_path]
-    subprocess.run(cmd, check=True, env=env)
+    env["LAST_UDS_SCRIPT"] = str(script_path)
+
+    python_exe = base_dir / '.venv' / 'Scripts' / 'python.exe'
+    cmd = [str(python_exe), "-m", "Project.UPP.upp", str(script_path)]
+
+    # Run from the repository root (folder that has the 'Project' package)
+    subprocess.run(cmd, check=True, env=env, cwd=str(base_dir))
 
 # =========================
 # ========= MAIN ==========
@@ -144,7 +142,7 @@ def main():
     if not EXE.is_file():
         raise FileNotFoundError(f"UdsClient not found: {EXE}")
 
-    missing = [s for s in SCRIPTS if not Path(s).is_file()]
+    missing = [str(s) for s in SCRIPTS if not s.is_file()]
     if missing:
         raise FileNotFoundError("Missing .script file(s):\n  " + "\n  ".join(missing))
 
@@ -156,7 +154,6 @@ def main():
     print("\n✅ All scripts executed and parsed.")
 
 if __name__ == "__main__":
-
     try:
         main()
     except Exception as e:
