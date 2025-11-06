@@ -100,20 +100,29 @@ def run_one_script(script_path: Path):
         raise RuntimeError(f"Timed out after {TIMEOUT_PER_SCRIPT}s: {script_path}")
 
 def run_parser_for(script_path: Path):
-    """Run the parser right after one script, passing context.
-
-    IMPORTANT: we invoke upp.py as a module (-m Project.UPP.upp) and set cwd to repo root,
-    so 'from Project.UPP.logger import setup_logger' works on Jenkins.
+    """Run parser after one script. Keep -m execution, but also add
+    Project/UPP to PYTHONPATH so bare 'Condition' imports work.
     """
     print("   -> Parsing logs for:", script_path)
     env = os.environ.copy()
     env["LAST_UDS_SCRIPT"] = str(script_path)
 
+    # Ensure both repo root and the package subdir are on sys.path for upp.py
+    # - repo root lets 'from Project.UPP.logger import ...' work
+    # - Project/UPP lets 'from Condition import ...' work
+    add_paths = [
+        str(base_dir),                        # contains 'Project'
+        str(base_dir / "Project" / "UPP"),    # so bare 'Condition' resolves
+    ]
+    current_pp = env.get("PYTHONPATH", "")
+    env["PYTHONPATH"] = os.pathsep.join([p for p in add_paths + [current_pp] if p])
+
     python_exe = base_dir / '.venv' / 'Scripts' / 'python.exe'
     cmd = [str(python_exe), "-m", "Project.UPP.upp", str(script_path)]
 
-    # Run from the repository root (folder that has the 'Project' package)
+    # Run from the repo root (folder that has the 'Project' package)
     subprocess.run(cmd, check=True, env=env, cwd=str(base_dir))
+
 
 # =========================
 # ========= MAIN ==========
