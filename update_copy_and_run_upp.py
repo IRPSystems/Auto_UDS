@@ -3,6 +3,7 @@ import sys
 import shutil
 import subprocess
 from pathlib import Path
+from selectors import SelectSelector
 from typing import List
 
 # =========================
@@ -17,8 +18,12 @@ base_dir =  os.path.dirname((os.path.abspath(__file__)))
 SOURCE_UDS = os.path.join(base_dir, 'Project' )
 print(SOURCE_UDS)
 
+#SOURCE_ROOT = Path(fr"C:\Users\{username}\Desktop\UPP")   # where new builds appear
+home = Path.home()
+candidate = home / "Desktop" / "UPP"
+SOURCE_ROOT = candidate if candidate.exists() else Path(r"C:\Jenkins\NewVersion")
 
-SOURCE_ROOT = Path(fr"C:\Users\{username}\Desktop\UPP")   # where new builds appear
+
 CLIENT_DIR_NAME = "UDS-Client"                       # subfolder to copy from
 TARGET_DIR = Path(r"C:\Jenkins\UdsClient_CL")        # tool install dir (writable by Jenkins)
 

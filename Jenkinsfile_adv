@@ -1,19 +1,36 @@
 pipeline {
   agent { label 'master' }
 
-  options {
-  ansiColor('xterm')
-  }
+  options { ansiColor('xterm') }
+
   parameters {
     choice(
       name: 'DEVICE',
-      choices: ['UPP', 'NewGen'],
-      description: 'Select the project you want to run'
+      choices: ['UPP','NewGen'],
+      description: '''Select which project you want to run.
+
+Each project corresponds to a specific hardware and firmware setup:
+• UPP – Used for Gen2 power platform flashing and validation.
+• NewGen – Used for Dynamic 6 generation devices.
+
+Choose the project that matches your target device for flashing and testing'''
     )
-    choice(
+    string(
       name: 'FLASH_LOOPS',
-      choices: ['1','2','3','4','5','6','7','8','9','10'],
-      description: 'How many flash rounds to run'
+      defaultValue: '1',
+      trim: true,
+      description: '''How many flash cycles to run.
+Enter a positive integer. Non-numeric/empty values default to 1.'''
+    )
+    booleanParam(
+      name: 'DO_FLASH',
+      defaultValue: true,
+      description: 'Run the flashing steps. Uncheck to only prepare files and print summary.'
+    )
+     booleanParam(
+      name: 'DO_UDS',
+      defaultValue: true,
+      description: 'Run UDS client step after flashing.'
     )
   }
 
@@ -24,7 +41,7 @@ pipeline {
     DEST_FOLDER      = "${env.HOME}/workspace/NewVersion"
     REMOTE_TARGET    = 'C:\\Jenkins\\NewVersion'
     WORKSPACE_TARGET = "C:/Jenkins/workspace"
-    REMOTE_USER      = 'dyno'       // overridden in Environment stage if needed
+    REMOTE_USER      = 'dyno'
     REQUIREMENTS     = 'requirements.txt'
   }
 
@@ -33,7 +50,6 @@ pipeline {
     stage('Environment') {
       steps {
         script {
-          // Use params.DEVICE, not env.DEVICE
           switch (params.DEVICE) {
             case 'UPP':
               env.REMOTE_IP    = '192.168.10.31'
@@ -44,7 +60,7 @@ pipeline {
             case 'NewGen':
               env.REMOTE_IP    = '192.168.10.85'
               env.REMOTE_USER  = 'dyno'
-              env.MAIN_VER_DIR = 'dynamic 6/newGen'   // contains space
+              env.MAIN_VER_DIR = 'dynamic 6/newGen'
               env.REQUIREMENTS = 'requirements.txt'
               break
             default:
@@ -73,17 +89,18 @@ if (-not (Test-Path 'C:\\Jenkins\\workspace\\Auto_UDS')) {
 
 Set-Location 'C:\\Jenkins\\workspace\\Auto_UDS'
 
-# Temporarily disabled:
-if (Test-Path 'venv') { Remove-Item -Recurse -Force 'venv' }
-python -m venv venv
-#& 'venv\\Scripts\\pip.exe' install -r 'requirements.txt'
-#& 'venv\\Scripts\\pip.exe' freeze | Tee-Object -FilePath 'freeze.txt'
+# Create venv (consistent name)
+if (Test-Path '.venv') { Remove-Item -Recurse -Force '.venv' }
+python -m venv .venv
+# & '.venv\\Scripts\\pip.exe' install -r 'requirements.txt'
 PS
         """
       }
     }
 
     stage('Find Latest Firmware Folder') {
+    when { expression { return params.DO_FLASH } }
+    }
       steps {
         script {
           def latestFolder = sh(
@@ -101,7 +118,7 @@ PS
           ).trim()
 
           if (!latestFolder) {
-            error "[FAIL Could not find the latest folder in ${RCLONE_BASE}/${MAIN_VER_DIR}"
+            error "[FAIL] Could not find the latest folder in ${RCLONE_BASE}/${MAIN_VER_DIR}"
           }
           if (!previousFolder) {
             error "[FAIL] Could not find the previous folder in ${RCLONE_BASE}/${MAIN_VER_DIR} (need at least two releases)"
@@ -116,6 +133,8 @@ PS
     }
 
     stage('Copy Previous/Latest Firmware') {
+    when { expression { return params.DO_FLASH } }
+    }
       steps {
         sh """
           echo " Cleaning destination folder: ${DEST_FOLDER}"
@@ -180,116 +199,144 @@ PS
       }
     }
 
-   stage('Flash Loops') {
-  steps {
-    script {
-      int loops = params.FLASH_LOOPS as Integer
-      for (int i = 1; i <= loops; i++) {
-        echo " Starting flash round ${i} of ${loops}"
-        sh """
-          ssh ${REMOTE_USER}@${REMOTE_IP} powershell -NoProfile -Command - <<'PS'
-          # UTF-8 everything (prevents charmap issues)
-          chcp 65001 | Out-Null
-          [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-          \$env:PYTHONIOENCODING = 'utf-8'
-          \$env:PYTHONUTF8 = '1'
-          \$env:ROUND_INDEX = '${i}/${loops}'
+    stage('Flash Loops') {
+      when { expression { return params.DO_FLASH } }
+      steps {
+        script {
+          // normalize FLASH_LOOPS
+          def raw = (params.FLASH_LOOPS ?: '1').toString().trim()
+          def n = (raw ==~ /^[0-9]+$/) ? raw.toInteger() : 1
+          if (n < 1) n = 1
+          def MAX_LOOPS = 1000
+          if (n > MAX_LOOPS) { echo "FLASH_LOOPS (${n}) exceeds safety ceiling (${MAX_LOOPS}); clamping."; n = MAX_LOOPS }
+          echo "Normalized FLASH_LOOPS: ${n}"
+          env.FLASH_LOOPS_NORM = n.toString()
 
-          # Inject Jenkins values as literal strings (Groovy already expanded them)
-          \$prevFolder   = "${env.PREVIOUS_FOLDER}"
-          \$latestFolder = "${env.LATEST_FOLDER}"
-          if ([string]::IsNullOrWhiteSpace(\$prevFolder) -or [string]::IsNullOrWhiteSpace(\$latestFolder)) {
-            Write-Host "[FAIL] PREVIOUS_FOLDER or LATEST_FOLDER is empty. Aborting."
-            exit 1
-          }
-          \$oldPath = "C:\\Jenkins\\NewVersion\\\$prevFolder"
-          \$newPath = "C:\\Jenkins\\NewVersion\\\$latestFolder"
-          Write-Host " Using --old=\$oldPath --new=\$newPath"
+          for (int i = 1; i <= n; i++) {
+            echo "Starting flash round ${i} of ${n}"
+            sh """
+              ssh ${REMOTE_USER}@${REMOTE_IP} powershell -NoProfile -Command - <<'PS'
+# UTF-8 everything (prevents charmap issues)
+chcp 65001 | Out-Null
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+${'$'}env:PYTHONIOENCODING = 'utf-8'
+${'$'}env:PYTHONUTF8 = '1'
+${'$'}env:ROUND_INDEX = '${i}/${n}'
 
-          Set-Location 'C:\\Jenkins\\workspace\\Auto_UDS'
-          \$flashPath = 'C:\\Jenkins\\workspace\\Auto_UDS\\1UPP_flash.py'
-          if (-Not (Test-Path \$flashPath)) {
-            Write-Host "[FAIL]  Flash script not found at \$flashPath"
-            exit 1
-          }
+# Inject Jenkins values as literal strings (Groovy already expanded them)
+${'$'}prevFolder   = "${env.PREVIOUS_FOLDER}"
+${'$'}latestFolder = "${env.LATEST_FOLDER}"
+if ([string]::IsNullOrWhiteSpace(${ '$'}prevFolder) -or [string]::IsNullOrWhiteSpace(${ '$'}latestFolder)) {
+  Write-Host "[FAIL] PREVIOUS_FOLDER or LATEST_FOLDER is empty. Aborting."
+  exit 1
+}
+${'$'}oldPath = "C:\\Jenkins\\NewVersion\\${'$'}prevFolder"
+${'$'}newPath = "C:\\Jenkins\\NewVersion\\${'$'}latestFolder"
+Write-Host " Using --old=${'$'}oldPath --new=${'$'}newPath"
 
-          Write-Host " Running UPP_flash.py (round ${i}/${loops}) ..."
-          & 'C:\\Jenkins\\workspace\\Auto_UDS\\venv\\Scripts\\python.exe' -X utf8 -u \$flashPath `
-            --old "\$oldPath" `
-            --new "\$newPath"
-
-          if (\$LASTEXITCODE -ne 0) {
-            Write-Host "[FAIL] Flash script failed with exit code \$LASTEXITCODE (round ${i}/${loops})"
-            exit \$LASTEXITCODE
-          } else {
-            Write-Host "[OK] Flash script completed successfully (round ${i}/${loops})"
-          }
-PS
-        """
-      }
-    }
-  }
+Set-Location 'C:\\Jenkins\\workspace\\Auto_UDS'
+${'$'}flashPath = 'C:\\Jenkins\\workspace\\Auto_UDS\\1UPP_flash.py'
+if (-Not (Test-Path ${'$'}flashPath)) {
+  Write-Host "[FAIL]  Flash script not found at ${'$'}flashPath"
+  exit 1
 }
 
+Write-Host " Running UPP_flash.py (round ${i}/${n}) ..."
+& 'C:\\Jenkins\\workspace\\Auto_UDS\\.venv\\Scripts\\python.exe' -X utf8 -u ${'$'}flashPath `
+  --old "${'$'}oldPath" `
+  --new "${'$'}newPath"
 
-stage('Flash Summary') {
-  steps {
-    script {
-      echo '----------------------------------------'
-      echo 'Collecting version details and generating summary...'
-      echo '----------------------------------------'
+if (${ '$'}LASTEXITCODE -ne 0) {
+  Write-Host "[FAIL] Flash script failed with exit code ${'$'}LASTEXITCODE (round ${i}/${n})"
+  exit ${'$'}LASTEXITCODE
+} else {
+  Write-Host "[OK] Flash script completed successfully (round ${i}/${n})"
+}
+PS
+            """
+          }
+        }
+      }
+    }
 
-      def result = sh(
-        script: """
-          ssh ${REMOTE_USER}@${REMOTE_IP} powershell -NoLogo -NoProfile -NonInteractive -Command - <<'PS'
+    stage('UDS') {
+      when { expression { return params.DO_UDS } }
+      steps {
+        script {
+    sh """
+              ssh ${REMOTE_USER}@${REMOTE_IP} powershell -NoProfile -Command - <<'PS'
+            # UTF-8 everything (prevents charmap issues)
+            chcp 65001 | Out-Null
+            [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+            ${'$'}env:PYTHONIOENCODING = 'utf-8'
+            ${'$'}env:PYTHONUTF8 = '1'
+            ${'$'}env:ROUND_INDEX = '${i}/${n}'
+
+            Set-Location 'C:\\Jenkins\\workspace\\Auto_UDS'
+            ${'$'}flashPath = 'C:\\Jenkins\\workspace\\Auto_UDS\\update_copy_and_run_upp.py'
+
+        }
+        }
+        }
+    stage('Flash Summary') {
+      steps {
+        script {
+          echo '----------------------------------------'
+          echo 'Collecting version details and generating summary...'
+          echo '----------------------------------------'
+
+          def result = sh(
+            script: """
+              ssh ${REMOTE_USER}@${REMOTE_IP} powershell -NoLogo -NoProfile -NonInteractive -Command - <<'PS'
 ${'$'}ErrorActionPreference = 'Stop'
 ${'$'}ProgressPreference    = 'SilentlyContinue'
 
 ${'$'}root   = 'C:\\Jenkins\\NewVersion'
-${'$'}prev   = '${PREVIOUS_FOLDER}'
-${'$'}latest = '${LATEST_FOLDER}'
+${'$'}prev   = '${env.PREVIOUS_FOLDER}'
+${'$'}latest = '${env.LATEST_FOLDER}'
 
 function Get-HexPair([string]${'$'}dirPath) {
   ${'$'}merged = Join-Path ${'$'}dirPath 'FW Merged'
   if (-not (Test-Path -LiteralPath ${'$'}merged)) { return '|' }  # app|boot
 
-  ${'$'}app  = Get-ChildItem -LiteralPath ${'$'}merged -Filter '*Merge_App_*.hex'  -ErrorAction SilentlyContinue |
+  ${'$'}app  = Get-ChildItem -LiteralPath ${'$'}merged -Filter '*Merge_App_*UPP_v*.hex'  -ErrorAction SilentlyContinue |
                Sort-Object LastWriteTime | Select-Object -Last 1
-  ${'$'}boot = Get-ChildItem -LiteralPath ${'$'}merged -Filter '*Merge_Boot_*.hex' -ErrorAction SilentlyContinue |
+  ${'$'}boot = Get-ChildItem -LiteralPath ${'$'}merged -Filter '*Merge_Boot_*UPP_v*.hex' -ErrorAction SilentlyContinue |
                Sort-Object LastWriteTime | Select-Object -Last 1
 
   ${'$'}appName  = if (${'$'}app)  { ${'$'}app.Name }  else { '' }
   ${'$'}bootName = if (${'$'}boot) { ${'$'}boot.Name } else { '' }
-  return "${'$'}appName|${'$'}bootName"
+  Write-Output "${'$'}appName|${'$'}bootName"
 }
 
 ${'$'}prevPair   = Get-HexPair (Join-Path ${'$'}root ${'$'}prev)
 ${'$'}latestPair = Get-HexPair (Join-Path ${'$'}root ${'$'}latest)
 Write-Output "${'$'}prevPair|${'$'}latestPair"
 PS
-        """,
-        returnStdout: true
-      ).trim()
+            """,
+            returnStdout: true
+          ).trim()
 
-      def parts = result.split('\\|', -1)
-      if (parts.size() < 4) {
-        error "Could not parse flash metadata. Got: ${result}"
-      }
+          def parts = result.split('\\|', -1)
+          if (parts.size() < 4) {
+            error "Could not parse flash metadata. Got: ${result}"
+          }
 
-      def prevApp  = parts[0] ?: 'N/A'
-      def prevBoot = parts[1] ?: 'N/A'
-      def newApp   = parts[2] ?: 'N/A'
-      def newBoot  = parts[3] ?: 'N/A'
+          def prevApp  = parts[0] ?: 'N/A'
+          def prevBoot = parts[1] ?: 'N/A'
+          def newApp   = parts[2] ?: 'N/A'
+          def newBoot  = parts[3] ?: 'N/A'
 
-      def loops = params.FLASH_LOOPS ?: '1'
-      def now   = sh(script: "date -u +'%Y-%m-%d %H:%M:%S UTC'", returnStdout: true).trim()
+          // reuse normalized loops if set, else compute quickly
+          def loops = env.FLASH_LOOPS_NORM ?: ((params.FLASH_LOOPS ?: '1').isInteger() ? params.FLASH_LOOPS : '1')
+          def now   = sh(script: "date -u +'%Y-%m-%d %H:%M:%S UTC'", returnStdout: true).trim()
 
-def summary = """
+          def summary = """
 ----------------------------------------
 FLASH SUMMARY REPORT
 ----------------------------------------
 Device: ${params.DEVICE}
-Total loops flashed: ${loops}
+Total loops flashed: ${params.DO_FLASH ? loops : '0 (flash skipped)'}
 Timestamp: ${now}
 
 Previous version folder: ${env.PREVIOUS_FOLDER}
@@ -300,15 +347,11 @@ New version folder: ${env.LATEST_FOLDER}
   App : ${newApp}
   Boot: ${newBoot}
 ----------------------------------------
-"""
+""".stripIndent()
 
-// Either:
-echo summary
-// Or, if you want to trim leading/trailing blank lines (allowed in sandbox):
-// echo summary.trim()
-
+          echo summary
+        }
+      }
     }
-  }
-}
   }
 }
