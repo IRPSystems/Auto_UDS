@@ -130,8 +130,8 @@ REQ_ID_MAPPING = {
        # "VCU_ACTIVE Healing Time": ("MCU_NM_ID_LIST_1", "F1D2"),
        "BMS5_10 Timeout": ("MCU_NM_ID_LIST_1", "F1D2"),
        "BMS5_10 Healing Time": ("MCU_NM_ID_LIST_1", "F1D2"),
-        "BMS6_10 Timeout": ("MCU_NM_ID_LIST_1", "F1D2"),
-        "BMS6_10 Healing Time": ("MCU_NM_ID_LIST_1", "F1D2"),
+        # "BMS6_10 Timeout": ("MCU_NM_ID_LIST_1", "F1D2"),
+        # "BMS6_10 Healing Time": ("MCU_NM_ID_LIST_1", "F1D2"),
         # F1D4 - Network Management Enable
         "Network Management Enable": ("MCU_NM_ID_LIST_3", "F1D4"),
         # 0104 - CAN Wakeup Configuration (Not Tested)
