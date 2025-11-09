@@ -441,6 +441,36 @@ def process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, logger):
         strip_ansi_codes(original_log_file)
     return result_folder
 
+# if __name__ == "__main__":
+#     folder_path = r"C:\\temp3"
+#     files = glob.glob(os.path.join(folder_path, "*.uds.txt"))
+#     if not files:
+#         print("No matching files found.")
+#     else:
+#         newest_file = max(files, key=os.path.getmtime)
+#         logger = setup_logger("main", Logs_folder)
+#         logger.setLevel(logging.DEBUG)
+#         # Process all script sections
+#         script_sections = process_uds_file(newest_file, logger)
+#         if not script_sections:
+#             logger.warning("No script sections to process in %s", newest_file)
+#         else:
+#             result_folder = None
+#             for script_name, tx_lines, rx_lines, all_lines in script_sections:
+#                 logger.info(f"Processing script section: {script_name}")
+#                 script_logger = setup_logger(script_name, Logs_folder)
+#                 script_logger.setLevel(logging.DEBUG)
+#                 if tx_lines or rx_lines:
+#                     result = process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, script_logger)
+#                     if result:  # only overwrite if we actually got a result
+#                         result_folder = os.path.basename(result)
+#
+#             if result_folder:
+#                 os.environ['RESULT_FOLDER'] = result_folder
+#                 os.system(f'python {SCRIPT_DIR}/modify_compliance_matrix.py')
+#
+#             else:
+#                 logger.warning("No result folder was detected from logs. Compliance matrix not generated.")
 if __name__ == "__main__":
     folder_path = r"C:\\temp3"
     files = glob.glob(os.path.join(folder_path, "*.uds.txt"))
@@ -466,28 +496,25 @@ if __name__ == "__main__":
                         result_folder = os.path.basename(result)
 
             if result_folder:
-                os.environ['RESULT_FOLDER'] = result_folder
-                os.system(f'python {SCRIPT_DIR}/modify_compliance_matrix.py')
+                # pass RESULT_FOLDER to the child process and use the SAME interpreter (venv on Jenkins)
+                env = os.environ.copy()
+                env['RESULT_FOLDER'] = result_folder
 
+                script_path = os.path.join(SCRIPT_DIR, "modify_compliance_matrix.py")
+                logger.info(
+                    f"Running compliance matrix modifier: {script_path} (RESULT_FOLDER={result_folder})"
+                )
+
+                try:
+                    subprocess.run(
+                        [sys.executable, script_path],
+                        check=True,
+                        env=env,
+                    )
+                except subprocess.CalledProcessError as e:
+                    logger.error(f"modify_compliance_matrix.py failed with return code {e.returncode}")
+                    raise
             else:
                 logger.warning("No result folder was detected from logs. Compliance matrix not generated.")
 
-            # if result_folder:
-            #     # pass RESULT_FOLDER to the child process
-            #     env = os.environ.copy()
-            #     env['RESULT_FOLDER'] = result_folder
-            #
-            #     script_path = os.path.join(SCRIPT_DIR, "modify_compliance_matrix.py")
-            #     logger.info(f"Running compliance matrix modifier: {script_path} (RESULT_FOLDER={result_folder})")
-            #
-            #     try:# Use the *same* Python that is running upp.py (venv on Jenkins)
-            #         subprocess.run(
-            #             [sys.executable, script_path],
-            #             check=True,
-            #             env=env,
-            #
-            #         )
-            #     except subprocess.CalledProcessError as e:
-            #         logger.error(f"modify_compliance_matrix.py failed with return code {e.returncode}")
-            #         raise
 

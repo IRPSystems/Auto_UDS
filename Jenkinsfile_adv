@@ -27,7 +27,7 @@ Enter a positive integer. Non-numeric/empty values default to 1.'''
       defaultValue: true,
       description: 'Run the flashing steps. Uncheck to only prepare files and print summary.'
     )
-     booleanParam(
+    booleanParam(
       name: 'DO_UDS',
       defaultValue: true,
       description: 'Run UDS client step after flashing.'
@@ -92,15 +92,15 @@ Set-Location 'C:\\Jenkins\\workspace\\Auto_UDS'
 # Create venv (consistent name)
 if (Test-Path '.venv') { Remove-Item -Recurse -Force '.venv' }
 python -m venv .venv
-# & '.venv\\Scripts\\pip.exe' install -r 'requirements.txt'
+& '.venv\\Scripts\\python.exe' -m pip install --upgrade pip
+& '.venv\\Scripts\\pip.exe' install -r 'requirements.txt'
 PS
         """
       }
     }
 
     stage('Find Latest Firmware Folder') {
-    when { expression { return params.DO_FLASH } }
-    }
+      when { expression { return params.DO_FLASH } }
       steps {
         script {
           def latestFolder = sh(
@@ -133,8 +133,7 @@ PS
     }
 
     stage('Copy Previous/Latest Firmware') {
-    when { expression { return params.DO_FLASH } }
-    }
+      when { expression { return params.DO_FLASH } }
       steps {
         sh """
           echo " Cleaning destination folder: ${DEST_FOLDER}"
@@ -262,22 +261,34 @@ PS
     stage('UDS') {
       when { expression { return params.DO_UDS } }
       steps {
-        script {
-    sh """
-              ssh ${REMOTE_USER}@${REMOTE_IP} powershell -NoProfile -Command - <<'PS'
-            # UTF-8 everything (prevents charmap issues)
-            chcp 65001 | Out-Null
-            [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-            ${'$'}env:PYTHONIOENCODING = 'utf-8'
-            ${'$'}env:PYTHONUTF8 = '1'
-            ${'$'}env:ROUND_INDEX = '${i}/${n}'
+        sh """
+          ssh ${REMOTE_USER}@${REMOTE_IP} powershell -NoProfile -Command - <<'PS'
+# UTF-8 everything (prevents charmap issues)
+chcp 65001 | Out-Null
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+${'$'}env:PYTHONIOENCODING = 'utf-8'
+${'$'}env:PYTHONUTF8 = '1'
 
-            Set-Location 'C:\\Jenkins\\workspace\\Auto_UDS'
-            ${'$'}flashPath = 'C:\\Jenkins\\workspace\\Auto_UDS\\update_copy_and_run_upp.py'
+Set-Location 'C:\\Jenkins\\workspace\\Auto_UDS'
+${'$'}udsPath = 'C:\\Jenkins\\workspace\\Auto_UDS\\update_copy_and_run_upp.py'
+if (-Not (Test-Path ${'$'}udsPath)) {
+  Write-Host "[FAIL]  UDS script not found at ${'$'}udsPath"
+  exit 1
+}
 
-        }
-        }
-        }
+Write-Host " Running update_copy_and_run_upp.py ..."
+& 'C:\\Jenkins\\workspace\\Auto_UDS\\.venv\\Scripts\\python.exe' -X utf8 -u ${'$'}udsPath
+if (${ '$'}LASTEXITCODE -ne 0) {
+  Write-Host "[FAIL] UDS step failed with exit code ${'$'}LASTEXITCODE"
+  exit ${'$'}LASTEXITCODE
+} else {
+  Write-Host "[OK] UDS step completed successfully"
+}
+PS
+        """
+      }
+    }
+
     stage('Flash Summary') {
       steps {
         script {
@@ -353,5 +364,6 @@ New version folder: ${env.LATEST_FOLDER}
         }
       }
     }
+
   }
 }
