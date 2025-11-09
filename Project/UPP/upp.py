@@ -468,6 +468,7 @@ if __name__ == "__main__":
 
             if result_folder:
                 os.environ['RESULT_FOLDER'] = result_folder
-                os.system('python modify_compliance_matrix.py')
+                os.system(f'python {SCRIPT_DIR}/modify_compliance_matrix.py')
+
             else:
                 logger.warning("No result folder was detected from logs. Compliance matrix not generated.")
