@@ -479,11 +479,15 @@ if __name__ == "__main__":
                 script_path = os.path.join(SCRIPT_DIR, "modify_compliance_matrix.py")
                 logger.info(f"Running compliance matrix modifier: {script_path} (RESULT_FOLDER={result_folder})")
 
-                # Use the *same* Python that is running upp.py (venv on Jenkins)
-                subprocess.run(
-                    [sys.executable, script_path],
-                    check=True,
-                    env=env,
-                )
-            else:
-                logger.warning("No result folder was detected from logs. Compliance matrix not generated.")
+                try:# Use the *same* Python that is running upp.py (venv on Jenkins)
+                    subprocess.run(
+                        [sys.executable, script_path],
+                        check=True,
+                        env=env,
+
+                    )
+                except subprocess.CalledProcessError as e:
+                    logger.error(f"modify_compliance_matrix.py failed with return code {e.returncode}")
+                    raise
+                    # else:
+                    #     logger.warning("No result folder was detected from logs. Compliance matrix not generated.")
