@@ -673,7 +673,7 @@ def compare_and_generate_report(srd_services, srd_original_names, srd_details, l
         raise
 
 def main():
-    os.system('python output_with_raw.py')
+    os.system(f'python {base_log_dir}/output_with_raw.py')
     parser = argparse.ArgumentParser(description="Generate UDS compliance report")
     parser.add_argument("--srd-file", default=SRD_path, help="SRD Excel file path")
     parser.add_argument("--log-file", default=UDS_path, help="Log Excel file path")
