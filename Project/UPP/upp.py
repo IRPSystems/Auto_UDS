@@ -1,8 +1,7 @@
 import logging
-import os
-import re
-import glob
-import shutil
+import os, subprocess
+import glob, re
+import shutil, sys
 from datetime import datetime
 from Condition import (id_conditions_F1D2, id_conditions_F1D3, id_conditions_Fault_Config,
                        id_conditions_TrueDrive, id_conditions_Routine, id_conditions_F1D5,
@@ -466,9 +465,25 @@ if __name__ == "__main__":
                     if result:  # only overwrite if we actually got a result
                         result_folder = os.path.basename(result)
 
+            # if result_folder:
+            #     os.environ['RESULT_FOLDER'] = result_folder
+            #     os.system(f'python {SCRIPT_DIR}/modify_compliance_matrix.py')
+            #
+            # else:
+            #     logger.warning("No result folder was detected from logs. Compliance matrix not generated.")
             if result_folder:
-                os.environ['RESULT_FOLDER'] = result_folder
-                os.system(f'python {SCRIPT_DIR}/modify_compliance_matrix.py')
+                # pass RESULT_FOLDER to the child process
+                env = os.environ.copy()
+                env['RESULT_FOLDER'] = result_folder
 
+                script_path = os.path.join(SCRIPT_DIR, "modify_compliance_matrix.py")
+                logger.info(f"Running compliance matrix modifier: {script_path} (RESULT_FOLDER={result_folder})")
+
+                # Use the *same* Python that is running upp.py (venv on Jenkins)
+                subprocess.run(
+                    [sys.executable, script_path],
+                    check=True,
+                    env=env,
+                )
             else:
                 logger.warning("No result folder was detected from logs. Compliance matrix not generated.")
