@@ -465,29 +465,29 @@ if __name__ == "__main__":
                     if result:  # only overwrite if we actually got a result
                         result_folder = os.path.basename(result)
 
-            # if result_folder:
-            #     os.environ['RESULT_FOLDER'] = result_folder
-            #     os.system(f'python {SCRIPT_DIR}/modify_compliance_matrix.py')
-            #
-            # else:
-            #     logger.warning("No result folder was detected from logs. Compliance matrix not generated.")
             if result_folder:
-                # pass RESULT_FOLDER to the child process
-                env = os.environ.copy()
-                env['RESULT_FOLDER'] = result_folder
+                os.environ['RESULT_FOLDER'] = result_folder
+                os.system(f'python {SCRIPT_DIR}/modify_compliance_matrix.py')
 
-                script_path = os.path.join(SCRIPT_DIR, "modify_compliance_matrix.py")
-                logger.info(f"Running compliance matrix modifier: {script_path} (RESULT_FOLDER={result_folder})")
+            else:
+                logger.warning("No result folder was detected from logs. Compliance matrix not generated.")
 
-                try:# Use the *same* Python that is running upp.py (venv on Jenkins)
-                    subprocess.run(
-                        [sys.executable, script_path],
-                        check=True,
-                        env=env,
+            # if result_folder:
+            #     # pass RESULT_FOLDER to the child process
+            #     env = os.environ.copy()
+            #     env['RESULT_FOLDER'] = result_folder
+            #
+            #     script_path = os.path.join(SCRIPT_DIR, "modify_compliance_matrix.py")
+            #     logger.info(f"Running compliance matrix modifier: {script_path} (RESULT_FOLDER={result_folder})")
+            #
+            #     try:# Use the *same* Python that is running upp.py (venv on Jenkins)
+            #         subprocess.run(
+            #             [sys.executable, script_path],
+            #             check=True,
+            #             env=env,
+            #
+            #         )
+            #     except subprocess.CalledProcessError as e:
+            #         logger.error(f"modify_compliance_matrix.py failed with return code {e.returncode}")
+            #         raise
 
-                    )
-                except subprocess.CalledProcessError as e:
-                    logger.error(f"modify_compliance_matrix.py failed with return code {e.returncode}")
-                    raise
-                    # else:
-                    #     logger.warning("No result folder was detected from logs. Compliance matrix not generated.")
