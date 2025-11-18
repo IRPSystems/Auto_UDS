@@ -8,7 +8,6 @@ pipeline {
       name: 'DEVICE',
       choices: ['UPP','NewGen'],
       description: '''Select which project you want to run.
-
 Each project corresponds to a specific hardware and firmware setup:
 • UPP – Used for Gen2 power platform flashing and validation.
 • NewGen – Used for Dynamic 6 generation devices.
@@ -19,8 +18,15 @@ Choose the project that matches your target device for flashing and testing'''
       name: 'FLASH_LOOPS',
       defaultValue: '1',
       trim: true,
-      description: '''How many flash cycles to run.
-Enter a positive integer. Non-numeric/empty values default to 1.'''
+      description:  '''How many flash cycles to run.
+Each cycle performs 4 steps on the target device:
+1) Flash OLD Application
+2) Flash OLD Boot
+3) Flash NEW Application
+4) Flash NEW Boot
+
+"OLD" files come from the Previous version folder; "NEW" files come from the Latest version folder.
+The pipeline stops on first failure and prints a flash summary at the end.'''
     )
     booleanParam(
       name: 'DO_FLASH',
@@ -71,11 +77,13 @@ Enter a positive integer. Non-numeric/empty values default to 1.'''
       }
     }
 
-    stage('Clone Project on Remote Windows') {
-      steps {
-        sh """
-          echo " Running remote clone + setup (PowerShell via stdin)..."
-          ssh ${REMOTE_USER}@${REMOTE_IP} powershell -NoProfile -Command - <<'PS'
+   stage('Clone Project on Remote Windows') {
+  steps {
+    sh """
+      echo " Running remote clone + setup (PowerShell via stdin)..."
+      ssh ${REMOTE_USER}@${REMOTE_IP} powershell -NoProfile -Command - <<'PS'
+${'$'}ErrorActionPreference = 'Stop'
+
 if (-not (Test-Path 'C:\\Jenkins\\workspace')) {
   New-Item -ItemType Directory -Path 'C:\\Jenkins\\workspace' -Force | Out-Null
 }
@@ -92,13 +100,33 @@ Set-Location 'C:\\Jenkins\\workspace\\Auto_UDS'
 # Create venv (consistent name)
 if (Test-Path '.venv') { Remove-Item -Recurse -Force '.venv' }
 python -m venv .venv
-& '.venv\\Scripts\\python.exe' -m pip install --upgrade pip
-& '.venv\\Scripts\\pip.exe' install -r 'requirements.txt'
-PS
-        """
-      }
-    }
 
+Write-Host " [INFO] Installing requirements into .venv ..."
+& '.venv\\Scripts\\python.exe' -m pip install --upgrade pip
+if (${ '$'}LASTEXITCODE -ne 0) {
+  Write-Host "[FAIL] pip upgrade failed with code ${'$'}LASTEXITCODE"
+  exit ${'$'}LASTEXITCODE
+}
+
+& '.venv\\Scripts\\pip.exe' install -r 'requirements.txt'
+if (${ '$'}LASTEXITCODE -ne 0) {
+  Write-Host "[FAIL] pip install -r requirements.txt failed with code ${'$'}LASTEXITCODE"
+  exit ${'$'}LASTEXITCODE
+}
+
+# Sanity check: prove openpyxl is importable in THIS venv
+Write-Host " [INFO] Verifying openpyxl in .venv ..."
+& '.venv\\Scripts\\python.exe' -c "import openpyxl, sys; print('openpyxl OK from', openpyxl.__file__)"
+if (${ '$'}LASTEXITCODE -ne 0) {
+  Write-Host "[FAIL] openpyxl import test failed in .venv"
+  exit ${'$'}LASTEXITCODE
+}
+
+Write-Host " [OK] Virtualenv + requirements setup completed."
+PS
+    """
+  }
+}
     stage('Find Latest Firmware Folder') {
       when { expression { return params.DO_FLASH } }
       steps {

@@ -7,7 +7,6 @@ security 1
 
 #Boot  Software  Identification F180
 send 22 F180
-
 #Application Software  Identification F181
 send 22 F181
 
