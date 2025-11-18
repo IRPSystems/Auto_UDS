@@ -107,7 +107,7 @@ def run_parser_for(script_path: Path):
     env["PYTHONPATH"] = os.pathsep.join([p for p in add_paths + [current_pp] if p])
 
     python_exe = base_dir / '.venv' / 'Scripts' / 'python.exe'
-    cmd = [str(python_exe), "-m", "Project.NewGen", str(script_path)]
+    cmd = [str(python_exe), "-m", "Project.NewGen.ng", str(script_path)]
     #cmd = [str(python_exe), "-m", "Project.NewGem.newgen", str(script_path)]
 
     # Run from the repo root (folder that has the 'Project' package)
