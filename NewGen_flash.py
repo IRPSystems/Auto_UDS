@@ -148,17 +148,17 @@ def run_flash(exe: Path, channel: str, target: str, file_path: Path) -> None:
         stripped = line.strip()
 
         # NEW: treat "End" / "Close" as error
-        if stripped in ("End", "Close"):
-            if last_pct is not None:
-                sys.stdout.write("\n")
-                sys.stdout.flush()
-            print(f"[ERROR] Tool reported '{stripped}' – aborting flash for {target}")
-            process.terminate()
-            try:
-                process.wait(timeout=10)
-            except subprocess.TimeoutExpired:
-                process.kill()
-            raise RuntimeError(f"Flash aborted: tool reported '{stripped}'")
+        # if stripped in ("End", "Close"):
+            # if last_pct is not None:
+            #     sys.stdout.write("\n")
+            #     sys.stdout.flush()
+            # print(f"[ERROR] Tool reported '{stripped}' – aborting flash for {target}")
+            # process.terminate()
+            # try:
+            #     process.wait(timeout=10)
+            # except subprocess.TimeoutExpired:
+            #     process.kill()
+            # raise RuntimeError(f"Flash aborted: tool reported '{stripped}'")
 
         # existing percent / normal line handling stays as you had it
         m = pct_re.match(line)
