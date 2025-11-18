@@ -1,5 +1,5 @@
 import argparse
-import time
+import subprocess
 
 import openpyxl
 from openpyxl.styles import PatternFill, Font
@@ -19,7 +19,14 @@ username = os.environ.get('USERNAME', 'unknown')
 if username == 'unknown':
     raise EnvironmentError("USERNAME environment variable not set.")
 
-base_log_dir = os.path.join('C:\\', 'Users', username, 'PycharmProjects', 'UDS', 'Projects', 'NewGen')
+#Logs_folder = os.path.join("Logs")
+###############################
+base_log_dir = os.path.dirname(os.path.abspath(__file__))
+Logs_folder = os.path.join(base_log_dir, "Logs")
+os.makedirs(Logs_folder, exist_ok=True)
+#####################################
+
+print(base_log_dir)
 
 result_folder = os.environ.get("RESULT_FOLDER")
 
@@ -517,9 +524,18 @@ def compare_and_generate_report(srd_services, srd_original_names, srd_details, l
         raise
 
 def main():
-    #os.system(base_log_dir+'//output_with_raw.py')
-    script_path = os.path.join(base_log_dir, 'output_with_raw.py')
-    os.system(f'python "{script_path}"')
+    # os.system(f'python {base_log_dir}/output_with_raw.py')
+    # parser = argparse.ArgumentParser(description="Generate UDS compliance report")
+    script_path = os.path.join(base_log_dir, "output_with_raw.py")
+    try:
+        subprocess.run(
+            [sys.executable, script_path],
+            check=True,
+        )
+    except subprocess.CalledProcessError as e:
+        print(f"output_with_raw.py failed with return code {e.returncode}")
+        sys.exit(e.returncode)
+
     parser = argparse.ArgumentParser(description="Generate UDS compliance report")
     parser.add_argument("--srd-file", default=SRD_path, help="SRD Excel file path")
     parser.add_argument("--log-file", default=UDS_path, help="Log Excel file path")

@@ -8,12 +8,57 @@ from openpyxl.drawing.image import Image
 import matplotlib.pyplot as plt
 import sys
 
-def get_latest_log_folder(logs_base_path="Logs"):
-    """Find the latest folder in Logs directory."""
-    log_folders = [f for f in glob.glob(os.path.join(logs_base_path, "*")) if os.path.isdir(f)]
+# -------------------------------------------------------------------
+# Base paths – ALWAYS anchor to this file's location, not CWD
+# -------------------------------------------------------------------
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+LOGS_ROOT = os.path.join(BASE_DIR, "Logs")
+
+print(f"BASE_DIR: {BASE_DIR}")
+print(f"LOGS_ROOT: {LOGS_ROOT}")
+
+
+def get_latest_log_folder(logs_base_path=None):
+    """
+    Find the log folder to process.
+
+    Priority:
+      1) RESULT_FOLDER env var under LOGS_ROOT
+      2) Latest subfolder under LOGS_ROOT
+    """
+    if logs_base_path is None:
+        logs_base_path = LOGS_ROOT
+
+    # 1) Prefer RESULT_FOLDER from environment
+    result_folder = os.environ.get("RESULT_FOLDER")
+    if result_folder:
+        candidate = os.path.join(logs_base_path, result_folder)
+        print(f"RESULT_FOLDER from env: {result_folder}")
+        print(f"Candidate log dir: {candidate}")
+        if os.path.isdir(candidate):
+            return candidate
+        else:
+            print(
+                f"WARNING: RESULT_FOLDER is set to '{result_folder}', "
+                f"but folder does not exist at: {candidate}. Falling back to latest folder."
+            )
+
+    # 2) Fallback: pick latest subfolder under logs_base_path
+    if not os.path.isdir(logs_base_path):
+        raise FileNotFoundError(f"Logs base path does not exist: {logs_base_path}")
+
+    log_folders = [
+        os.path.join(logs_base_path, d)
+        for d in os.listdir(logs_base_path)
+        if os.path.isdir(os.path.join(logs_base_path, d))
+    ]
     if not log_folders:
-        raise FileNotFoundError("No log folders found in Logs directory.")
-    return max(log_folders, key=os.path.getmtime)
+        raise FileNotFoundError(f"No log folders found in Logs directory: {logs_base_path}")
+
+    latest = max(log_folders, key=os.path.getmtime)
+    print(f"No RESULT_FOLDER set; using latest folder: {latest}")
+    return latest
+
 
 def parse_log_line(line, seen_keys=None):
     if seen_keys is None:
@@ -34,10 +79,15 @@ def parse_log_line(line, seen_keys=None):
         return did, result, status
 
     # INFO pattern (capture both Converted and Raw Values)
-    info_match = re.search(r"\[INFO\] - (.+?)(?:(?:[:,] (?:Converted result|Converted): (.+?))(?:, Raw Values: ([0-9A-F\s]+))?)?(?:\s+(Pass|Fail))?$", line)
+    info_match = re.search(
+        r"\[INFO\] - (.+?)(?:(?:[:,] (?:Converted result|Converted): (.+?))(?:, Raw Values: ([0-9A-F\s]+))?)?(?:\s+(Pass|Fail))?$",
+        line,
+    )
     if info_match:
         did = re.sub(r"\s*Matching Tx and Rx", "", info_match.group(1)).strip()
-        did = re.sub(r"\s*Read Data By Identifier\s*$", "", did, flags=re.IGNORECASE).strip()  # Remove Read Data By Identifier
+        did = re.sub(
+            r"\s*Read Data By Identifier\s*$", "", did, flags=re.IGNORECASE
+        ).strip()  # Remove Read Data By Identifier
         converted = info_match.group(2).strip() if info_match.group(2) else ""
         raw_values = info_match.group(3).strip() if info_match.group(3) else ""
         status = info_match.group(4).strip() if info_match.group(4) else "Pass"
@@ -57,7 +107,7 @@ def parse_log_line(line, seen_keys=None):
                     result = int(float_val)
                 else:
                     result = float_val
-        except:
+        except Exception:
             pass
         if did in seen_keys:
             return None
@@ -75,7 +125,9 @@ def parse_log_line(line, seen_keys=None):
         return did, "", "Pass"
 
     # ERROR: Mismatch type
-    mismatch_error = re.search(r"\[ERROR\] - (.+?),\s+(Mismatch Tx and Rx [0-9A-F]+),\s+(Fail|Pass)", line)
+    mismatch_error = re.search(
+        r"\[ERROR\] - (.+?),\s+(Mismatch Tx and Rx [0-9A-F]+),\s+(Fail|Pass)", line
+    )
     if mismatch_error:
         did = mismatch_error.group(1).strip()
         result = mismatch_error.group(2).strip()
@@ -203,6 +255,7 @@ def generate_excel_report(log_folder):
 
     # Create Charts sheet
     print("Creating Charts sheet")
+    chart_path = None
     try:
         ws_charts = wb.create_sheet("Charts")
         ws_charts.append(["Status", "Count"])
@@ -213,15 +266,15 @@ def generate_excel_report(log_folder):
             cell.fill = header_fill
             cell.font = Font(size=12, bold=False)
             cell.alignment = Alignment(horizontal="center")
-        ws_charts.column_dimensions['A'].width = 20
-        ws_charts.column_dimensions['B'].width = 15
+        ws_charts.column_dimensions["A"].width = 20
+        ws_charts.column_dimensions["B"].width = 15
 
         # Ensure at least one non-zero count to avoid chart rendering issues
-        if status_counts['Pass'] == 0 and status_counts['Fail'] == 0:
+        if status_counts["Pass"] == 0 and status_counts["Fail"] == 0:
             print("Warning: No Pass or Fail counts to display in chart. Adding default data.")
             ws_charts.append(["Pass", 1])
             ws_charts.append(["Fail", 0])
-            status_counts['Pass'] = 1
+            status_counts["Pass"] = 1
 
         # Generate pie chart with matplotlib
         print("Generating pie chart with matplotlib")
@@ -266,7 +319,7 @@ def generate_excel_report(log_folder):
         sys.exit(1)
 
     # Clean up the temporary image file
-    if os.path.exists(chart_path):
+    if chart_path and os.path.exists(chart_path):
         os.remove(chart_path)
         print(f"Cleaned up temporary file: {chart_path}")
 

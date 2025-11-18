@@ -323,7 +323,8 @@ def process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, logger):
         if tx_position == -1:
             continue
         if script_name in ["Standard_Identifiers", "Generetic_ECU_Read"]:
-            Standart_Generetic_condition = id_Standart_Generetic.ID_CONDITIONS.get(tx_identifier, "Unknown DID")
+            Standart_Generetic_condition = id_Standard_Generetic.ID_CONDITIONS.get(tx_identifier, "Unknown DID")
+#			 Standart_Generetic_condition = id_Standart_Generetic.ID_CONDITIONS.get(tx_identifier, "Unknown DID")
         else:
             Standart_Generetic_condition = get_condition_from_position(tx_position, script_name)[0]
         expected_condition = get_condition_from_position(tx_position, script_name)

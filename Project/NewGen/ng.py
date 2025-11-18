@@ -5,10 +5,9 @@
 #Can go over all uds commands in one log
 
 import logging
-import os
-import re
-import glob
-import shutil
+import os, subprocess
+import glob, re
+import shutil, sys
 from datetime import datetime
 
 
@@ -25,6 +24,7 @@ SUPPRESS_NRC_DIDS = set()
 #Logs_folder = os.path.join("Logs")
 ###############################
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+print((SCRIPT_DIR))
 Logs_folder = os.path.join(SCRIPT_DIR, "Logs")
 os.makedirs(Logs_folder, exist_ok=True)
 #####################################
@@ -300,6 +300,56 @@ def process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, logger):
     passed_identifiers = set()
     result_folder = None
 
+    # ---------- SINGLE pass over all lines for Negative Response handling ----------
+    for i, (line, line_type) in enumerate(all_lines):
+        if line_type == "Rx" and "Negative Response" in line:
+            msg = line.split(':', 1)[1].strip()
+
+            # 0x78: always Pass/ignored
+            if "Request Correctly Received - Response Pending" in line:
+                #logger.info(f"Info: Response Pending (0x78) ignored -> {msg}")
+                continue
+
+            # Locate previous Tx to get DID, if any
+            prev_identifier = None
+            for j in range(i - 1, -1, -1):
+                prev_line, prev_type = all_lines[j]
+                if prev_type == "Tx":
+                    prev_values = extract_values_from_line(prev_line)
+                    if len(prev_values) >= 2:
+                        prev_identifier = "".join(b.replace("0x", "").upper() for b in prev_values[:2])
+                    break
+
+            # 0x12: always error
+            if "NRC=Sub Function Not Supported" in line:
+                logger.error(f"{prev_identifier or 'Unknown'} Negative Response: {msg}")
+                continue
+
+            # Other NRCs: suppress only if DID is configured
+            if prev_identifier and prev_identifier in SUPPRESS_NRC_DIDS:
+                continue
+            else:
+                logger.error(f"{prev_identifier or 'Unknown'} Negative Response: {msg}")
+
+        elif line_type == "Error":
+            # Existing error logic
+            for j in range(i - 1, -1, -1):
+                prev_line, prev_type = all_lines[j]
+                if prev_type == "Tx":
+                    prev_values = extract_values_from_line(prev_line)
+                    if len(prev_values) >= 2:
+                        prev_identifier = "".join(b.replace("0x", "").upper() for b in prev_values[:2])
+                        timestamp = line[:21] if len(line) >= 19 else "Unknown timestamp"
+                        logger.error(f"{prev_identifier} No response from ECU detected at {timestamp}")
+                    else:
+                        timestamp = line[:21] if len(line) >= 19 else "Unknown timestamp"
+                        logger.error(f"Unknown No response from ECU detected at {timestamp} (previous Tx invalid)")
+                    break
+            else:
+                timestamp = line[:21] if len(line) >= 19 else "Unknown timestamp"
+                logger.error(f"Unknown No response from ECU detected at {timestamp} (no previous Tx found)")
+
+    # ---------- Tx/Rx matching and value checks ----------
     for tx_line in tx_lines:
         tx_values = extract_values_from_line(tx_line)
         if len(tx_values) == 2:
@@ -387,6 +437,10 @@ def process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, logger):
                 logger.error(f"Unknown No response from ECU detected at {timestamp} (no previous Tx found)")
 
     for rx_line in rx_lines:
+        # Skip any Negative Response lines here—they were already processed above
+        if "Negative Response" in rx_line:
+            continue
+
         rx_values = extract_values_from_line(rx_line)
         if len(rx_values) < 3:
             continue
@@ -394,7 +448,9 @@ def process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, logger):
         if rx_identifier == "F195":
             result = convert(rx_values[2:])
             if result and result != "0" and result != "wrong output":
-                result_folder = os.path.join(base_log_dir+"//Logs", result)
+                #result_folder = os.path.join("../../Logs", result)
+                result_folder = os.path.join(Logs_folder, result)
+
                 os.makedirs(result_folder, exist_ok=True)
                 logger.debug(f"Creating folder at: {result_folder}")
         if rx_identifier in SKIP_IDENTIFIERS:
@@ -450,6 +506,7 @@ def process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, logger):
             logger.error(f"Failed to move or clean log file: {e}")
     elif os.path.exists(original_log_file):
         strip_ansi_codes(original_log_file)
+    return result_folder
 
 if __name__ == "__main__":
     folder_path = r"C:\\temp3"
@@ -465,17 +522,36 @@ if __name__ == "__main__":
         if not script_sections:
             logger.warning("No script sections to process in %s", newest_file)
         else:
+            result_folder = None
             for script_name, tx_lines, rx_lines, all_lines in script_sections:
                 logger.info(f"Processing script section: {script_name}")
                 script_logger = setup_logger(script_name, Logs_folder)
                 script_logger.setLevel(logging.DEBUG)
                 if tx_lines or rx_lines:
-                    result_folder = process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, script_logger)
-                    if result_folder:
-                        os.environ['RESULT_FOLDER'] = result_folder
-                        logger.info(f"Compliance matrix processing required. Please run modify_compliance_matrix.py with RESULT_FOLDER={result_folder}")
-                    else:
-                        logger.warning("No result folder detected from logs. Compliance matrix not generated.")
-        #os.system(base_log_dir+'//modify_compliance_matrix.py')
-        script_path = os.path.join(base_log_dir, 'modify_compliance_matrix.py')
-        os.system(f'python "{script_path}"')
+                    result = process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, script_logger)
+                    if result:  # only overwrite if we actually got a result
+                        result_folder = os.path.basename(result)
+
+            if result_folder:
+                # pass RESULT_FOLDER to the child process and use the SAME interpreter (venv on Jenkins)
+                env = os.environ.copy()
+                env['RESULT_FOLDER'] = result_folder
+
+                script_path = os.path.join(SCRIPT_DIR, "modify_compliance_matrix.py")
+                logger.info(
+                    f"Running compliance matrix modifier: {script_path} (RESULT_FOLDER={result_folder})"
+                )
+
+                try:
+                    subprocess.run(
+                        [sys.executable, script_path],
+                        check=True,
+                        env=env,
+                    )
+                except subprocess.CalledProcessError as e:
+                    logger.error(f"modify_compliance_matrix.py failed with return code {e.returncode}")
+                    raise
+            else:
+                logger.warning("No result folder was detected from logs. Compliance matrix not generated.")
+
+
