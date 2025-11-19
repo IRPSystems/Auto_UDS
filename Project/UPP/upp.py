@@ -323,7 +323,7 @@ def process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, logger):
         if tx_position == -1:
             continue
         if script_name in ["Standard_Identifiers", "Generetic_ECU_Read"]:
-            Standart_Generetic_condition = id_Standard_Generetic.ID_CONDITIONS.get(tx_identifier, "Unknown DID")
+             Standart_Generetic_condition = id_Standart_Generetic.ID_CONDITIONS.get(tx_identifier, "Unknown DID")
 #			 Standart_Generetic_condition = id_Standart_Generetic.ID_CONDITIONS.get(tx_identifier, "Unknown DID")
         else:
             Standart_Generetic_condition = get_condition_from_position(tx_position, script_name)[0]
@@ -352,16 +352,16 @@ def process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, logger):
                 if rx_normalized == tx_normalized:
                     if script_name not in ["Standard_Identifiers", "Generetic_ECU_Read"]:
                         logger.info(
-                            f"\033[34m{condition},\033[0m Converted result: \033[93m{result}\033[0m \033[32m Pass\033[0m ")
+                            f"\033[34m{condition},\033[0m Converted result: \033[34m{result}\033[0m \033[32m Pass\033[0m ")
                         continue
                     if script_name in ["Standard_Identifiers", "Generetic_ECU_Read"]:
                         if result != "wrong output":
                             logger.info(
-                                f"\033[93m{tx_identifier} \033[93m{Standart_Generetic_condition}\033[0m Matching Tx and Rx, Converted: \033[93m{result}\033[0m \033[32m Pass\033[0m")
+                                f"\033[34m{tx_identifier} \033[34m{Standart_Generetic_condition}\033[0m Matching Tx and Rx, Converted: \033[34m{result}\033[0m \033[32m Pass\033[0m")
                             passed_identifiers.add(tx_identifier)
                         else:
                             logger.error(
-                                f"{tx_identifier} {Standart_Generetic_condition} Mismatch Tx and Rx, Condition: \033[93m{condition}\033[0m, Converted: wrong output Fail")
+                                f"{tx_identifier} {Standart_Generetic_condition} Mismatch Tx and Rx, Condition: \033[34m{condition}\033[0m, Converted: wrong output Fail")
                 else:
                     if script_name in ["Standard_Identifiers", "Generetic_ECU_Read"]:
                         logger.error(f"Mismatch Tx and Rx {tx_identifier} {Standart_Generetic_condition} wrong output Fail")
@@ -412,14 +412,14 @@ def process_tx_rx_lines(script_name, tx_lines, rx_lines, all_lines, logger):
                     f"{rx_identifier} Read Data By Identifier, Condition: \033[91m{condition}\033[0m, Converted result: wrong output")
             elif result == "0":
                 logger.info(
-                    f"\033[93m{rx_identifier} {Standart_Generetic_condition} \033[0m Read Data By Identifier, Converted result: \033[93m0\033[0m, Raw Values: \033[93m{raw_values}\033[0m")
+                    f"\033[34m{rx_identifier} {Standart_Generetic_condition} \033[0m Read Data By Identifier, Converted result: \033[34m\033[0m, Raw Values: \033[34m{raw_values}\033[0m")
             else:
                 if script_name in ["Standard_Identifiers"]:
                     logger.info(
-                        f"\033[93m{rx_identifier} {Standart_Generetic_condition}\033[0m Read Data By Identifier, Converted result: \033[93m{result}\033[0m, Raw Values: \033[93m{raw_values}\033[0m")
+                        f"\033[34m{rx_identifier} {Standart_Generetic_condition}\033[0m Read Data By Identifier, Converted result: \033[34m{result}\033[0m, Raw Values: \033[34m{raw_values}\033[0m")
                 elif script_name in ["Generetic_ECU_Read"]:
                     logger.info(
-                        f"\033[93m{rx_identifier} {Standart_Generetic_condition} \033[0m Read Data By Identifier, Converted result: \033[93m{result}\033[0m, Raw Values: \033[93m{raw_values}\033[0m")
+                        f"\033[34m{rx_identifier} {Standart_Generetic_condition} \033[0m Read Data By Identifier, Converted result: \033[34m{result}\033[0m, Raw Values: \033[34m{raw_values}\033[0m")
 
     # Close and remove logger handlers
     for handler in logger.handlers[:]:
