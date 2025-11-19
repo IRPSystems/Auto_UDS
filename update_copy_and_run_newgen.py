@@ -31,13 +31,12 @@ EXE = TARGET_DIR / "UdsClient_CL.exe"         # tool exe
 CHANNEL = "51"
 DEVICE = "NewGen"
 
-# Script list
-SCRIPTS: List[Path] = [
-    SOURCE_UDS / 'NewGen' / 'Scripts' / 'Standard_Identifiers.script',
+# Single script path
+SCRIPT = SOURCE_UDS / 'NewGen' / 'Scripts' / 'Standard_Identifiers.script'
 
-]
-
-TIMEOUT_PER_SCRIPT = 900  # seconds
+# Timeouts
+TIMEOUT_PER_SCRIPT = 500          # seconds for UdsClient_CL
+PARSER_TIMEOUT_SEC = 200          # seconds for ng.py
 
 # =========================
 # =====  UTILITIES  =======
@@ -93,26 +92,43 @@ def run_one_script(script_path: Path):
         raise RuntimeError(f"Timed out after {TIMEOUT_PER_SCRIPT}s: {script_path}")
 
 def run_parser_for(script_path: Path):
-
+    """Run ng.py after script, with its own timeout."""
     print("   -> Parsing logs for:", script_path)
     env = os.environ.copy()
     env["LAST_UDS_SCRIPT"] = str(script_path)
 
-
+    # Ensure both repo root and Project/NewGen are on PYTHONPATH
     add_paths = [
         str(base_dir),                        # contains 'Project'
-        str(base_dir / "Project" / "NewGen"),    # so bare 'Condition' resolves
+        str(base_dir / "Project" / "NewGen"), # if ng.py uses bare imports
     ]
     current_pp = env.get("PYTHONPATH", "")
     env["PYTHONPATH"] = os.pathsep.join([p for p in add_paths + [current_pp] if p])
 
     python_exe = base_dir / '.venv' / 'Scripts' / 'python.exe'
-    #cmd = [str(python_exe), "-m", "Project.NewGen.ng", str(script_path)]
+
+    # EITHER: run as module (recommended, if Project/NewGen is a proper package):
+    # cmd = [str(python_exe), "-m", "Project.NewGen.ng", str(script_path)]
+
+    # OR: run file directly (your current approach):
     ng_path = base_dir / 'Project' / 'NewGen' / 'ng.py'
     cmd = [str(python_exe), str(ng_path), str(script_path)]
-    # Run from the repo root (folder that has the 'Project' package)
-    subprocess.run(cmd, check=True, env=env, cwd=str(base_dir))
 
+    print("   -> Running parser cmd:", " ".join(cmd))
+
+    # Run from the repo root (folder that has the 'Project' package)
+    try:
+        subprocess.run(
+            cmd,
+            check=True,
+            env=env,
+            cwd=str(base_dir),
+            timeout=PARSER_TIMEOUT_SEC
+        )
+    except subprocess.TimeoutExpired:
+        raise RuntimeError(
+            f"Parser (ng.py) timed out after {PARSER_TIMEOUT_SEC}s for {script_path}"
+        )
 
 # =========================
 # ========= MAIN ==========
@@ -141,14 +157,14 @@ def main():
     if not EXE.is_file():
         raise FileNotFoundError(f"UdsClient not found: {EXE}")
 
-    missing = [str(s) for s in SCRIPTS if not s.is_file()]
-    if missing:
-        raise FileNotFoundError("Missing .script file(s):\n  " + "\n  ".join(missing))
+    if not SCRIPT.is_file():
+        raise FileNotFoundError(f"Missing .script file: {SCRIPT}")
 
-    # 3) For each script: run UDS, then run parser
-    for s in SCRIPTS:
-        run_one_script(s)
-        run_parser_for(s)
+    # 3) Run UDS, then run parser
+    print("[INFO] Starting UDS script + parser for NewGen...")
+    run_one_script(SCRIPT)
+    print("[INFO] UDS script finished, starting parser...")
+    run_parser_for(SCRIPT)
 
     print("\n✅ All scripts executed and parsed.")
 
