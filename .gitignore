@@ -9,10 +9,8 @@ Condition/__pycache__/
 Logs/
 venv/
 .venv/
-/Scripts/Upgrade_Downgrade.script
 Archive/complaince_test.py
 Archive/compliance_matrix_test2.py
 /DTC/dtc_report.xlsx
 /Flashing/*
-UPP_uds.py
-test.py
+

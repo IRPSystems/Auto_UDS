@@ -53,7 +53,7 @@ SRD_path = os.path.join(base_log_dir, "Documents", "New Gen D-6 Microcontroller 
 
 
 # Define non-implemented DIDs
-NON_IMPLEMENTED_DIDS = {"F1BE","B11B", "B11C", "B11D" }
+NON_IMPLEMENTED_DIDS = {"F1BE"}
 
 # Expected output order for first 10 rows
 EXPECTED_ORDER = [
