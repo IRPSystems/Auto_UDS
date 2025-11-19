@@ -191,6 +191,9 @@ send 22 B11B
 #IqAct B11C
 send 22 B11C
 
+#VLL_rms
+send 22 B11D
+
 #MotorOverSpeedThreshold B11E
 send 22 B11E
 
