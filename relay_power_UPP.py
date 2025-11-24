@@ -1,6 +1,8 @@
 # relay_power_UPP.py
+import os
+
 import serial
-import time
+import time, datetime
 
 
 
@@ -21,12 +23,12 @@ def power_cycle_relay(port: str = "COM3", off_time: float = 10.0):
 
     # Relay 1 ON (power off)
     send_byte(0x65)
-    print("Relay 1 ON, power off")
+    print("Relay 1 ON, power off: ", datetime.datetime.now())
     time.sleep(off_time)
 
     # Relay 1 OFF (power on)
     send_byte(0x6F)
-    print("Relay 1 OFF, power on")
+    print("Relay 1 ON, power on: " , datetime.datetime.now())
 
     # optional: read state
     send_byte(0x5B)
