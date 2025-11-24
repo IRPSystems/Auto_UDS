@@ -6,6 +6,7 @@ import time
 from pathlib import Path
 from typing import Tuple, List
 import argparse
+from relay_power_UPP import power_cycle_relay
 
 # ---- Console safety: avoid charmap/encoding crashes everywhere ----
 try:
@@ -183,6 +184,9 @@ def flash_one_round(old_app: Path, old_boot: Path, new_app: Path, new_boot: Path
     run_flash(EXE, CHANNEL, FIRMWARE_UPP, old_app)
     print(f"   -> Done in {int(time.time() - step_start)} sec")
     sleep_with_countdown(60, "Waiting after old firmware")
+    power_cycle_relay(off_time=10)
+    sleep_with_countdown(10, "Waiting after power cycle")
+
 
     # 2) old boot
     print("\n[STEP 2] Flashing OLD bootloader...")
@@ -190,6 +194,8 @@ def flash_one_round(old_app: Path, old_boot: Path, new_app: Path, new_boot: Path
     run_flash(EXE, CHANNEL, BOOT_UPP, old_boot)
     print(f"   -> Done in {int(time.time() - step_start)} sec")
     sleep_with_countdown(20, "Waiting after old boot")
+    power_cycle_relay(off_time=10)
+    sleep_with_countdown(10, "Waiting after power cycle")
 
     # 3) new firmware
     print("\n[STEP 3] Flashing NEW firmware...")
@@ -197,6 +203,8 @@ def flash_one_round(old_app: Path, old_boot: Path, new_app: Path, new_boot: Path
     run_flash(EXE, CHANNEL, FIRMWARE_UPP, new_app)
     print(f"   -> Done in {int(time.time() - step_start)} sec")
     sleep_with_countdown(60, "Waiting after new firmware")
+    power_cycle_relay(off_time=10)
+    sleep_with_countdown(10, "Waiting after power cycle")
 
     # 4) new boot
     print("\n[STEP 4] Flashing NEW bootloader...")
@@ -204,6 +212,8 @@ def flash_one_round(old_app: Path, old_boot: Path, new_app: Path, new_boot: Path
     run_flash(EXE, CHANNEL, BOOT_UPP, new_boot)
     print(f"   -> Done in {int(time.time() - step_start)} sec")
     sleep_with_countdown(20, "Waiting after new boot")
+    power_cycle_relay(off_time=10)
+    sleep_with_countdown(10, "Waiting after power cycle")
 
     print(f"\n✅ Round completed in {int(time.time() - round_start)} sec\n")
 

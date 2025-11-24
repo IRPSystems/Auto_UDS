@@ -13,7 +13,7 @@ from openpyxl import load_workbook
 
 # CAN interface setup
 can_interface = 'pcan'
-channel = 'PCAN_USBBUS1'
+channel = 'PCAN_USBBUS2'
 tx_id = 0x7D0
 rx_id = 0x7D8
 
