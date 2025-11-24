@@ -202,9 +202,9 @@ def flash_one_round(old_app: Path, old_boot: Path, new_app: Path, new_boot: Path
     step_start = time.time()
     run_flash(EXE, CHANNEL, FIRMWARE_UPP, new_app)
     print(f"   -> Done in {int(time.time() - step_start)} sec")
-    sleep_with_countdown(60, "Waiting after new firmware")
-    # power_cycle_relay(off_time=10)
-    # sleep_with_countdown(10, "Waiting after power cycle")
+    sleep_with_countdown(120, "Waiting after new firmware")
+    power_cycle_relay(off_time=10)
+    sleep_with_countdown(10, "Waiting after power cycle")
 
     # 4) new boot
     print("\n[STEP 4] Flashing NEW bootloader...")
