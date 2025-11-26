@@ -5,6 +5,12 @@ send 10 03
 security 1
 sleep 500
 
+send 11 03
+sleep 1000
+send 10 03
+security 1
+sleep 500
+
 #Network Manager Missmatch
 
 #VCU_100 DLC Mismatch Threshold (Default 5, Scale 1) not in use

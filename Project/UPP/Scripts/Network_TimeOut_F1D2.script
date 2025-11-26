@@ -6,6 +6,12 @@ send 10 03
 security 1
 sleep 500
 
+send 11 03
+sleep 1000
+send 10 03
+security 1
+sleep 500
+
 #Network Manager
 
 #VCU_100 TimeOut (Default 1000, Scale 20) not in use
