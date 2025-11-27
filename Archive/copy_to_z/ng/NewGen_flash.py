@@ -24,8 +24,6 @@ SOURCE_ROOT = Path(r"C:\Jenkins\NewVersion")
 TARGET_DIR = Path(r"C:\Jenkins\UdsClient_CL")
 EXE = TARGET_DIR / "UdsClient_CL.exe"
 
-LOGS_DIR=Path(r"C:\temp3")
-
 # Flash params
 CHANNEL = "51"
 FIRMWARE_NewGen = "NewGen"
@@ -246,62 +244,10 @@ def flash_one_round(old_app: Path, old_boot: Path, new_app: Path, new_boot: Path
 # =========================
 # ========= main ==========
 # =========================
-def clear_temp3():
-    """Delete all files and subfolders inside C:\\Temp3, but keep the folder itself."""
-    print("🧹 Deleting old log files in C:\\Temp3 ...")
-    if not LOGS_DIR.exists():
-        print(f"   - {LOGS_DIR} does not exist, nothing to clean.")
-        return
-
-    for entry in LOGS_DIR.iterdir():
-        try:
-            if entry.is_file() or entry.is_symlink():
-                entry.unlink()
-            elif entry.is_dir():
-                shutil.rmtree(entry)
-        except PermissionError as e:
-            print(f"   ! Permission denied removing {entry}: {e}")
-        except OSError as e:
-            print(f"   ! Failed removing {entry}: {e}")
-    print("   - Cleanup finished.")
-
-
-def copying_files(version_str: str):
-
-    if not version_str:
-        print("[copying_files] version_str is empty, nothing to copy.")
-        return
-
-    if not LOGS_DIR.exists():
-        print(f"[copying_files] LOGS_DIR does not exist, nothing to copy: {LOGS_DIR}")
-        return
-
-    external_root = Path(r"Z:\V&V\UDS_Result")
-    final_root = external_root / "UPP" / ("0" + version_str)
-    dest_dir = final_root / "Flashing logs"
-
-    print(f"\n📁 Copying logs to external disk: {dest_dir}")
-    dest_dir.mkdir(parents=True, exist_ok=True)
-
-    files_copied = 0
-    for entry in LOGS_DIR.iterdir():
-        if entry.is_file():
-            target = dest_dir / entry.name
-            shutil.copy2(entry, target)
-            print(f"  Copied {entry} -> {target}")
-            files_copied += 1
-
-    if files_copied == 0:
-        print("  (No files found to copy in Temp3)")
-    else:
-        print(f"✅ Copy to external disk completed. {files_copied} file(s) copied.")
-
-
 
 def main() -> int:
-    clear_temp3()
-    try:
-        args = parse_args()
+        try:
+            args = parse_args()
 
             if args.old and args.new:
                 old_dir = Path(args.old)
@@ -315,23 +261,15 @@ def main() -> int:
             old_app, old_boot = find_merged_files(old_dir)
             new_app, new_boot = find_merged_files(new_dir)
 
-        m = re.search(r"NewGen_v(.+)", new_dir.name)
-        version_str = m.group(1) if m else new_dir.name
+            print(f"Old version: {old_dir.name}")
+            print(f"  FW: {old_app}")
+            print(f"  BOOT: {old_boot}")
+            print(f"New version: {new_dir.name}")
+            print(f"  FW: {new_app}")
+            print(f"  BOOT: {new_boot}")
 
-        print(f"Old version: {old_dir.name}")
-        print(f"  FW: {old_app}")
-        print(f"  BOOT: {old_boot}")
-        print(f"New version: {new_dir.name}")
-        print(f"  FW: {new_app}")
-        print(f"  BOOT: {new_boot}")
-        print(f"Version folder name for logs: {version_str}")
-
-        flash_one_round(old_app, old_boot, new_app, new_boot)
-
-        # 🔽 NEW: copy Temp3 logs to external disk
-        copying_files(version_str)
-
-        return 0
+            flash_one_round(old_app, old_boot, new_app, new_boot)
+            return 0
 
         except Exception as e:
             print(f"\nERROR: {e}", file=sys.stderr)

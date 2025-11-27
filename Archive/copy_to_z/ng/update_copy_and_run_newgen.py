@@ -20,7 +20,7 @@ print(SOURCE_UDS)
 
 # Where new builds appear
 home = Path.home()
-candidate = home / "Desktop" / "UPP"
+candidate = home / "Desktop" / "NewGen"
 SOURCE_ROOT = candidate if candidate.exists() else Path(r"C:\Jenkins\NewVersion")
 
 CLIENT_DIR_NAME = "UDS-Client"                # subfolder to copy from
@@ -29,22 +29,14 @@ TARGET_DIR = Path(r"C:\Jenkins\UdsClient_CL") # tool install dir (writable by Je
 EXE = TARGET_DIR / "UdsClient_CL.exe"         # tool exe
 
 CHANNEL = "51"
-DEVICE = "UPP"
+DEVICE = "NewGen"
 
-# Script list
-SCRIPTS: List[Path] = [
-    SOURCE_UDS / 'UPP' / 'Scripts' / 'Standard_Identifiers.script',
-    SOURCE_UDS / 'UPP' / 'Scripts' / 'CanConfig_103.script',
-    SOURCE_UDS / 'UPP' / 'Scripts' / 'Faults_Configuration.script',
-    SOURCE_UDS / 'UPP' / 'Scripts' / 'Network_F1D5.script',
-    SOURCE_UDS / 'UPP' / 'Scripts' / 'Network_Missmatch_F1D3.script',
-    SOURCE_UDS / 'UPP' / 'Scripts' / 'Network_TimeOut_F1D2.script',
-    SOURCE_UDS / 'UPP' / 'Scripts' / 'Routine_Control.script',
-    SOURCE_UDS / 'UPP' / 'Scripts' / 'TrueDriveManager.script',
-    SOURCE_UDS / 'UPP' / 'Scripts' / 'Generetic_ECU_Read.script',
-]
+# Single script path
+SCRIPT = SOURCE_UDS / 'NewGen' / 'Scripts' / 'Standard_Identifiers.script'
 
-TIMEOUT_PER_SCRIPT = 900  # seconds
+# Timeouts
+TIMEOUT_PER_SCRIPT = 500          # seconds for UdsClient_CL
+PARSER_TIMEOUT_SEC = 200          # seconds for ng.py
 
 # =========================
 # =====  UTILITIES  =======
@@ -100,36 +92,50 @@ def run_one_script(script_path: Path):
         raise RuntimeError(f"Timed out after {TIMEOUT_PER_SCRIPT}s: {script_path}")
 
 def run_parser_for(script_path: Path):
-    """Run parser after one script. Keep -m execution, but also add
-    Project/UPP to PYTHONPATH so bare 'Condition' imports work.
-    """
+    """Run ng.py after script, with its own timeout."""
     print("   -> Parsing logs for:", script_path)
     env = os.environ.copy()
     env["LAST_UDS_SCRIPT"] = str(script_path)
 
-    # Ensure both repo root and the package subdir are on sys.path for upp.py
-    # - repo root lets 'from Project.UPP.logger import ...' work
-    # - Project/UPP lets 'from Condition import ...' work
+    # Ensure both repo root and Project/NewGen are on PYTHONPATH
     add_paths = [
         str(base_dir),                        # contains 'Project'
-        str(base_dir / "Project" / "UPP"),    # so bare 'Condition' resolves
+        str(base_dir / "Project" / "NewGen"), # if ng.py uses bare imports
     ]
     current_pp = env.get("PYTHONPATH", "")
     env["PYTHONPATH"] = os.pathsep.join([p for p in add_paths + [current_pp] if p])
 
     python_exe = base_dir / '.venv' / 'Scripts' / 'python.exe'
-    cmd = [str(python_exe), "-m", "Project.UPP.upp", str(script_path)]
+
+    # EITHER: run as module (recommended, if Project/NewGen is a proper package):
+    # cmd = [str(python_exe), "-m", "Project.NewGen.ng", str(script_path)]
+
+    # OR: run file directly (your current approach):
+    ng_path = base_dir / 'Project' / 'NewGen' / 'ng.py'
+    cmd = [str(python_exe), str(ng_path), str(script_path)]
+
+    print("   -> Running parser cmd:", " ".join(cmd))
 
     # Run from the repo root (folder that has the 'Project' package)
-    subprocess.run(cmd, check=True, env=env, cwd=str(base_dir))
-
+    try:
+        subprocess.run(
+            cmd,
+            check=True,
+            env=env,
+            cwd=str(base_dir),
+            timeout=PARSER_TIMEOUT_SEC
+        )
+    except subprocess.TimeoutExpired:
+        raise RuntimeError(
+            f"Parser (ng.py) timed out after {PARSER_TIMEOUT_SEC}s for {script_path}"
+        )
 
 # =========================
 # ========= MAIN ==========
 # =========================
 def main():
     # 1) Locate latest and copy client files
-    print("🔍 Searching latest UPP drop …")
+    print("🔍 Searching latest NewGen drop …")
     latest = find_latest_subfolder(SOURCE_ROOT)
     print(f"[INFO] Latest folder: {latest}")
 
@@ -151,14 +157,14 @@ def main():
     if not EXE.is_file():
         raise FileNotFoundError(f"UdsClient not found: {EXE}")
 
-    missing = [str(s) for s in SCRIPTS if not s.is_file()]
-    if missing:
-        raise FileNotFoundError("Missing .script file(s):\n  " + "\n  ".join(missing))
+    if not SCRIPT.is_file():
+        raise FileNotFoundError(f"Missing .script file: {SCRIPT}")
 
-    # 3) For each script: run UDS, then run parser
-    for s in SCRIPTS:
-        run_one_script(s)
-        run_parser_for(s)
+    # 3) Run UDS, then run parser
+    print("[INFO] Starting UDS script + parser for NewGen...")
+    run_one_script(SCRIPT)
+    print("[INFO] UDS script finished, starting parser...")
+    run_parser_for(SCRIPT)
 
     print("\n✅ All scripts executed and parsed.")
 

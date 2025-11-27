@@ -1,7 +1,6 @@
 import argparse
-import shutil
 import subprocess
-from pathlib import Path
+
 import openpyxl
 from openpyxl.styles import PatternFill, Font
 import os
@@ -26,7 +25,6 @@ base_log_dir = os.path.dirname(os.path.abspath(__file__))
 Logs_folder = os.path.join(base_log_dir, "Logs")
 os.makedirs(Logs_folder, exist_ok=True)
 #####################################
-LOGS_DIR=Path(r"C:\temp3")
 
 print(base_log_dir)
 
@@ -524,73 +522,6 @@ def compare_and_generate_report(srd_services, srd_original_names, srd_details, l
     except Exception as e:
         print(f"Error in report generation: {e}")
         raise
-def copy_tree(src: Path, dst: Path, last_n: int | None = None):
-    """
-    Copy files/dirs from src to dst.
-
-    - If last_n is None → recursive copy of full tree (previous behavior).
-    - If last_n is an int → copy only the last N files in src (non-recursive).
-    """
-    if not src.exists():
-        print(f"[copy_tree] Source does not exist, skipping: {src}")
-        return
-
-    # Mode 1: only last N files in this folder (non-recursive)
-    if last_n is not None:
-        files = [p for p in src.iterdir() if p.is_file()]
-        if not files:
-            print(f"[copy_tree] No files found in {src}")
-            return
-
-        files_sorted = sorted(files, key=lambda p: p.stat().st_mtime)
-        to_copy = files_sorted[-last_n:]
-
-        dst.mkdir(parents=True, exist_ok=True)
-        print(f"[copy_tree] Copying last {len(to_copy)} file(s) from {src} to {dst}")
-        for src_file in to_copy:
-            dst_file = dst / src_file.name
-            shutil.copy2(src_file, dst_file)
-            print(f"  Copied {src_file} -> {dst_file}")
-        return
-
-    # Mode 2: full recursive tree copy (original behavior)
-    for root, dirs, files in os.walk(src):
-        root_path = Path(root)
-        rel = root_path.relative_to(src)
-        target_root = dst / rel
-        target_root.mkdir(parents=True, exist_ok=True)
-
-        for name in files:
-            src_file = root_path / name
-            dst_file = target_root / name
-            shutil.copy2(src_file, dst_file)
-            print(f"  Copied {src_file} -> {dst_file}")
-
-
-def copying_files():
-
-    if not result_folder:
-        print("[copying_files] RESULT_FOLDER is not set, nothing to copy.")
-        return
-
-    external_root = Path(r"Z:\V&V\UDS_Result")
-    final_root = external_root / "NewGen" / result_folder
-
-    print(f"\n📁 Copying logs to external disk: {final_root}")
-    final_root.mkdir(parents=True, exist_ok=True)
-
-    # 1) Copy ONLY the last 2 files from C:\temp3 -> ...\Client logs
-    temp3_dst = final_root / "Client logs"
-    print(f"  - Copying last 2 raw logs from {LOGS_DIR} to {temp3_dst}")
-    copy_tree(LOGS_DIR, temp3_dst, last_n=2)
-
-    # 2) Copy ALL processed logs from Logs/<result_folder> -> ...\Result logs
-    src_logs_dir = Path(base_log_dir) / "Logs" / result_folder
-    logs_dst = final_root / "Result logs"
-    print(f"  - Copying processed logs from {src_logs_dir} to {logs_dst}")
-    copy_tree(src_logs_dir, logs_dst)   # full recursive
-
-    print("✅ Copy to external disk completed.")
 
 def main():
     # os.system(f'python {base_log_dir}/output_with_raw.py')
@@ -630,7 +561,6 @@ def main():
     except Exception as e:
         print(f"Error: {e}")
         sys.exit(1)
-    copying_files()
 
 if __name__ == "__main__":
     main()

@@ -1,7 +1,7 @@
 import os
 import re
 import sys
-import subprocess
+import subprocess, shutil
 import time
 from pathlib import Path
 from typing import Tuple, List
@@ -25,6 +25,8 @@ SOURCE_ROOT = Path(r"C:\Jenkins\NewVersion")
 # Tool install dir and EXE
 TARGET_DIR = Path(r"C:\Jenkins\UdsClient_CL")
 EXE = TARGET_DIR / "UdsClient_CL.exe"
+
+LOGS_DIR=Path(r"C:\temp3")
 
 # Flash params
 CHANNEL = "51"
@@ -194,7 +196,7 @@ def flash_one_round(old_app: Path, old_boot: Path, new_app: Path, new_boot: Path
     run_flash(EXE, CHANNEL, BOOT_UPP, old_boot)
     print(f"   -> Done in {int(time.time() - step_start)} sec")
     sleep_with_countdown(20, "Waiting after old boot")
-    power_cycle_relay(off_time=10)
+    #power_cycle_relay(off_time=10)
     sleep_with_countdown(20, "Waiting after power cycle")
 
     # 3) new firmware
@@ -203,7 +205,7 @@ def flash_one_round(old_app: Path, old_boot: Path, new_app: Path, new_boot: Path
     run_flash(EXE, CHANNEL, FIRMWARE_UPP, new_app)
     print(f"   -> Done in {int(time.time() - step_start)} sec")
     sleep_with_countdown(60, "Waiting after new firmware")
-    # power_cycle_relay(off_time=10)
+    #power_cycle_relay(off_time=10)
     # sleep_with_countdown(10, "Waiting after power cycle")
 
     # 4) new boot
@@ -212,7 +214,7 @@ def flash_one_round(old_app: Path, old_boot: Path, new_app: Path, new_boot: Path
     run_flash(EXE, CHANNEL, BOOT_UPP, new_boot)
     print(f"   -> Done in {int(time.time() - step_start)} sec")
     sleep_with_countdown(20, "Waiting after new boot")
-    power_cycle_relay(off_time=10)
+    ####power_cycle_relay(off_time=10)
     sleep_with_countdown(20, "Waiting after power cycle")
 
     print(f"\n✅ Round completed in {int(time.time() - round_start)} sec\n")
@@ -220,8 +222,29 @@ def flash_one_round(old_app: Path, old_boot: Path, new_app: Path, new_boot: Path
 # =========================
 # ========= main ==========
 # =========================
+def clear_temp3():
+    """Delete all files and subfolders inside C:\\Temp3, but keep the folder itself."""
+    print("🧹 Deleting old log files in C:\\Temp3 ...")
+    if not LOGS_DIR.exists():
+        print(f"   - {LOGS_DIR} does not exist, nothing to clean.")
+        return
+
+    for entry in LOGS_DIR.iterdir():
+        try:
+            if entry.is_file() or entry.is_symlink():
+                entry.unlink()
+            elif entry.is_dir():
+                shutil.rmtree(entry)
+        except PermissionError as e:
+            print(f"   ! Permission denied removing {entry}: {e}")
+        except OSError as e:
+            print(f"   ! Failed removing {entry}: {e}")
+    print("   - Cleanup finished.")
+
+
 
 def main() -> int:
+        clear_temp3()
         try:
             args = parse_args()
 

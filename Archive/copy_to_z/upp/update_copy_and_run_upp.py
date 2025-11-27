@@ -1,3 +1,5 @@
+## change in jenkins by new file that run all scripts together
+## this script should run each script separately
 import os
 import sys
 import shutil
@@ -15,26 +17,24 @@ if username == 'unknown':
 
 # repo root (folder that contains Project/)
 base_dir = Path(__file__).resolve().parent
-SOURCE_UDS = base_dir / 'Project'  # expects Project/UPP/Scripts/*.script
+SOURCE_UDS = base_dir / 'Project'
+print(SOURCE_UDS)
 
-#LOGS_DIR=Path(r"C:\temp3")
-
-# Where new builds appear (preferred Desktop path, else Jenkins drop)
+# Where new builds appear
 home = Path.home()
 candidate = home / "Desktop" / "UPP"
 SOURCE_ROOT = candidate if candidate.exists() else Path(r"C:\Jenkins\NewVersion")
 
-CLIENT_DIR_NAME = "UDS-Client"                 # subfolder to copy from
-TARGET_DIR = Path(r"C:\Jenkins\UdsClient_CL")  # tool install dir (writable by Jenkins)
+CLIENT_DIR_NAME = "UDS-Client"                # subfolder to copy from
+TARGET_DIR = Path(r"C:\Jenkins\UdsClient_CL") # tool install dir (writable by Jenkins)
 
-EXE = TARGET_DIR / "UdsClient_CL.exe"          # tool exe
+EXE = TARGET_DIR / "UdsClient_CL.exe"         # tool exe
 
 CHANNEL = "51"
 DEVICE = "UPP"
 
-# List of scripts to run (full paths)
+# Script list
 SCRIPTS: List[Path] = [
-    SOURCE_UDS / 'UPP' / 'Scripts' / 'TrueDriveManager.script',
     SOURCE_UDS / 'UPP' / 'Scripts' / 'Standard_Identifiers.script',
     SOURCE_UDS / 'UPP' / 'Scripts' / 'CanConfig_103.script',
     SOURCE_UDS / 'UPP' / 'Scripts' / 'Faults_Configuration.script',
@@ -42,23 +42,15 @@ SCRIPTS: List[Path] = [
     SOURCE_UDS / 'UPP' / 'Scripts' / 'Network_Missmatch_F1D3.script',
     SOURCE_UDS / 'UPP' / 'Scripts' / 'Network_TimeOut_F1D2.script',
     SOURCE_UDS / 'UPP' / 'Scripts' / 'Routine_Control.script',
+    SOURCE_UDS / 'UPP' / 'Scripts' / 'TrueDriveManager.script',
     SOURCE_UDS / 'UPP' / 'Scripts' / 'Generetic_ECU_Read.script',
-
-
 ]
 
-# How long to allow the single “all scripts” run (seconds)
-TIMEOUT_SINGLE_RUN = 3600
-
-PARSER_CMD = [
-    str(base_dir / '.venv' / 'Scripts' / 'python.exe'),
-    "-m", "Project.UPP.upp"
-]
+TIMEOUT_PER_SCRIPT = 900  # seconds
 
 # =========================
 # =====  UTILITIES  =======
 # =========================
-
 def find_latest_subfolder(root: Path) -> Path:
     subdirs = [p for p in root.iterdir() if p.is_dir()]
     if not subdirs:
@@ -85,14 +77,10 @@ def copy_all_files(src_dir: Path, dst_dir: Path) -> List[Path]:
         copied.append(target)
     return copied
 
-def run_all_together(scripts: List[Path], timeout_sec: int = TIMEOUT_SINGLE_RUN):
-    """Run UdsClient_CL once: UdsClient_CL.exe 51 UPP /s <script1> <script2> ..."""
-    args = [str(EXE), CHANNEL, DEVICE, "/s"] + [str(p) for p in scripts]
-
-    print("\nRunning once with all scripts:")
-    for i, a in enumerate(args):
-        print(f"  [{i}] {a}")
-
+def run_one_script(script_path: Path):
+    """Run a single .script via UdsClient_CL, stream output, with timeout."""
+    args = [str(EXE), CHANNEL, DEVICE, "/s", str(script_path)]
+    print(f"\n==> Running: {script_path}")
     proc = subprocess.Popen(
         args,
         cwd=str(TARGET_DIR),
@@ -100,59 +88,48 @@ def run_all_together(scripts: List[Path], timeout_sec: int = TIMEOUT_SINGLE_RUN)
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,
-        creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0)
+        creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0)  # safe on *nix too
     )
     try:
         assert proc.stdout is not None
         for line in proc.stdout:
             sys.stdout.write(line)
-        rc = proc.wait(timeout=timeout_sec)
+        rc = proc.wait(timeout=TIMEOUT_PER_SCRIPT)
         if rc != 0:
             raise subprocess.CalledProcessError(rc, args)
     except subprocess.TimeoutExpired:
         proc.kill()
-        raise RuntimeError(f"Timed out after {timeout_sec}s running ALL scripts")
+        raise RuntimeError(f"Timed out after {TIMEOUT_PER_SCRIPT}s: {script_path}")
 
-def run_parser_once():
-    """Run parser once after the UDS batch finishes.
-    Ensures both repo root and Project/UPP are in PYTHONPATH for imports."""
-    print("\n==> Launching parser …")
+def run_parser_for(script_path: Path):
+    """Run parser after one script. Keep -m execution, but also add
+    Project/UPP to PYTHONPATH so bare 'Condition' imports work.
+    """
+    print("   -> Parsing logs for:", script_path)
     env = os.environ.copy()
+    env["LAST_UDS_SCRIPT"] = str(script_path)
 
+    # Ensure both repo root and the package subdir are on sys.path for upp.py
+    # - repo root lets 'from Project.UPP.logger import ...' work
+    # - Project/UPP lets 'from Condition import ...' work
     add_paths = [
-        str(base_dir),                     # contains 'Project'
-        str(base_dir / "Project" / "UPP")  # so bare 'Condition' resolves
+        str(base_dir),                        # contains 'Project'
+        str(base_dir / "Project" / "UPP"),    # so bare 'Condition' resolves
     ]
     current_pp = env.get("PYTHONPATH", "")
     env["PYTHONPATH"] = os.pathsep.join([p for p in add_paths + [current_pp] if p])
 
-    subprocess.run(PARSER_CMD, check=True, env=env, cwd=str(base_dir))
+    python_exe = base_dir / '.venv' / 'Scripts' / 'python.exe'
+    cmd = [str(python_exe), "-m", "Project.UPP.upp", str(script_path)]
+
+    # Run from the repo root (folder that has the 'Project' package)
+    subprocess.run(cmd, check=True, env=env, cwd=str(base_dir))
+
 
 # =========================
 # ========= MAIN ==========
 # =========================
-# def clear_temp3():
-#     """Delete all files and subfolders inside C:\\Temp3, but keep the folder itself."""
-#     print("🧹 Deleting old log files in C:\\Temp3 ...")
-#     if not LOGS_DIR.exists():
-#         print(f"   - {LOGS_DIR} does not exist, nothing to clean.")
-#         return
-#
-#     for entry in LOGS_DIR.iterdir():
-#         try:
-#             if entry.is_file() or entry.is_symlink():
-#                 entry.unlink()
-#             elif entry.is_dir():
-#                 shutil.rmtree(entry)
-#         except PermissionError as e:
-#             print(f"   ! Permission denied removing {entry}: {e}")
-#         except OSError as e:
-#             print(f"   ! Failed removing {entry}: {e}")
-#     print("   - Cleanup finished.")
-
 def main():
-    print("Delete old log files in the Temp3 folder")
-    # clear_temp3()
     # 1) Locate latest and copy client files
     print("🔍 Searching latest UPP drop …")
     latest = find_latest_subfolder(SOURCE_ROOT)
@@ -180,11 +157,10 @@ def main():
     if missing:
         raise FileNotFoundError("Missing .script file(s):\n  " + "\n  ".join(missing))
 
-    # 3) Run ALL scripts in a single UdsClient_CL call
-    run_all_together(SCRIPTS)
-
-    # 4) Run parser once after everything finished
-    run_parser_once()
+    # 3) For each script: run UDS, then run parser
+    for s in SCRIPTS:
+        run_one_script(s)
+        run_parser_for(s)
 
     print("\n✅ All scripts executed and parsed.")
 

@@ -1,11 +1,12 @@
 import os
 import re
 import sys
-import subprocess
+import subprocess, shutil
 import time
 from pathlib import Path
 from typing import Tuple, List
 import argparse
+from relay_power_UPP import power_cycle_relay
 
 # ---- Console safety: avoid charmap/encoding crashes everywhere ----
 try:
@@ -18,6 +19,7 @@ except Exception:
 # ======  CONFIG  =========
 # =========================
 
+# Root that contains version folders like: UPP_v3.02.00, UPP_v3.02.02, ...
 SOURCE_ROOT = Path(r"C:\Jenkins\NewVersion")
 
 # Tool install dir and EXE
@@ -28,14 +30,12 @@ LOGS_DIR=Path(r"C:\temp3")
 
 # Flash params
 CHANNEL = "51"
-FIRMWARE_NewGen = "NewGen"
-BOOT_NG = "**Bootloader-NG**"  # kept as you requested
+FIRMWARE_UPP = "UPP"
+BOOT_UPP = "**Bootloader**"  # kept as you requested
 
 # =========================
 # ======  HELPERS  ========
 # =========================
-
-
 
 def require_exists(path: Path, desc: str) -> None:
     if not path.exists():
@@ -66,17 +66,12 @@ def pick_latest_file(candidates: List[Path]) -> Path:
     return max(candidates, key=lambda p: p.stat().st_mtime)
 
 def find_merged_files(version_dir: Path) -> Tuple[Path, Path]:
-    merged_dir = version_dir / "Firmware"
-    require_exists(merged_dir, f"'Firmware' directory for {version_dir.name}")
 
-    # Application: *.brn.hex but NOT *_Boot.brn.hex
-    app_candidates = [
-        p for p in merged_dir.glob("*.brn.hex")
-        if "_Boot" not in p.name
-    ]
+    merged_dir = version_dir / "FW Merged"
+    require_exists(merged_dir, f"'FW Merged' directory for {version_dir.name}")
 
-    # Boot: *_Boot.brn.hex
-    boot_candidates = list(merged_dir.glob("*_Boot.brn.hex"))
+    app_candidates = list(merged_dir.glob("*Merge_App_*UPP_v*.hex"))
+    boot_candidates = list(merged_dir.glob("*Merge_Boot_*UPP_v*.hex"))
 
     app_hex = pick_latest_file(app_candidates)
     boot_hex = pick_latest_file(boot_candidates)
@@ -147,46 +142,18 @@ def run_flash(exe: Path, channel: str, target: str, file_path: Path) -> None:
 
     for raw in process.stdout:
         line = raw.rstrip("\r\n")
-        stripped = line.strip()
-
-        # NEW: treat "End" / "Close" as error
-        # if stripped in ("End", "Close"):
-            # if last_pct is not None:
-            #     sys.stdout.write("\n")
-            #     sys.stdout.flush()
-            # print(f"[ERROR] Tool reported '{stripped}' – aborting flash for {target}")
-            # process.terminate()
-            # try:
-            #     process.wait(timeout=10)
-            # except subprocess.TimeoutExpired:
-            #     process.kill()
-            # raise RuntimeError(f"Flash aborted: tool reported '{stripped}'")
-
-        # existing percent / normal line handling stays as you had it
         m = pct_re.match(line)
         if m:
             pct = int(m.group(1))
             render_progress(pct)
             continue
 
+        # Non-percent output: end the progress line cleanly once
         if last_pct is not None:
             sys.stdout.write("\n")
             sys.stdout.flush()
-            last_pct = None
+            line_len = 0
         print(line)
-        # line = raw.rstrip("\r\n")
-        # m = pct_re.match(line)
-        # if m:
-        #     pct = int(m.group(1))
-        #     render_progress(pct)
-        #     continue
-        #
-        # # Non-percent output: end the progress line cleanly once
-        # if last_pct is not None:
-        #     sys.stdout.write("\n")
-        #     sys.stdout.flush()
-        #     line_len = 0
-        # print(line)
 
     process.wait()
 
@@ -216,30 +183,39 @@ def flash_one_round(old_app: Path, old_boot: Path, new_app: Path, new_boot: Path
     # 1) old firmware
     print("\n[STEP 1] Flashing OLD firmware...")
     step_start = time.time()
-    run_flash(EXE, CHANNEL, FIRMWARE_NewGen, old_app)
+    run_flash(EXE, CHANNEL, FIRMWARE_UPP, old_app)
     print(f"   -> Done in {int(time.time() - step_start)} sec")
     sleep_with_countdown(60, "Waiting after old firmware")
+    # power_cycle_relay(off_time=20)
+    # sleep_with_countdown(30, "Waiting after power cycle")
+
 
     # 2) old boot
     print("\n[STEP 2] Flashing OLD bootloader...")
     step_start = time.time()
-    run_flash(EXE, CHANNEL, BOOT_NG, old_boot)
+    run_flash(EXE, CHANNEL, BOOT_UPP, old_boot)
     print(f"   -> Done in {int(time.time() - step_start)} sec")
     sleep_with_countdown(20, "Waiting after old boot")
+    #power_cycle_relay(off_time=10)
+    #sleep_with_countdown(20, "Waiting after power cycle")
 
     # 3) new firmware
     print("\n[STEP 3] Flashing NEW firmware...")
     step_start = time.time()
-    run_flash(EXE, CHANNEL, FIRMWARE_NewGen, new_app)
+    run_flash(EXE, CHANNEL, FIRMWARE_UPP, new_app)
     print(f"   -> Done in {int(time.time() - step_start)} sec")
     sleep_with_countdown(60, "Waiting after new firmware")
+    #power_cycle_relay(off_time=10)
+    # sleep_with_countdown(10, "Waiting after power cycle")
 
-    # 4) new boot
+    # # 4) new boot
     print("\n[STEP 4] Flashing NEW bootloader...")
     step_start = time.time()
-    run_flash(EXE, CHANNEL, BOOT_NG, new_boot)
+    run_flash(EXE, CHANNEL, BOOT_UPP, new_boot)
     print(f"   -> Done in {int(time.time() - step_start)} sec")
     sleep_with_countdown(20, "Waiting after new boot")
+    ####power_cycle_relay(off_time=10)
+    #sleep_with_countdown(20, "Waiting after power cycle")
 
     print(f"\n✅ Round completed in {int(time.time() - round_start)} sec\n")
 
@@ -303,19 +279,19 @@ def main() -> int:
     try:
         args = parse_args()
 
-            if args.old and args.new:
-                old_dir = Path(args.old)
-                new_dir = Path(args.new)
-                require_exists(old_dir, "Old version folder")
-                require_exists(new_dir, "New version folder")
-            else:
-                # Fallback: auto-detect (kept for manual runs)
-                old_dir, new_dir = find_two_version_dirs(SOURCE_ROOT)
+        if args.old and args.new:
+            old_dir = Path(args.old)
+            new_dir = Path(args.new)
+            require_exists(old_dir, "Old version folder")
+            require_exists(new_dir, "New version folder")
+        else:
+            # Fallback: auto-detect (kept for manual runs)
+            old_dir, new_dir = find_two_version_dirs(SOURCE_ROOT)
 
-            old_app, old_boot = find_merged_files(old_dir)
-            new_app, new_boot = find_merged_files(new_dir)
+        old_app, old_boot = find_merged_files(old_dir)
+        new_app, new_boot = find_merged_files(new_dir)
 
-        m = re.search(r"NewGen_v(.+)", new_dir.name)
+        m = re.search(r"UPP_v(.+)", new_dir.name)
         version_str = m.group(1) if m else new_dir.name
 
         print(f"Old version: {old_dir.name}")
@@ -333,9 +309,10 @@ def main() -> int:
 
         return 0
 
-        except Exception as e:
-            print(f"\nERROR: {e}", file=sys.stderr)
-            return 1
+    except Exception as e:
+        print(f"\nERROR: {e}", file=sys.stderr)
+        return 1
+
 
 
 if __name__ == "__main__":
