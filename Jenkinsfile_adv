@@ -67,6 +67,7 @@ The pipeline stops on first failure and prints a flash summary at the end.'''
 			  env.UDS_SCRIPT      = 'update_copy_and_run_upp.py'
 			  env.HEX_FILTER_APP  = '*Merge_App_*UPP_v*.hex'
 			  env.HEX_FILTER_BOOT = '*Merge_Boot_*UPP_v*.hex'
+			  env:PASSWORD = 'nexus1'
               break
             case 'NewGen':
               env.REMOTE_IP    = '192.168.10.85'
@@ -78,6 +79,7 @@ The pipeline stops on first failure and prints a flash summary at the end.'''
 	          env.UDS_SCRIPT      = 'update_copy_and_run_newgen.py' // ← change if name differs
               env.HEX_FILTER_APP  = '*.brn.hex'
               env.HEX_FILTER_BOOT = '*_Boot*.brn.hex'
+              env:PASSWORD = 'nexus1'
               break
             default:
               error "DEVICE not set or unrecognized. Set DEVICE to 'UPP' or 'NewGen'."
@@ -268,6 +270,7 @@ if ([string]::IsNullOrWhiteSpace(\$prevFolder) -or [string]::IsNullOrWhiteSpace(
   Write-Host "[FAIL] PREVIOUS_FOLDER or LATEST_FOLDER is empty. Aborting."
   exit 1
 }
+NET USE Z: "\\NEXUS-SRV\Users Temp Files" /user:$env:REMOTE_USER $env:PASSWORD /persistent:no
 
 \$oldPath = "C:\\Jenkins\\NewVersion\\\$prevFolder"
 \$newPath = "C:\\Jenkins\\NewVersion\\\$latestFolder"

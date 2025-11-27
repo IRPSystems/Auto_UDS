@@ -286,10 +286,10 @@ def copying_files(version_str: str):
     # print(f"\n📁 Copying logs to external disk: {dest_dir}")
     # dest_dir.mkdir(parents=True, exist_ok=True)
     try:
-        files = os.listdir("Z:/")
-        print(files)
         final_root.mkdir(parents=True, exist_ok=True)
+        dest_dir.mkdir(parents=True, exist_ok=True)  # 👈 THIS LINE IS THE KEY
         print("  ✅ Created/verified:", final_root)
+        print("  ✅ Created/verified:", dest_dir)
     except Exception as e:
         print("  ❌ mkdir failed:", type(e).__name__, e)
         return
