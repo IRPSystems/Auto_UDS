@@ -277,7 +277,8 @@ def copying_files(version_str: str):
         print(f"[copying_files] LOGS_DIR does not exist, nothing to copy: {LOGS_DIR}")
         return
 
-    external_root = Path(r"Z:\V&V\UDS_Result")
+    #external_root = Path(r"Z:\V&V\UDS_Result")
+    external_root = Path(r"\\nexus-srv\Users Temp Files\V&V\UDS_Result")
     final_root = external_root / "NewGen" / ("0" + version_str)
     dest_dir = final_root / "Flashing logs"
 

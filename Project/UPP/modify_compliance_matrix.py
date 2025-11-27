@@ -723,7 +723,8 @@ def copying_files():
         print("[copying_files] RESULT_FOLDER is not set, nothing to copy.")
         return
 
-    external_root = Path(r"Z:\V&V\UDS_Result")
+    #external_root = Path(r"Z:\V&V\UDS_Result")
+    external_root = Path(r"\\nexus-srv\Users Temp Files\V&V\UDS_Result")
     final_root = external_root / "UPP" / result_folder
 
     print(f"\n📁 Copying logs to external disk: {final_root}")

@@ -34,15 +34,15 @@ DEVICE = "UPP"
 
 # List of scripts to run (full paths)
 SCRIPTS: List[Path] = [
-    SOURCE_UDS / 'UPP' / 'Scripts' / 'TrueDriveManager.script',
-    SOURCE_UDS / 'UPP' / 'Scripts' / 'Standard_Identifiers.script',
-    SOURCE_UDS / 'UPP' / 'Scripts' / 'CanConfig_103.script',
-    SOURCE_UDS / 'UPP' / 'Scripts' / 'Faults_Configuration.script',
-    SOURCE_UDS / 'UPP' / 'Scripts' / 'Network_F1D5.script',
-    SOURCE_UDS / 'UPP' / 'Scripts' / 'Network_Missmatch_F1D3.script',
-    SOURCE_UDS / 'UPP' / 'Scripts' / 'Network_TimeOut_F1D2.script',
-    SOURCE_UDS / 'UPP' / 'Scripts' / 'Routine_Control.script',
-    SOURCE_UDS / 'UPP' / 'Scripts' / 'Generetic_ECU_Read.script',
+    # SOURCE_UDS / 'UPP' / 'Scripts' / 'TrueDriveManager.script',
+    # SOURCE_UDS / 'UPP' / 'Scripts' / 'Standard_Identifiers.script',
+    # SOURCE_UDS / 'UPP' / 'Scripts' / 'CanConfig_103.script',
+    # SOURCE_UDS / 'UPP' / 'Scripts' / 'Faults_Configuration.script',
+     SOURCE_UDS / 'UPP' / 'Scripts' / 'Network_F1D5.script',
+    # SOURCE_UDS / 'UPP' / 'Scripts' / 'Network_Missmatch_F1D3.script',
+    # SOURCE_UDS / 'UPP' / 'Scripts' / 'Network_TimeOut_F1D2.script',
+    # SOURCE_UDS / 'UPP' / 'Scripts' / 'Routine_Control.script',
+    # SOURCE_UDS / 'UPP' / 'Scripts' / 'Generetic_ECU_Read.script',
 
 
 ]
