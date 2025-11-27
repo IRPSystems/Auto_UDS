@@ -214,12 +214,12 @@ def flash_one_round(old_app: Path, old_boot: Path, new_app: Path, new_boot: Path
 
     round_start = time.time()
 
-    # 1) old firmware
-    print("\n[STEP 1] Flashing OLD firmware...")
-    step_start = time.time()
-    run_flash(EXE, CHANNEL, FIRMWARE_NewGen, old_app)
-    print(f"   -> Done in {int(time.time() - step_start)} sec")
-    sleep_with_countdown(60, "Waiting after old firmware")
+    # # 1) old firmware
+    # print("\n[STEP 1] Flashing OLD firmware...")
+    # step_start = time.time()
+    # run_flash(EXE, CHANNEL, FIRMWARE_NewGen, old_app)
+    # print(f"   -> Done in {int(time.time() - step_start)} sec")
+    # sleep_with_countdown(60, "Waiting after old firmware")
 
     # 2) old boot
     print("\n[STEP 2] Flashing OLD bootloader...")
@@ -278,8 +278,9 @@ def copying_files(version_str: str):
         return
 
     #external_root = Path(r"Z:\V&V\UDS_Result")
-    external_root = Path(r"Z:\V&V\UDS_Result")
+    external_root = Path(r":\V&V\UDS_Result")
     final_root = external_root / "NewGen" / ("0" + version_str)
+    print(final_root)
     dest_dir = final_root / "Flashing logs"
 
     # print(f"\n📁 Copying logs to external disk: {dest_dir}")
