@@ -215,11 +215,11 @@ def flash_one_round(old_app: Path, old_boot: Path, new_app: Path, new_boot: Path
     round_start = time.time()
 
     # # 1) old firmware
-    # print("\n[STEP 1] Flashing OLD firmware...")
-    # step_start = time.time()
-    # run_flash(EXE, CHANNEL, FIRMWARE_NewGen, old_app)
-    # print(f"   -> Done in {int(time.time() - step_start)} sec")
-    # sleep_with_countdown(60, "Waiting after old firmware")
+    print("\n[STEP 1] Flashing OLD firmware...")
+    step_start = time.time()
+    run_flash(EXE, CHANNEL, FIRMWARE_NewGen, old_app)
+    print(f"   -> Done in {int(time.time() - step_start)} sec")
+    sleep_with_countdown(60, "Waiting after old firmware")
 
     # 2) old boot
     print("\n[STEP 2] Flashing OLD bootloader...")
@@ -229,20 +229,20 @@ def flash_one_round(old_app: Path, old_boot: Path, new_app: Path, new_boot: Path
     sleep_with_countdown(20, "Waiting after old boot")
 
     # # 3) new firmware
-    # print("\n[STEP 3] Flashing NEW firmware...")
-    # step_start = time.time()
-    # run_flash(EXE, CHANNEL, FIRMWARE_NewGen, new_app)
-    # print(f"   -> Done in {int(time.time() - step_start)} sec")
-    # sleep_with_countdown(60, "Waiting after new firmware")
-    #
-    # # 4) new boot
-    # print("\n[STEP 4] Flashing NEW bootloader...")
-    # step_start = time.time()
-    # run_flash(EXE, CHANNEL, BOOT_NG, new_boot)
-    # print(f"   -> Done in {int(time.time() - step_start)} sec")
-    # sleep_with_countdown(20, "Waiting after new boot")
-    #
-    # print(f"\n✅ Round completed in {int(time.time() - round_start)} sec\n")
+    print("\n[STEP 3] Flashing NEW firmware...")
+    step_start = time.time()
+    run_flash(EXE, CHANNEL, FIRMWARE_NewGen, new_app)
+    print(f"   -> Done in {int(time.time() - step_start)} sec")
+    sleep_with_countdown(60, "Waiting after new firmware")
+
+    # 4) new boot
+    print("\n[STEP 4] Flashing NEW bootloader...")
+    step_start = time.time()
+    run_flash(EXE, CHANNEL, BOOT_NG, new_boot)
+    print(f"   -> Done in {int(time.time() - step_start)} sec")
+    sleep_with_countdown(20, "Waiting after new boot")
+
+    print(f"\n✅ Round completed in {int(time.time() - round_start)} sec\n")
 
 # =========================
 # ========= main ==========
