@@ -257,8 +257,14 @@ def copying_files(version_str: str):
     final_root = external_root / "UPP" / ("0" + version_str)
     dest_dir = final_root / "Flashing logs"
 
-    print(f"\n📁 Copying logs to external disk: {dest_dir}")
-    dest_dir.mkdir(parents=True, exist_ok=True)
+    # print(f"\n📁 Copying logs to external disk: {dest_dir}")
+    # dest_dir.mkdir(parents=True, exist_ok=True)
+    try:
+        final_root.mkdir(parents=True, exist_ok=True)
+        print("  ✅ Created/verified:", final_root)
+    except Exception as e:
+        print("  ❌ mkdir failed:", type(e).__name__, e)
+        return
 
     files_copied = 0
     for entry in LOGS_DIR.iterdir():
