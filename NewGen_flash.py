@@ -278,7 +278,7 @@ def copying_files(version_str: str):
         return
 
     #external_root = Path(r"Z:\V&V\UDS_Result")
-    external_root = Path(r":\V&V\UDS_Result")
+    external_root = Path(r"Z:\V&V\UDS_Result")
     final_root = external_root / "NewGen" / ("0" + version_str)
     print(final_root)
     dest_dir = final_root / "Flashing logs"
