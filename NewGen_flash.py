@@ -228,21 +228,21 @@ def flash_one_round(old_app: Path, old_boot: Path, new_app: Path, new_boot: Path
     print(f"   -> Done in {int(time.time() - step_start)} sec")
     sleep_with_countdown(20, "Waiting after old boot")
 
-    # 3) new firmware
-    print("\n[STEP 3] Flashing NEW firmware...")
-    step_start = time.time()
-    run_flash(EXE, CHANNEL, FIRMWARE_NewGen, new_app)
-    print(f"   -> Done in {int(time.time() - step_start)} sec")
-    sleep_with_countdown(60, "Waiting after new firmware")
-
-    # 4) new boot
-    print("\n[STEP 4] Flashing NEW bootloader...")
-    step_start = time.time()
-    run_flash(EXE, CHANNEL, BOOT_NG, new_boot)
-    print(f"   -> Done in {int(time.time() - step_start)} sec")
-    sleep_with_countdown(20, "Waiting after new boot")
-
-    print(f"\n✅ Round completed in {int(time.time() - round_start)} sec\n")
+    # # 3) new firmware
+    # print("\n[STEP 3] Flashing NEW firmware...")
+    # step_start = time.time()
+    # run_flash(EXE, CHANNEL, FIRMWARE_NewGen, new_app)
+    # print(f"   -> Done in {int(time.time() - step_start)} sec")
+    # sleep_with_countdown(60, "Waiting after new firmware")
+    #
+    # # 4) new boot
+    # print("\n[STEP 4] Flashing NEW bootloader...")
+    # step_start = time.time()
+    # run_flash(EXE, CHANNEL, BOOT_NG, new_boot)
+    # print(f"   -> Done in {int(time.time() - step_start)} sec")
+    # sleep_with_countdown(20, "Waiting after new boot")
+    #
+    # print(f"\n✅ Round completed in {int(time.time() - round_start)} sec\n")
 
 # =========================
 # ========= main ==========
@@ -278,9 +278,13 @@ def copying_files(version_str: str):
         return
 
     #external_root = Path(r"Z:\V&V\UDS_Result")
-    external_root = Path(r"\\nexus-srv\Users Temp Files\V&V\UDS_Result")
-    final_root = external_root / "NewGen" / ("0" + version_str)
+    # external_root = Path(r"\\nexus-srv\Users Temp Files\V&V\UDS_Result")
+    # final_root = external_root / "NewGen" / ("0" + version_str)
+    # dest_dir = final_root / "Flashing logs"
+    external_root = Path(r"\\nexus-srv\Users Temp Files\V&V\UDS_Result\NewGen")
+    final_root = external_root / ("0" + version_str)
     dest_dir = final_root / "Flashing logs"
+
 
     # print(f"\n📁 Copying logs to external disk: {dest_dir}")
     # dest_dir.mkdir(parents=True, exist_ok=True)
