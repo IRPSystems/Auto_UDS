@@ -253,7 +253,7 @@ def copying_files(version_str: str):
         return
 
     #external_root = Path(r"Z:\V&V\UDS_Result")
-    external_root = Path(r"\\nexus-srv\Users Temp Files\V&V\UDS_Result")
+    external_root = Path(r"Z:\V&V\UDS_Result")
     final_root = external_root / "UPP" / ("0" + version_str)
     dest_dir = final_root / "Flashing logs"
 

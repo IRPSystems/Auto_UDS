@@ -25,7 +25,7 @@ SOURCE_ROOT = Path(r"C:\Jenkins\NewVersion")
 TARGET_DIR = Path(r"C:\Jenkins\UdsClient_CL")
 EXE = TARGET_DIR / "UdsClient_CL.exe"
 
-LOGS_DIR = Path(r"C:\temp3")
+LOGS_DIR=Path(r"C:\temp3")
 
 # Flash params
 CHANNEL = "51"
@@ -35,6 +35,8 @@ BOOT_NG = "**Bootloader-NG**"  # kept as you requested
 # =========================
 # ======  HELPERS  ========
 # =========================
+
+
 
 def require_exists(path: Path, desc: str) -> None:
     if not path.exists():
@@ -130,20 +132,38 @@ def run_flash(exe: Path, channel: str, target: str, file_path: Path) -> None:
 
     pct_re = re.compile(r"^\s*(\d{1,3})%\s*$")
     last_pct = None
+    line_len = 0
 
     def render_progress(pct: int):
-        nonlocal last_pct
+        nonlocal last_pct, line_len
         if last_pct == pct:
             return  # suppress duplicates (Jenkins prints each line)
         last_pct = pct
         msg = f"Flashing progress: {pct}%"
+        # Try to overwrite the same line (ANSI clear-line + CR). If console
+        # doesn't honor ANSI, you'll still get one line per changed % only.
         sys.stdout.write("\x1b[2K\r" + msg)
         sys.stdout.flush()
+        line_len = len(msg)
 
     for raw in process.stdout:
         line = raw.rstrip("\r\n")
         stripped = line.strip()
 
+        # NEW: treat "End" / "Close" as error
+        # if stripped in ("End", "Close"):
+            # if last_pct is not None:
+            #     sys.stdout.write("\n")
+            #     sys.stdout.flush()
+            # print(f"[ERROR] Tool reported '{stripped}' – aborting flash for {target}")
+            # process.terminate()
+            # try:
+            #     process.wait(timeout=10)
+            # except subprocess.TimeoutExpired:
+            #     process.kill()
+            # raise RuntimeError(f"Flash aborted: tool reported '{stripped}'")
+
+        # existing percent / normal line handling stays as you had it
         m = pct_re.match(line)
         if m:
             pct = int(m.group(1))
@@ -154,11 +174,24 @@ def run_flash(exe: Path, channel: str, target: str, file_path: Path) -> None:
             sys.stdout.write("\n")
             sys.stdout.flush()
             last_pct = None
-
         print(line)
+        # line = raw.rstrip("\r\n")
+        # m = pct_re.match(line)
+        # if m:
+        #     pct = int(m.group(1))
+        #     render_progress(pct)
+        #     continue
+        #
+        # # Non-percent output: end the progress line cleanly once
+        # if last_pct is not None:
+        #     sys.stdout.write("\n")
+        #     sys.stdout.flush()
+        #     line_len = 0
+        # print(line)
 
     process.wait()
 
+    # If we ended on a progress line, close it nicely
     if last_pct is not None:
         sys.stdout.write("\n")
         sys.stdout.flush()
@@ -175,7 +208,7 @@ def sleep_with_countdown(seconds: int, message: str):
     print()  # newline after countdown
 
 def flash_one_round(old_app: Path, old_boot: Path, new_app: Path, new_boot: Path) -> None:
-    """Exactly one round: old FW -> old Boot (new steps commented out)."""
+    """Exactly one round: old FW -> old Boot -> new FW -> new Boot, with waits."""
     round_label = os.environ.get("ROUND_INDEX") or "single run"
     print(f"\n=== FLASH ROUND {round_label} ===")
 
@@ -195,12 +228,25 @@ def flash_one_round(old_app: Path, old_boot: Path, new_app: Path, new_boot: Path
     print(f"   -> Done in {int(time.time() - step_start)} sec")
     sleep_with_countdown(20, "Waiting after old boot")
 
-    print(f"\n✅ Round completed in {int(time.time() - round_start)} sec\n")
+    # # 3) new firmware
+    # print("\n[STEP 3] Flashing NEW firmware...")
+    # step_start = time.time()
+    # run_flash(EXE, CHANNEL, FIRMWARE_NewGen, new_app)
+    # print(f"   -> Done in {int(time.time() - step_start)} sec")
+    # sleep_with_countdown(60, "Waiting after new firmware")
+    #
+    # # 4) new boot
+    # print("\n[STEP 4] Flashing NEW bootloader...")
+    # step_start = time.time()
+    # run_flash(EXE, CHANNEL, BOOT_NG, new_boot)
+    # print(f"   -> Done in {int(time.time() - step_start)} sec")
+    # sleep_with_countdown(20, "Waiting after new boot")
+    #
+    # print(f"\n✅ Round completed in {int(time.time() - round_start)} sec\n")
 
 # =========================
 # ========= main ==========
 # =========================
-
 def clear_temp3():
     """Delete all files and subfolders inside C:\\Temp3, but keep the folder itself."""
     print("🧹 Deleting old log files in C:\\Temp3 ...")
@@ -220,35 +266,6 @@ def clear_temp3():
             print(f"   ! Failed removing {entry}: {e}")
     print("   - Cleanup finished.")
 
-def robust_mkdir_robocopy(path: Path) -> bool:
-    """
-    Try to ensure a directory exists using robocopy from an empty dummy dir.
-    Returns True on success (robocopy exit code 0–7), False on failure.
-    """
-    dummy = Path(r"C:\Windows\Temp\_dummy_empty_dir")
-    try:
-        dummy.mkdir(parents=True, exist_ok=True)
-    except Exception as e:
-        print(f"  ❌ Failed to prepare dummy dir for robocopy: {e}")
-        return False
-
-    cmd = [
-        "robocopy",
-        str(dummy),   # source (empty)
-        str(path),    # destination
-        "/MIR"
-    ]
-    print(f"  Running robocopy to ensure directory exists: {path}")
-    result = subprocess.run(cmd, capture_output=True, text=True)
-    # robocopy 0–7 => success or minor issues; >7 => failure
-    if result.returncode > 7:
-        print(f"  ❌ robocopy mkdir failed for {path}: rc={result.returncode}")
-        print("     stdout:", result.stdout)
-        print("     stderr:", result.stderr)
-        return False
-
-    print(f"  ✅ Directory ensured via robocopy: {path} (rc={result.returncode})")
-    return True
 
 def copying_files(version_str: str):
 
@@ -260,35 +277,34 @@ def copying_files(version_str: str):
         print(f"[copying_files] LOGS_DIR does not exist, nothing to copy: {LOGS_DIR}")
         return
 
+    #external_root = Path(r"Z:\V&V\UDS_Result")
     external_root = Path(r"\\nexus-srv\Users Temp Files\V&V\UDS_Result")
     final_root = external_root / "NewGen" / ("0" + version_str)
     dest_dir = final_root / "Flashing logs"
 
-    print(f"\n📁 Copying logs to external disk under: {dest_dir}")
-
-    # Ensure both final_root and dest_dir via robocopy
-    if not robust_mkdir_robocopy(final_root):
-        print("  ❌ Could not create/verify final_root, aborting copy.")
-        return
-    if not robust_mkdir_robocopy(dest_dir):
-        print("  ❌ Could not create/verify dest_dir, aborting copy.")
+    # print(f"\n📁 Copying logs to external disk: {dest_dir}")
+    # dest_dir.mkdir(parents=True, exist_ok=True)
+    try:
+        final_root.mkdir(parents=True, exist_ok=True)
+        print("  ✅ Created/verified:", final_root)
+    except Exception as e:
+        print("  ❌ mkdir failed:", type(e).__name__, e)
         return
 
     files_copied = 0
     for entry in LOGS_DIR.iterdir():
         if entry.is_file():
             target = dest_dir / entry.name
-            try:
-                shutil.copy2(entry, target)
-                print(f"  Copied {entry} -> {target}")
-                files_copied += 1
-            except Exception as e:
-                print(f"  ❌ Failed to copy {entry} -> {target}: {e}")
+            shutil.copy2(entry, target)
+            print(f"  Copied {entry} -> {target}")
+            files_copied += 1
 
     if files_copied == 0:
         print("  (No files found to copy in Temp3)")
     else:
         print(f"✅ Copy to external disk completed. {files_copied} file(s) copied.")
+
+
 
 def main() -> int:
     clear_temp3()
@@ -307,7 +323,6 @@ def main() -> int:
         old_app, old_boot = find_merged_files(old_dir)
         new_app, new_boot = find_merged_files(new_dir)
 
-        # Version string is derived from *new* version folder name
         m = re.search(r"NewGen_v(.+)", new_dir.name)
         version_str = m.group(1) if m else new_dir.name
 
@@ -321,7 +336,7 @@ def main() -> int:
 
         flash_one_round(old_app, old_boot, new_app, new_boot)
 
-        # Copy Temp3 logs to external disk
+        # 🔽 NEW: copy Temp3 logs to external disk
         copying_files(version_str)
 
         return 0
@@ -329,6 +344,7 @@ def main() -> int:
     except Exception as e:
         print(f"\nERROR: {e}", file=sys.stderr)
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())
