@@ -8,28 +8,20 @@ from pathlib import Path
 from typing import Tuple, List
 import argparse
 
-# ---- Console safety: avoid charmap/encoding crashes everywhere ----
-try:
-    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
-    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
-except Exception:
-    pass
-
 # =========================
-# ====== CONFIG =========
+# ====== CONFIG ===========
 # =========================
 SOURCE_ROOT = Path(r"C:\Jenkins\NewVersion")
 TARGET_DIR = Path(r"C:\Jenkins\UdsClient_CL")
 EXE = TARGET_DIR / "UdsClient_CL.exe"
 LOGS_DIR = Path(r"C:\temp3")
 
-# Flash params
 CHANNEL = "51"
 FIRMWARE_NewGen = "NewGen"
 BOOT_NG = "**Bootloader-NG**"
 
 # =========================
-# ====== HELPERS ========
+# ====== HELPERS ==========
 # =========================
 
 def require_exists(path: Path, desc: str) -> None:
@@ -37,7 +29,7 @@ def require_exists(path: Path, desc: str) -> None:
         raise FileNotFoundError(f"{desc} not found: {path}")
 
 def parse_args():
-    ap = argparse.ArgumentParser()
+    ap = argparse.ArgumentParser(description="Flash old → old boot (for rollback test)")
     ap.add_argument("--old", type=str, help="Path to previous version folder")
     ap.add_argument("--new", type=str, help="Path to latest version folder")
     return ap.parse_args()
@@ -46,7 +38,7 @@ def find_two_version_dirs(root: Path) -> Tuple[Path, Path]:
     require_exists(root, "SOURCE_ROOT")
     subdirs = [p for p in root.iterdir() if p.is_dir()]
     if len(subdirs) < 2:
-        raise FileNotFoundError(f"Expected at least 2 version folders inside {root}, found {len(subdirs)}")
+        raise FileNotFoundError(f"Expected at least 2 version folders in {root}, found {len(subdirs)}")
     subdirs.sort(key=lambda p: p.stat().st_mtime)
     return subdirs[-2], subdirs[-1]
 
@@ -57,28 +49,32 @@ def pick_latest_file(candidates: List[Path]) -> Path:
 
 def find_merged_files(version_dir: Path) -> Tuple[Path, Path]:
     merged_dir = version_dir / "Firmware"
-    require_exists(merged_dir, f"'Firmware' directory for {version_dir.name}")
+    require_exists(merged_dir, f"'Firmware' folder in {version_dir.name}")
+
     app_candidates = [p for p in merged_dir.glob("*.brn.hex") if "_Boot" not in p.name]
     boot_candidates = list(merged_dir.glob("*_Boot.brn.hex"))
+
     app_hex = pick_latest_file(app_candidates)
     boot_hex = pick_latest_file(boot_candidates)
     return app_hex, boot_hex
 
-def list_xmls_in_target():
-    xmls = list(TARGET_DIR.glob("*.xml"))
+def list_xmls_in_target(target_dir: Path = TARGET_DIR) -> None:
+    """Show which XML config files the flashing tool can see."""
+    xmls = list(target_dir.glob("*.xml"))
     if not xmls:
-        print(f"[WARN] No XML files found in {TARGET_DIR}")
+        print(f"[WARN] No XML files found in {target_dir}")
     else:
-        print("[INFO] XML files visible to tool:")
+        print(f"[INFO] XML files visible to tool in {target_dir}:")
         for x in xmls:
-            print(" -", x.name)
+            print(f"   - {x.name}")
 
 def run_flash(exe: Path, channel: str, target: str, file_path: Path) -> None:
     require_exists(exe, "UdsClient_CL.exe")
     require_exists(file_path, f"hex file for {target}")
+
     cmd = [str(exe), channel, target, "/f", str(file_path)]
-    print(f'\n==> Running: {Path(exe).name} {channel} {target} /f "{file_path}"')
-    print(f"[INFO] Working directory for process: {TARGET_DIR}")
+    print(f"\n==> Running: {' '.join(cmd)}")
+    print(f"[INFO] Working directory: {TARGET_DIR}")
     list_xmls_in_target(TARGET_DIR)
 
     env = os.environ.copy()
@@ -94,11 +90,10 @@ def run_flash(exe: Path, channel: str, target: str, file_path: Path) -> None:
         encoding="utf-8",
         errors="replace",
         bufsize=1,
-        universal_newlines=True,
     )
 
     pct_re = re.compile(r"^\s*(\d{1,3})%\s*$")
-    last_pct = None
+    last_pct: int | None = None
 
     def render_progress(pct: int):
         nonlocal last_pct
@@ -109,12 +104,11 @@ def run_flash(exe: Path, channel: str, target: str, file_path: Path) -> None:
         sys.stdout.write("\x1b[2K\r" + msg)
         sys.stdout.flush()
 
-    for raw in process.stdout:
-        line = raw.rstrip("\r\n")
+    for line in process.stdout:
+        line = line.rstrip("\r\n")
         m = pct_re.match(line)
         if m:
-            pct = int(m.group(1))
-            render_progress(pct)
+            render_progress(int(m.group(1)))
             continue
         if last_pct is not None:
             sys.stdout.write("\n")
@@ -128,140 +122,120 @@ def run_flash(exe: Path, channel: str, target: str, file_path: Path) -> None:
         sys.stdout.flush()
 
     if process.returncode != 0:
-        raise RuntimeError(f"Flash command failed with exit code {process.returncode}")
+        raise RuntimeError(f"Flash failed with exit code {process.returncode}")
 
-def sleep_with_countdown(seconds: int, message: str):
-    for remaining in range(seconds, 0, -1):
-        sys.stdout.write(f"\r{message}: {remaining:3d}s remaining")
+def sleep_with_countdown(seconds: int, message: str = "Waiting"):
+    for i in range(seconds, 0, -1):
+        sys.stdout.write(f"\r{message}: {i:3d}s ")
         sys.stdout.flush()
         time.sleep(1)
-    print()
-
-def flash_one_round(old_app: Path, old_boot: Path, new_app: Path, new_boot: Path) -> None:
-    round_label = os.environ.get("ROUND_INDEX") or "single run"
-    print(f"\n=== FLASH ROUND {round_label} ===")
-    round_start = time.time()
-
-    print("\n[STEP 1] Flashing OLD firmware...")
-    step_start = time.time()
-    run_flash(EXE, CHANNEL, FIRMWARE_NewGen, old_app)
-    print(f"   -> Done in {int(time.time() - step_start)} sec")
-    sleep_with_countdown(60, "Waiting after old firmware")
-
-    print("\n[STEP 2] Flashing OLD bootloader...")
-    step_start = time.time()
-    run_flash(EXE, CHANNEL, BOOT_NG, old_boot)
-    print(f"   -> Done in {int(time.time() - step_start)} sec")
-    sleep_with_countdown(20, "Waiting after old boot")
+    print("\r" + " " * 50 + "\r", end="")
 
 # =========================
-# ====== ROBUST MKDIR ======
+# ====== ROBUST MKDIR =====
 # =========================
 
 def robust_mkdir_robocopy(path: Path) -> None:
-    """
-    Creates directory using robocopy + empty source trick.
-    Works reliably on UNC paths with &, spaces, long paths, etc.
-    """
+    """Create directory using robocopy — works on any UNC path, even with & ( ) # etc."""
     if path.exists():
-        print(f"   Directory already exists: {path}")
         return
 
-    print(f"   Creating directory via robocopy: {path}")
-    dummy = Path(r"C:\Windows\Temp\_dummy_empty_dir_for_robocopy")
+    print(f"   Creating folder (robocopy): {path}")
+    dummy = Path(r"C:\Windows\Temp\_empty_dir_for_robocopy")
     dummy.mkdir(exist_ok=True)
 
     cmd = [
-        'robocopy',
+        "robocopy",
         str(dummy),
         str(path),
-        '/MIR',       # Mirror (creates destination)
-        '/R:1',       # Retry once
-        '/W:1',       # Wait 1s
-        '/NP',        # No progress (we don't need it)
-        '/NJH', '/NJS'  # No header/summary
+        "/MIR", "/R:1", "/W:1", "/NP", "/NJH", "/NJS"
     ]
 
     result = subprocess.run(cmd, capture_output=True, text=True)
 
-    # robocopy exit codes: 0-7 = success (some files copied or not), 8+ = failure
-    if result.returncode > 7:
+    if result.returncode > 7:  # 0–7 = success in robocopy world
         raise OSError(f"robocopy failed (code {result.returncode})\n"
-                      f"CMD: {' '.join(cmd)}\n"
-                      f"STDOUT: {result.stdout}\n"
-                      f"STDERR: {result.stderr}")
+                      f"Command: {' '.join(cmd)}\n"
+                      f"Output: {result.stdout}\n{result.stderr}")
 
-    if path.exists():
-        print(f"   Successfully created: {path}")
-    else:
-        raise OSError(f"robocopy reported success but directory still missing: {path}")
+    if not path.exists():
+        raise OSError(f"robocopy succeeded but folder was not created: {path}")
 
 # =========================
 # ========= MAIN ==========
 # =========================
 
 def clear_temp3():
-    print("Deleting old log files in C:\\Temp3 ...")
+    print("Cleaning old logs in C:\\temp3 ...")
     if not LOGS_DIR.exists():
-        print(f"   - {LOGS_DIR} does not exist, nothing to clean.")
         return
     for entry in LOGS_DIR.iterdir():
         try:
             if entry.is_file() or entry.is_symlink():
                 entry.unlink()
             elif entry.is_dir():
-                shutil.rmtree(entry)
-        except PermissionError as e:
-            print(f"   ! Permission denied removing {entry}: {e}")
-        except OSError as e:
-            print(f"   ! Failed removing {entry}: {e}")
-    print("   - Cleanup finished.")
+                shutil.rmtree(entry, ignore_errors=True)
+        except Exception as e:
+            print(f"   Warning: Could not delete {entry}: {e}")
+    print("   Cleanup done.")
 
-def copying_files(version_str: str):
-    if not version_str:
-        print("[copying_files] version_str is empty, nothing to copy.")
+def copy_logs_to_network(version_str: str):
+    if not version_str or not LOGS_DIR.exists() or not any(LOGS_DIR.iterdir()):
+        print("No logs to copy.")
         return
 
-    if not LOGS_DIR.exists() or not any(LOGS_DIR.iterdir()):
-        print(f"[copying_files] No logs in {LOGS_DIR} to copy.")
-        return
-
-    external_root = Path(r"\\nexus-srv\Users Temp Files\V&V\UDS_Result")
-    final_root = external_root / "NewGen" / ("0" + version_str.lstrip('0.'))  # e.g., 00.03.53 → 00.03.53
+    network_root = Path(r"\\nexus-srv\Users Temp Files\V&V\UDS_Result")
+    final_root = network_root / "NewGen" / f"0{version_str.lstrip('0.')}"   # e.g., 0.03.53 → 00.03.53
     dest_dir = final_root / "Flashing logs"
 
-    print(f"\nCopying logs to network location:")
-    print(f"   -> {dest_dir}")
+    print(f"\nCopying logs to network share:")
+    print(f"   → {dest_dir}")
 
-    # Use robust robocopy method for both levels
     try:
         robust_mkdir_robocopy(final_root)
         robust_mkdir_robocopy(dest_dir)
     except Exception as e:
-        print(f"   Failed to create destination folder: {e}")
+        print(f"   Failed to create network folder: {e}")
         print("   Skipping log copy.")
         return
 
-    files_copied = 0
-    for entry in LOGS_DIR.iterdir():
-        if entry.is_file():
+    copied = 0
+    for src_file in LOGS_DIR.iterdir():
+        if src_file.is_file():
             try:
-                target = dest_dir / entry.name
-                shutil.copy2(entry, target)
-                print(f"   Copied: {entry.name}")
-                files_copied += 1
+                shutil.copy2(src_file, dest_dir / src_file.name)
+                print(f"   Copied: {src_file.name}")
+                copied += 1
             except Exception as e:
-                print(f"   Failed to copy {entry.name}: {e}")
+                print(f"   Failed to copy {src_file.name}: {e}")
 
-    if files_copied == 0:
-        print("   (No files were copied)")
-    else:
-        print(f"   Copy completed: {files_copied} file(s) copied to network share.")
+    print(f"   Log copy complete: {copied} file(s) → {dest_dir}")
+
+def flash_one_round(old_app: Path, old_boot: Path):
+    print("\n=== STARTING FLASH SEQUENCE (old FW → old Boot) ===")
+    start_time = time.time()
+
+    # Step 1: Flash old application
+    print("\n[1/2] Flashing OLD firmware...")
+    run_flash(EXE, CHANNEL, FIRMWARE_NewGen, old_app)
+    print(f"   Done in {int(time.time() - start_time)}s")
+    sleep_with_countdown(60, "Waiting after firmware flash")
+
+    # Step 2: Flash old bootloader
+    print("\n[2/2] Flashing OLD bootloader...")
+    run_flash(EXE, CHANNEL, BOOT_NG, old_boot)
+    total_time = int(time.time() - start_time)
+    print(f"   Done in {total_time}s total")
+    sleep_with_countdown(20, "Waiting after bootloader")
+
+    print(f"\nFLASH SEQUENCE COMPLETED in {total_time} seconds")
 
 def main() -> int:
     clear_temp3()
+
     try:
         args = parse_args()
+
         if args.old and args.new:
             old_dir = Path(args.old)
             new_dir = Path(args.new)
@@ -271,29 +245,30 @@ def main() -> int:
             old_dir, new_dir = find_two_version_dirs(SOURCE_ROOT)
 
         old_app, old_boot = find_merged_files(old_dir)
-        new_app, new_boot = find_merged_files(new_dir)
+        new_app, new_boot = find_merged_files(new_dir)  # kept for future use
 
-        m = re.search(r"NewGen_v(.+)", new_dir.name)
-        version_str = m.group(1) if m else new_dir.name
+        match = re.search(r"NewGen_v(.+)", new_dir.name)
+        version_str = match.group(1) if match else new_dir.name
 
-        print(f"Old version: {old_dir.name}")
-        print(f"  FW: {old_app}")
-        print(f"  BOOT: {old_boot}")
-        print(f"New version: {new_dir.name}")
-        print(f"  FW: {new_app}")
-        print(f"  BOOT: {new_boot}")
-        print(f"Version folder name for logs: {version_str}")
+        print(f"\nOld version : {old_dir.name}")
+        print(f"   App  → {old_app.name}")
+        print(f"   Boot → {old_boot.name}")
+        print(f"New version : {new_dir.name}")
+        print(f"   App  → {new_app.name}")
+        print(f"   Boot → {new_boot.name}")
+        print(f"Log folder  : 0{version_str}")
 
-        flash_one_round(old_app, old_boot, new_app, new_boot)
+        # Perform flash sequence
+        flash_one_round(old_app, old_boot)
 
         # Copy logs to network share
-        copying_files(version_str)
+        copy_logs_to_network(version_str)
 
-        print("\nAll done successfully!")
+        print("\nALL TASKS COMPLETED SUCCESSFULLY!")
         return 0
 
     except Exception as e:
-        print(f"\nERROR: {e}", file=sys.stderr)
+        print(f"\nFATAL ERROR: {e}", file=sys.stderr)
         return 1
 
 
