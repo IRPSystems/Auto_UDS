@@ -303,17 +303,17 @@ def main() -> int:
     try:
         args = parse_args()
 
-            if args.old and args.new:
-                old_dir = Path(args.old)
-                new_dir = Path(args.new)
-                require_exists(old_dir, "Old version folder")
-                require_exists(new_dir, "New version folder")
-            else:
-                # Fallback: auto-detect (kept for manual runs)
-                old_dir, new_dir = find_two_version_dirs(SOURCE_ROOT)
+        if args.old and args.new:
+            old_dir = Path(args.old)
+            new_dir = Path(args.new)
+            require_exists(old_dir, "Old version folder")
+            require_exists(new_dir, "New version folder")
+        else:
+            # Fallback: auto-detect (kept for manual runs)
+            old_dir, new_dir = find_two_version_dirs(SOURCE_ROOT)
 
-            old_app, old_boot = find_merged_files(old_dir)
-            new_app, new_boot = find_merged_files(new_dir)
+        old_app, old_boot = find_merged_files(old_dir)
+        new_app, new_boot = find_merged_files(new_dir)
 
         m = re.search(r"NewGen_v(.+)", new_dir.name)
         version_str = m.group(1) if m else new_dir.name
