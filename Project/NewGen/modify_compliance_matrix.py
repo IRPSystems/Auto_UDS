@@ -567,16 +567,6 @@ def copy_tree(src: Path, dst: Path, last_n: int | None = None):
             print(f"  Copied {src_file} -> {dst_file}")
 
 
-def ensure_network_share():
-    subprocess.run([
-        "net", "use",
-        r"\\nexus-srv\Users Temp Files",
-        # If credentials needed:
-        # "/USER:DOMAIN\\user", "password",
-        "/persistent:no"
-    ], shell=True)
-
-
 def copying_files():
 
     if not result_folder:
@@ -587,14 +577,8 @@ def copying_files():
     external_root = Path(r"\\nexus-srv\Users Temp Files\V&V\UDS_Result")
     final_root = external_root / "NewGen" / result_folder
 
-    # print(f"\n📁 Copying logs to external disk: {final_root}")
-    # final_root.mkdir(parents=True, exist_ok=True)
-    try:
-        final_root.mkdir(parents=True, exist_ok=True)
-        print("  ✅ Created/verified:", final_root)
-    except Exception as e:
-        print("  ❌ mkdir failed:", type(e).__name__, e)
-        return
+    print(f"\n📁 Copying logs to external disk: {final_root}")
+    final_root.mkdir(parents=True, exist_ok=True)
 
     # 1) Copy ONLY the last 2 files from C:\temp3 -> ...\Client logs
     temp3_dst = final_root / "Client logs"
@@ -610,7 +594,8 @@ def copying_files():
     print("✅ Copy to external disk completed.")
 
 def main():
-    ensure_network_share()
+    # os.system(f'python {base_log_dir}/output_with_raw.py')
+    # parser = argparse.ArgumentParser(description="Generate UDS compliance report")
     script_path = os.path.join(base_log_dir, "output_with_raw.py")
     try:
         subprocess.run(

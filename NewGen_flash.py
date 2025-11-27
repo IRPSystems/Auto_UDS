@@ -282,8 +282,14 @@ def copying_files(version_str: str):
     final_root = external_root / "NewGen" / ("0" + version_str)
     dest_dir = final_root / "Flashing logs"
 
-    print(f"\n📁 Copying logs to external disk: {dest_dir}")
-    dest_dir.mkdir(parents=True, exist_ok=True)
+    # print(f"\n📁 Copying logs to external disk: {dest_dir}")
+    # dest_dir.mkdir(parents=True, exist_ok=True)
+    try:
+        final_root.mkdir(parents=True, exist_ok=True)
+        print("  ✅ Created/verified:", final_root)
+    except Exception as e:
+        print("  ❌ mkdir failed:", type(e).__name__, e)
+        return
 
     files_copied = 0
     for entry in LOGS_DIR.iterdir():
@@ -298,9 +304,20 @@ def copying_files(version_str: str):
     else:
         print(f"✅ Copy to external disk completed. {files_copied} file(s) copied.")
 
+import subprocess
+
+def ensure_network_share():
+    subprocess.run([
+        "net", "use",
+        r"\\nexus-srv\Users Temp Files",
+        # If credentials needed:
+        # "/USER:DOMAIN\\user", "password",
+        "/persistent:no"
+    ], shell=True)
 
 
 def main() -> int:
+    ensure_network_share()
     clear_temp3()
     try:
         args = parse_args()
