@@ -268,7 +268,6 @@ def clear_temp3():
 
 
 def copying_files(version_str: str):
-
     if not version_str:
         print("[copying_files] version_str is empty, nothing to copy.")
         return
@@ -277,20 +276,29 @@ def copying_files(version_str: str):
         print(f"[copying_files] LOGS_DIR does not exist, nothing to copy: {LOGS_DIR}")
         return
 
-    #external_root = Path(r"Z:\V&V\UDS_Result")
-    # external_root = Path(r"\\nexus-srv\Users Temp Files\V&V\UDS_Result")
-    # final_root = external_root / "NewGen" / ("0" + version_str)
-    # dest_dir = final_root / "Flashing logs"
-    external_root = Path(r"\\nexus-srv\Users Temp Files\V&V\UDS_Result\NewGen")
-    final_root = external_root / ("0" + version_str)
+    # UNC root
+    external_root = Path(r"\\nexus-srv\Users Temp Files\V&V\UDS_Result")
+
+    # Project root for NewGen
+    project_root = external_root / "NewGen"
+
+    if not project_root.exists():
+        print(f"[copying_files] Project root does not exist: {project_root}")
+        print("  Please create this folder manually on the server.")
+        return
+
+    # Example: 0 + "2.06.06" -> "02.06.06"
+    version_folder = "0" + version_str
+    final_root = project_root / version_folder
     dest_dir = final_root / "Flashing logs"
 
+    print(f"\n📁 Copying logs to external disk: {dest_dir}")
 
-    # print(f"\n📁 Copying logs to external disk: {dest_dir}")
-    # dest_dir.mkdir(parents=True, exist_ok=True)
     try:
-        final_root.mkdir(parents=True, exist_ok=True)
-        print("  ✅ Created/verified:", final_root)
+        # Only create version + 'Flashing logs', assume NewGen already exists
+        final_root.mkdir(exist_ok=True)
+        dest_dir.mkdir(exist_ok=True)
+        print("  ✅ Created/verified:", dest_dir)
     except Exception as e:
         print("  ❌ mkdir failed:", type(e).__name__, e)
         return
@@ -304,7 +312,7 @@ def copying_files(version_str: str):
             files_copied += 1
 
     if files_copied == 0:
-        print("  (No files found to copy in Temp3)")
+        print("  (No files found to copy in LOGS_DIR)")
     else:
         print(f"✅ Copy to external disk completed. {files_copied} file(s) copied.")
 
