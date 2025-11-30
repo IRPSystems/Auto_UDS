@@ -581,7 +581,7 @@ def copying_files():
     # final_root.mkdir(parents=True, exist_ok=True)
 
     external_root = Path(r"Z:\V&V\UDS_Result")
-    final_root = external_root / "UPP" / result_folder
+    final_root = external_root / "NewGen" / result_folder
     print(final_root)
     dest_dir = final_root / "Flashing logs"
 
