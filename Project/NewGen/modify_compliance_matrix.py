@@ -574,11 +574,26 @@ def copying_files():
         return
 
     #external_root = Path(r"Z:\V&V\UDS_Result")
-    external_root = Path(r"\\nexus-srv\Users Temp Files\V&V\UDS_Result")
-    final_root = external_root / "NewGen" / result_folder
+    # external_root = Path(r"\\nexus-srv\Users Temp Files\V&V\UDS_Result")
+    # final_root = external_root / "NewGen" / result_folder
+    #
+    # print(f"\n📁 Copying logs to external disk: {final_root}")
+    # final_root.mkdir(parents=True, exist_ok=True)
 
-    print(f"\n📁 Copying logs to external disk: {final_root}")
-    final_root.mkdir(parents=True, exist_ok=True)
+    external_root = Path(r"Z:\V&V\UDS_Result")
+    final_root = external_root / "UPP" / result_folder
+    print(final_root)
+    dest_dir = final_root / "Flashing logs"
+
+    # print(f"\n📁 Copying logs to external disk: {dest_dir}")
+    # dest_dir.mkdir(parents=True, exist_ok=True)
+    try:
+        final_root.mkdir(parents=True, exist_ok=True)
+        dest_dir.mkdir(parents=True, exist_ok=True)  # 👈 THIS LINE IS THE KEY
+        print("  ✅ Created/verified:", final_root)
+        print("  ✅ Created/verified:", dest_dir)
+    except Exception as e:
+        print("  ❌ mkdir failed:", type(e).__name__, e)
 
     # 1) Copy ONLY the last 2 files from C:\temp3 -> ...\Client logs
     temp3_dst = final_root / "Client logs"

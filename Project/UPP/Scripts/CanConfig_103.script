@@ -8,6 +8,13 @@ send 10 03
 security 1
 sleep 500
 
+
+send 11 03
+sleep 1000
+send 10 03
+security 1
+sleep 500
+
 #CANWakeupFeatureEnable (Default 0 or 1, Scale 1)
 send 2E 01 03 01 00 00 00 00 00 00 00 00 00
 send 22 01 03
