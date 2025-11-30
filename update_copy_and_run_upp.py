@@ -34,8 +34,8 @@ DEVICE = "UPP"
 
 # List of scripts to run (full paths)
 SCRIPTS: List[Path] = [
-    SOURCE_UDS / 'UPP' / 'Scripts' / 'TrueDriveManager.script',
     SOURCE_UDS / 'UPP' / 'Scripts' / 'Standard_Identifiers.script',
+    SOURCE_UDS / 'UPP' / 'Scripts' / 'TrueDriveManager.script',
     SOURCE_UDS / 'UPP' / 'Scripts' / 'CanConfig_103.script',
     SOURCE_UDS / 'UPP' / 'Scripts' / 'Faults_Configuration.script',
     SOURCE_UDS / 'UPP' / 'Scripts' / 'Network_F1D5.script',
