@@ -26,16 +26,19 @@ send 31 02 02 96
 #compare CS
 #send 31 01 FF 01 FF FF
 
-#Update History zone
-send 31 01 02 01 00 01 02 4D 43 55 41 43 54 30 30 4D 43 55 41 43 54 30 30 1C 0A 07 E9 0A 1E    
-send 22 02 01
 
 #boot flag
 send 31 01 02 00 01
 send 22 02 00
 
+
+#Update History zone
+send 31 01 02 01 00 01 02 4D 43 55 41 43 54 30 30 4D 43 55 41 43 54 30 30 1C 0A 07 E9 0A 1E
+
 send 11 03
-sleep 500
+sleep 1200
+
+send 22 02 01
 
 #stop Autocalibration
 #send 31 02 02 95
