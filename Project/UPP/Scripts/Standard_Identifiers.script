@@ -1,4 +1,3 @@
-#linedelay 500
 tester on
 send 10 03
 #linedelay 600
@@ -141,6 +140,7 @@ send 22 23FB
 
 #DTC Enable/Disable
 send 2E 249C 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+sleep 500
 send 22 249C
 
 
