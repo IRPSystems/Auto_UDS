@@ -9,12 +9,6 @@ send 10 03
 security 1
 sleep 500
 
-
-#DTC Enable/Disable
-send 2E 249C 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-sleep 500
-send 22 249C
-
 #Boot  Software  Identification F180
 send 22 F180
 #Application Software  Identification F181
@@ -144,6 +138,9 @@ send 22 23FB
 #send 22 249C
 
 
+#DTC Enable/Disable
+send 2E 249C 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+send 22 249C
 
 
 
