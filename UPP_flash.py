@@ -195,7 +195,7 @@ def flash_one_round(old_app: Path, old_boot: Path, new_app: Path, new_boot: Path
     step_start = time.time()
     run_flash(EXE, CHANNEL, BOOT_UPP, old_boot)
     print(f"   -> Done in {int(time.time() - step_start)} sec")
-    sleep_with_countdown(20, "Waiting after old boot")
+    sleep_with_countdown(30, "Waiting after old boot")
     #power_cycle_relay(off_time=10)
     #sleep_with_countdown(20, "Waiting after power cycle")
 
@@ -204,7 +204,7 @@ def flash_one_round(old_app: Path, old_boot: Path, new_app: Path, new_boot: Path
     step_start = time.time()
     run_flash(EXE, CHANNEL, FIRMWARE_UPP, new_app)
     print(f"   -> Done in {int(time.time() - step_start)} sec")
-    sleep_with_countdown(60, "Waiting after new firmware")
+    sleep_with_countdown(90, "Waiting after new firmware")
     #power_cycle_relay(off_time=10)
     # sleep_with_countdown(10, "Waiting after power cycle")
     #
@@ -213,7 +213,7 @@ def flash_one_round(old_app: Path, old_boot: Path, new_app: Path, new_boot: Path
     step_start = time.time()
     run_flash(EXE, CHANNEL, BOOT_UPP, new_boot)
     print(f"   -> Done in {int(time.time() - step_start)} sec")
-    sleep_with_countdown(20, "Waiting after new boot")
+    sleep_with_countdown(30, "Waiting after new boot")
     ####power_cycle_relay(off_time=10)
     #sleep_with_countdown(20, "Waiting after power cycle")
 
