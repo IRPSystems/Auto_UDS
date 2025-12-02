@@ -256,16 +256,18 @@ def copying_files(version_str: str):
     # external_root = Path(r"Z:\V&V\Software_flashing_UPP")
     # dest_dir = external_root / "Flashing logs" / ("0" + version_str)
 
-    # NEW: write directly to the UNC share
-    external_root = Path(
-        r"\\192.168.10.100\Users Temp Files\V&V\Software_flashing_UPP\Flashing logs"
-    )
-    dest_dir = external_root / ("0" + version_str)
+    # external_root = Path(r"Z:\V&V\UDS_Result")
+    external_root = Path(r"Z:\V&V\Software_flashing_UPP\Flashing logs")
+    final_root = external_root / "UPP" / ("0" + version_str)
+    print(final_root)
+    dest_dir = final_root / "Flashing logs"
 
-    print(dest_dir)
-
+    # print(f"\n📁 Copying logs to external disk: {dest_dir}")
+    # dest_dir.mkdir(parents=True, exist_ok=True)
     try:
-        dest_dir.mkdir(parents=True, exist_ok=True)
+        final_root.mkdir(parents=True, exist_ok=True)
+        dest_dir.mkdir(parents=True, exist_ok=True)  # 👈 THIS LINE IS THE KEY
+        print("  ✅ Created/verified:", final_root)
         print("  ✅ Created/verified:", dest_dir)
     except Exception as e:
         print("  ❌ mkdir failed:", type(e).__name__, e)
