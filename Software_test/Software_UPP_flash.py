@@ -66,25 +66,38 @@ def pick_latest_file(candidates: List[Path]) -> Path:
     return max(candidates, key=lambda p: p.stat().st_mtime)
 
 def find_merged_files(version_dir: Path) -> Tuple[Path, Path]:
-
+    """
+    Look for merged app/boot hex files either in:
+      1) 'FW Merged' subfolder (preferred), or
+      2) directly in the version folder.
+    """
     merged_dir = version_dir / "FW Merged"
-    require_exists(merged_dir, f"'FW Merged' directory for {version_dir.name}")
 
-    app_candidates = list(merged_dir.glob("*Merge_App_*UPP_v*.hex"))
-    boot_candidates = list(merged_dir.glob("*Merge_Boot_*UPP_v*.hex"))
+    if merged_dir.is_dir():
+        search_dir = merged_dir
+        print(f"[INFO] Using 'FW Merged' directory for {version_dir.name}: {merged_dir}")
+    else:
+        search_dir = version_dir
+        print(f"[WARN] 'FW Merged' not found for {version_dir.name}, searching in version folder itself: {search_dir}")
+
+    # App: *Merge_App_*UPP_v*.hex
+    app_candidates = list(search_dir.glob("*Merge_App_*UPP_v*.hex"))
+    # Boot: *Merge_Boot_*UPP_v*.hex
+    boot_candidates = list(search_dir.glob("*Merge_Boot_*UPP_v*.hex"))
+
+    if not app_candidates:
+        raise FileNotFoundError(
+            f"No application hex files matching *Merge_App_*UPP_v*.hex found in {search_dir}"
+        )
+    if not boot_candidates:
+        raise FileNotFoundError(
+            f"No bootloader hex files matching *Merge_Boot_*UPP_v*.hex found in {search_dir}"
+        )
 
     app_hex = pick_latest_file(app_candidates)
     boot_hex = pick_latest_file(boot_candidates)
     return app_hex, boot_hex
 
-def list_xmls_in_target():
-    xmls = list(TARGET_DIR.glob("*.xml"))
-    if not xmls:
-        print(f"[WARN] No XML files found in {TARGET_DIR}")
-    else:
-        print("[INFO] XML files visible to tool:")
-        for x in xmls:
-            print("   -", x.name)
 
 def run_flash(exe: Path, channel: str, target: str, file_path: Path) -> None:
     def require_exists(path: Path, desc: str) -> None:
@@ -258,7 +271,7 @@ def copying_files(version_str: str):
 
     # external_root = Path(r"Z:\V&V\UDS_Result")
     external_root = Path(r"Z:\V&V\Software_flashing_UPP\Flashing logs")
-    final_root = external_root / ("UPP_" + version_str)
+    final_root = external_root / ("UPP_v" + version_str)
     print(final_root)
     dest_dir = final_root
 
