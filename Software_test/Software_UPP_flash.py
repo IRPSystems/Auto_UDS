@@ -66,59 +66,79 @@ def pick_latest_file(candidates: List[Path]) -> Path:
     return max(candidates, key=lambda p: p.stat().st_mtime)
 
 def find_merged_files(version_dir: Path) -> Tuple[Path, Path]:
+    """
+    Look for merged app/boot hex files in:
+      1) 'FW Merged' subfolder (preferred), then
+      2) the version folder itself as fallback.
+
+    It first tries strict patterns:
+        *Merge_App_*UPP_v*.hex
+        *Merge_Boot_*UPP_v*.hex
+    If that fails for a folder, it falls back to a looser '*.hex' scan and splits by 'app'/'boot'.
+    If a folder yields nothing, we move on to the next candidate folder.
+    """
+    candidates_dirs = []
 
     merged_dir = version_dir / "FW Merged"
-
     if merged_dir.is_dir():
-        search_dir = merged_dir
-        print(f"[INFO] Using 'FW Merged' directory for {version_dir.name}: {merged_dir}")
-    else:
-        search_dir = version_dir
-        print(f"[WARN] 'FW Merged' not found for {version_dir.name}, searching in version folder itself: {search_dir}")
+        candidates_dirs.append(merged_dir)
+        print(f"[INFO] 'FW Merged' directory exists for {version_dir.name}: {merged_dir}")
 
-    # --- Debug: show available .hex files in this directory ---
-    all_hex = list(search_dir.glob("*.hex"))
-    if all_hex:
-        print(f"[INFO] Found {len(all_hex)} .hex file(s) in {search_dir}:")
-        for p in all_hex:
-            print(f"       - {p.name}")
-    else:
-        print(f"[WARN] No .hex files at all in {search_dir}")
+    # Always fall back to the version root as a second candidate
+    candidates_dirs.append(version_dir)
+    print(f"[INFO] Will also consider version root directory: {version_dir}")
 
-    # --- 1st attempt: strict patterns (your original intention) ---
-    strict_app = list(search_dir.glob("*Merge_App_*UPP_v*.hex"))
-    strict_boot = list(search_dir.glob("*Merge_Boot_*UPP_v*.hex"))
+    selected_app = None
+    selected_boot = None
+    used_dir = None
 
-    if strict_app and strict_boot:
-        app_candidates = strict_app
-        boot_candidates = strict_boot
-        print("[INFO] Using strict patterns *Merge_App_*UPP_v*.hex and *Merge_Boot_*UPP_v*.hex")
-    else:
-        # --- 2nd attempt: looser matching on all_hex ---
-        print("[WARN] Strict patterns found nothing for App or Boot; falling back to loose matching...")
-        app_candidates = [p for p in all_hex if re.search(r"app", p.name, re.IGNORECASE)]
-        boot_candidates = [p for p in all_hex if re.search(r"boot", p.name, re.IGNORECASE)]
+    for search_dir in candidates_dirs:
+        print(f"[INFO] Scanning for hex files in: {search_dir}")
 
-    if not app_candidates:
+        all_hex = list(search_dir.glob("*.hex"))
+        if all_hex:
+            print(f"[INFO] Found {len(all_hex)} .hex file(s) in {search_dir}:")
+            for p in all_hex:
+                print(f"       - {p.name}")
+        else:
+            print(f"[WARN] No .hex files at all in {search_dir}, trying next location (if any)...")
+            continue  # go to next search_dir
+
+        # --- 1st attempt: strict patterns (original intention) ---
+        strict_app = list(search_dir.glob("*Merge_App_*UPP_v*.hex"))
+        strict_boot = list(search_dir.glob("*Merge_Boot_*UPP_v*.hex"))
+
+        if strict_app and strict_boot:
+            app_candidates = strict_app
+            boot_candidates = strict_boot
+            print("[INFO] Using strict patterns *Merge_App_*UPP_v*.hex and *Merge_Boot_*UPP_v*.hex")
+        else:
+            # --- 2nd attempt: looser matching on all_hex ---
+            print("[WARN] Strict patterns found nothing for App or Boot; falling back to loose matching...")
+            app_candidates = [p for p in all_hex if re.search(r"app", p.name, re.IGNORECASE)]
+            boot_candidates = [p for p in all_hex if re.search(r"boot", p.name, re.IGNORECASE)]
+
+        if not app_candidates or not boot_candidates:
+            print(f"[WARN] Could not find both App and Boot hex in {search_dir}, trying next location...")
+            continue  # try next candidate directory
+
+        # If we get here, this directory has both app + boot candidates
+        selected_app = pick_latest_file(app_candidates)
+        selected_boot = pick_latest_file(boot_candidates)
+        used_dir = search_dir
+        break  # stop scanning other dirs
+
+    if selected_app is None or selected_boot is None:
+        # None of the candidate dirs produced both App and Boot
         raise FileNotFoundError(
-            f"No application hex files found in {search_dir} "
-            f"(tried strict *Merge_App_*UPP_v*.hex and loose '*app*')."
-        )
-    if not boot_candidates:
-        raise FileNotFoundError(
-            f"No bootloader hex files found in {search_dir} "
-            f"(tried strict *Merge_Boot_*UPP_v*.hex and loose '*boot*')."
+            f"No suitable App/Boot hex files found in any of: "
+            f"{', '.join(str(d) for d in candidates_dirs)}"
         )
 
-    app_hex = pick_latest_file(app_candidates)
-    boot_hex = pick_latest_file(boot_candidates)
+    print(f"[INFO] Selected App hex from {used_dir} : {selected_app.name}")
+    print(f"[INFO] Selected Boot hex from {used_dir}: {selected_boot.name}")
 
-    print(f"[INFO] Selected App hex : {app_hex.name}")
-    print(f"[INFO] Selected Boot hex: {boot_hex.name}")
-
-    return app_hex, boot_hex
-
-
+    return selected_app, selected_boot
 
 def run_flash(exe: Path, channel: str, target: str, file_path: Path) -> None:
     def require_exists(path: Path, desc: str) -> None:
