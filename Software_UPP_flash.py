@@ -189,33 +189,33 @@ def flash_one_round(old_app: Path, old_boot: Path, new_app: Path, new_boot: Path
     # power_cycle_relay(off_time=20)
     # sleep_with_countdown(30, "Waiting after power cycle")
 
-
-    # 2) old boot
-    print("\n[STEP 2] Flashing OLD bootloader...")
-    step_start = time.time()
-    run_flash(EXE, CHANNEL, BOOT_UPP, old_boot)
-    print(f"   -> Done in {int(time.time() - step_start)} sec")
-    sleep_with_countdown(30, "Waiting after old boot")
-    #power_cycle_relay(off_time=10)
-    #sleep_with_countdown(20, "Waiting after power cycle")
-
-    # # 3) new firmware
-    print("\n[STEP 3] Flashing NEW firmware...")
-    step_start = time.time()
-    run_flash(EXE, CHANNEL, FIRMWARE_UPP, new_app)
-    print(f"   -> Done in {int(time.time() - step_start)} sec")
-    sleep_with_countdown(90, "Waiting after new firmware")
-    #power_cycle_relay(off_time=10)
-    # sleep_with_countdown(10, "Waiting after power cycle")
     #
-    # # # 4) new boot
-    print("\n[STEP 4] Flashing NEW bootloader...")
-    step_start = time.time()
-    run_flash(EXE, CHANNEL, BOOT_UPP, new_boot)
-    print(f"   -> Done in {int(time.time() - step_start)} sec")
-    sleep_with_countdown(30, "Waiting after new boot")
-    ####power_cycle_relay(off_time=10)
-    #sleep_with_countdown(20, "Waiting after power cycle")
+    # # 2) old boot
+    # print("\n[STEP 2] Flashing OLD bootloader...")
+    # step_start = time.time()
+    # run_flash(EXE, CHANNEL, BOOT_UPP, old_boot)
+    # print(f"   -> Done in {int(time.time() - step_start)} sec")
+    # sleep_with_countdown(30, "Waiting after old boot")
+    # #power_cycle_relay(off_time=10)
+    # #sleep_with_countdown(20, "Waiting after power cycle")
+    #
+    # # # 3) new firmware
+    # print("\n[STEP 3] Flashing NEW firmware...")
+    # step_start = time.time()
+    # run_flash(EXE, CHANNEL, FIRMWARE_UPP, new_app)
+    # print(f"   -> Done in {int(time.time() - step_start)} sec")
+    # sleep_with_countdown(90, "Waiting after new firmware")
+    # #power_cycle_relay(off_time=10)
+    # # sleep_with_countdown(10, "Waiting after power cycle")
+    # #
+    # # # # 4) new boot
+    # print("\n[STEP 4] Flashing NEW bootloader...")
+    # step_start = time.time()
+    # run_flash(EXE, CHANNEL, BOOT_UPP, new_boot)
+    # print(f"   -> Done in {int(time.time() - step_start)} sec")
+    # sleep_with_countdown(30, "Waiting after new boot")
+    # ####power_cycle_relay(off_time=10)
+    # #sleep_with_countdown(20, "Waiting after power cycle")
 
     print(f"\n✅ Round completed in {int(time.time() - round_start)} sec\n")
 
@@ -253,7 +253,7 @@ def copying_files(version_str: str):
         return
 
     #external_root = Path(r"Z:\V&V\UDS_Result")
-    external_root = Path(r"Z:\V&V\Software_flashing_UPP\Client_logs")
+    external_root = Path(r"Z:\V&V\Software_flashing_UPP")
     final_root = external_root / "UPP" / ("0" + version_str)
     print(final_root)
     dest_dir = final_root / "Flashing logs"
