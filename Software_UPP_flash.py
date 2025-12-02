@@ -179,25 +179,25 @@ def flash_one_round(old_app: Path, old_boot: Path, new_app: Path, new_boot: Path
     print(f"\n=== FLASH ROUND {round_label} ===")
 
     round_start = time.time()
-
-    # 1) old firmware
-    print("\n[STEP 1] Flashing OLD firmware...")
-    step_start = time.time()
-    run_flash(EXE, CHANNEL, FIRMWARE_UPP, old_app)
-    print(f"   -> Done in {int(time.time() - step_start)} sec")
-    sleep_with_countdown(60, "Waiting after old firmware")
-    # power_cycle_relay(off_time=20)
-    # sleep_with_countdown(30, "Waiting after power cycle")
+    #
+    # # 1) old firmware
+    # print("\n[STEP 1] Flashing OLD firmware...")
+    # step_start = time.time()
+    # run_flash(EXE, CHANNEL, FIRMWARE_UPP, old_app)
+    # print(f"   -> Done in {int(time.time() - step_start)} sec")
+    # sleep_with_countdown(60, "Waiting after old firmware")
+    # # power_cycle_relay(off_time=20)
+    # # sleep_with_countdown(30, "Waiting after power cycle")
 
     #
-    # # 2) old boot
-    # print("\n[STEP 2] Flashing OLD bootloader...")
-    # step_start = time.time()
-    # run_flash(EXE, CHANNEL, BOOT_UPP, old_boot)
-    # print(f"   -> Done in {int(time.time() - step_start)} sec")
-    # sleep_with_countdown(30, "Waiting after old boot")
-    # #power_cycle_relay(off_time=10)
-    # #sleep_with_countdown(20, "Waiting after power cycle")
+    # 2) old boot
+    print("\n[STEP 2] Flashing OLD bootloader...")
+    step_start = time.time()
+    run_flash(EXE, CHANNEL, BOOT_UPP, old_boot)
+    print(f"   -> Done in {int(time.time() - step_start)} sec")
+    sleep_with_countdown(20, "Waiting after old boot")
+    #power_cycle_relay(off_time=10)
+    #sleep_with_countdown(20, "Waiting after power cycle")
     #
     # # # 3) new firmware
     # print("\n[STEP 3] Flashing NEW firmware...")
@@ -261,9 +261,7 @@ def copying_files(version_str: str):
     # print(f"\n📁 Copying logs to external disk: {dest_dir}")
     # dest_dir.mkdir(parents=True, exist_ok=True)
     try:
-        final_root.mkdir(parents=True, exist_ok=True)
         dest_dir.mkdir(parents=True, exist_ok=True)  # 👈 THIS LINE IS THE KEY
-        print("  ✅ Created/verified:", final_root)
         print("  ✅ Created/verified:", dest_dir)
     except Exception as e:
         print("  ❌ mkdir failed:", type(e).__name__, e)
