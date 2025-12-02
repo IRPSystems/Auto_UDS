@@ -1,0 +1,353 @@
+pipeline {
+  agent { label 'master' }
+
+  options { ansiColor('xterm') }
+    string(
+      name: 'FLASH_LOOPS',
+      defaultValue: '1',
+      trim: true,
+      description:  '''How many flash cycles to run.
+Each cycle performs 4 steps on the target device:
+1) Flash OLD Application
+2) Flash OLD Boot
+3) Flash NEW Application
+4) Flash NEW Boot
+
+"OLD" files come from the Previous version folder; "NEW" files come from the Latest version folder.
+The pipeline stops on first failure and prints a flash summary at the end.'''
+
+
+  environment {
+    LANG = 'en_US.UTF-8'
+    LC_ALL = 'en_US.UTF-8'
+    RCLONE_BASE      = 'Z:\V&V\Software_flashing_UPP\Versions_for_testing'
+    DEST_FOLDER      = "${env.HOME}/workspace/NewVersion"
+    REMOTE_TARGET    = 'C:\\Jenkins\\NewVersion'
+    WORKSPACE_TARGET = "C:/Jenkins/workspace"
+    REMOTE_USER      = 'dyno'
+    REQUIREMENTS     = 'requirements.txt'
+  }
+
+  stages {
+
+    stage('Environment') {
+      steps {
+        script {
+          switch (params.DEVICE) {
+            case 'UPP':
+              env.REMOTE_IP    = '192.168.10.31'
+              env.REMOTE_USER  = 'dyno'
+              env.MAIN_VER_DIR = 'HD_Gen2/upp'
+              env.REQUIREMENTS = 'requirements.txt'
+              env.FW_SUBDIR      = 'FW Merged'
+			  env.FLASH_SCRIPT    = 'Software_UPP_flash.py'
+			  env.UDS_SCRIPT      = 'update_copy_and_run_upp.py'
+			  env.HEX_FILTER_APP  = '*Merge_App_*UPP_v*.hex'
+			  env.HEX_FILTER_BOOT = '*Merge_Boot_*UPP_v*.hex'
+              break
+            default:
+              error "DEVICE not set or unrecognized. Set DEVICE to 'UPP' or 'NewGen'."
+          }
+          echo "Using remote ${env.REMOTE_USER}@${env.REMOTE_IP}, firmware dir: ${env.MAIN_VER_DIR}"
+		  echo "Selected flash script: ${env.FLASH_SCRIPT}"
+          echo "Selected UDS script: ${env.UDS_SCRIPT}"
+           currentBuild.displayName = "#${env.BUILD_NUMBER} ${params.DEVICE}"
+          currentBuild.description = "DEVICE=${params.DEVICE}"
+        }
+      }
+    }
+
+   stage('Clone Project on Remote Windows') {
+  steps {
+    sh """
+      echo " Running remote clone + setup (PowerShell via stdin)..."
+      ssh ${REMOTE_USER}@${REMOTE_IP} powershell -NoProfile -Command - <<'PS'
+${'$'}ErrorActionPreference = 'Stop'
+
+if (-not (Test-Path 'C:\\Jenkins\\workspace')) {
+  New-Item -ItemType Directory -Path 'C:\\Jenkins\\workspace' -Force | Out-Null
+}
+
+if (-not (Test-Path 'C:\\Jenkins\\workspace\\Auto_UDS')) {
+  git clone https://github.com/IRPSystems/Auto_UDS.git 'C:\\Jenkins\\workspace\\Auto_UDS'
+} else {
+  Set-Location 'C:\\Jenkins\\workspace\\Auto_UDS'
+  git pull
+}
+
+Set-Location 'C:\\Jenkins\\workspace\\Auto_UDS'
+
+# Create venv (consistent name)
+if (Test-Path '.venv') { Remove-Item -Recurse -Force '.venv' }
+python -m venv .venv
+
+Write-Host " [INFO] Installing requirements into .venv ..."
+& '.venv\\Scripts\\python.exe' -m pip install --upgrade pip
+if (${ '$'}LASTEXITCODE -ne 0) {
+  Write-Host "[FAIL] pip upgrade failed with code ${'$'}LASTEXITCODE"
+  exit ${'$'}LASTEXITCODE
+}
+
+& '.venv\\Scripts\\pip.exe' install -r 'requirements.txt'
+if (${ '$'}LASTEXITCODE -ne 0) {
+  Write-Host "[FAIL] pip install -r requirements.txt failed with code ${'$'}LASTEXITCODE"
+  exit ${'$'}LASTEXITCODE }
+
+# Sanity check: prove openpyxl is importable in THIS venv
+Write-Host " [INFO] Verifying openpyxl in .venv ..."
+& '.venv\\Scripts\\python.exe' -c "import openpyxl, sys; print('openpyxl OK from', openpyxl.__file__)"
+if (${ '$'}LASTEXITCODE -ne 0) {
+  Write-Host "[FAIL] openpyxl import test failed in .venv"
+  exit ${'$'}LASTEXITCODE
+}
+
+Write-Host " [OK] Virtualenv + requirements setup completed."
+PS
+    """
+  }
+}
+    stage('Find Latest Firmware Folder') {
+      when { expression { return params.DO_FLASH } }
+      steps {
+        script {
+          def latestFolder = sh(
+            script: """
+              rclone lsd "${RCLONE_BASE}/${MAIN_VER_DIR}" | sort -k2,3 | tail -n1 | awk '{\$1=\$2=\$3=\$4=""; print \$0}' | sed 's/^ *//'
+            """,
+            returnStdout: true
+          ).trim()
+
+          def previousFolder = sh(
+            script: """
+              rclone lsd "${RCLONE_BASE}/${MAIN_VER_DIR}" | sort -k2,3 | tail -n2 | head -n1 | awk '{\$1=\$2=\$3=\$4=""; print \$0}' | sed 's/^ *//'
+            """,
+            returnStdout: true
+          ).trim()
+
+          if (!latestFolder) {
+            error "[FAIL] Could not find the latest folder in ${RCLONE_BASE}/${MAIN_VER_DIR}"
+          }
+          if (!previousFolder) {
+            error "[FAIL] Could not find the previous folder in ${RCLONE_BASE}/${MAIN_VER_DIR} (need at least two releases)"
+          }
+
+          echo " [OK] Latest firmware folder: ${latestFolder}"
+          env.LATEST_FOLDER = latestFolder
+          echo " [OK] Previous firmware folder: ${previousFolder}"
+          env.PREVIOUS_FOLDER = previousFolder
+        }
+      }
+    }
+
+    stage('Copy Previous/Latest Firmware') {
+      when { expression { return params.DO_FLASH } }
+      steps {
+        sh """
+          echo " Cleaning destination folder: ${DEST_FOLDER}"
+          rm -rf "${DEST_FOLDER}"
+          mkdir -p "${DEST_FOLDER}"
+
+          echo " Copying from: ${RCLONE_BASE}/${MAIN_VER_DIR}/${LATEST_FOLDER}/"
+          rclone copy "${RCLONE_BASE}/${MAIN_VER_DIR}/${LATEST_FOLDER}/" "${DEST_FOLDER}/${LATEST_FOLDER}"
+
+          echo " Copying from: ${RCLONE_BASE}/${MAIN_VER_DIR}/${PREVIOUS_FOLDER}/"
+          rclone copy "${RCLONE_BASE}/${MAIN_VER_DIR}/${PREVIOUS_FOLDER}/" "${DEST_FOLDER}/${PREVIOUS_FOLDER}"
+        """
+
+        sh """
+          echo " Deleting and recreating remote NewVersion folder on ${REMOTE_USER}@${REMOTE_IP}..."
+          ssh ${REMOTE_USER}@${REMOTE_IP} powershell -NoProfile -Command - <<'PS'
+\$root = 'C:\\Jenkins\\NewVersion'
+Write-Host " Target:" \$root
+
+# Ensure parent exists
+\$parent = Split-Path -Parent \$root
+if (-not (Test-Path \$parent)) { New-Item -ItemType Directory -Path \$parent -Force | Out-Null }
+
+# Create root if missing
+if (-not (Test-Path \$root)) { New-Item -ItemType Directory -Path \$root -Force | Out-Null }
+
+# Mirror an EMPTY temp folder to root (reliably empties deep trees)
+\$temp = Join-Path \$env:TEMP ([guid]::NewGuid().ToString())
+New-Item -ItemType Directory -Path \$temp -Force | Out-Null
+robocopy \$temp \$root /MIR /NFL /NDL /NJH /NJS /NP | Out-Null
+\$rc = \$LASTEXITCODE
+Remove-Item -Recurse -Force \$temp -ErrorAction SilentlyContinue
+
+# Fallback if robocopy indicates failure (>7)
+if (\$rc -gt 7) {
+  Write-Host "Robocopy exit code \$rc; attempting PowerShell fallback..."
+  Get-ChildItem -LiteralPath \$root -Force | Remove-Item -Recurse -Force -ErrorAction Continue
+}
+
+# (Re)create the root
+if (-not (Test-Path \$root)) { New-Item -ItemType Directory -Path \$root -Force | Out-Null }
+
+# Verify empty; fail if not
+\$items = Get-ChildItem -LiteralPath \$root -Force
+if (\$items.Count -gt 0) {
+  Write-Host '[FAIL] Folder not empty after cleanup:'
+  \$items | Select-Object Name,Mode,Length | Format-Table -AutoSize
+  exit 1
+} else {
+  Write-Host ' [OK] Folder is empty.'
+}
+PS
+        """
+
+        sh """
+          echo " Sending files to remote host"
+          scp -r "${DEST_FOLDER}/${LATEST_FOLDER}"   ${REMOTE_USER}@${REMOTE_IP}:"C:/Jenkins/NewVersion"
+          scp -r "${DEST_FOLDER}/${PREVIOUS_FOLDER}" ${REMOTE_USER}@${REMOTE_IP}:"C:/Jenkins/NewVersion"
+          ssh ${REMOTE_USER}@${REMOTE_IP} "cmd /c dir C:\\Jenkins\\NewVersion"
+          echo " Firmware files copied successfully to: ${REMOTE_TARGET} on ${REMOTE_IP}"
+        """
+      }
+    }
+
+    stage('Flash Loops') {
+      when { expression { return params.DO_FLASH } }
+      steps {
+        script {
+          // normalize FLASH_LOOPS
+          def raw = (params.FLASH_LOOPS ?: '1').toString().trim()
+          def n = (raw ==~ /^[0-9]+$/) ? raw.toInteger() : 1
+          if (n < 1) n = 1
+          def MAX_LOOPS = 1000
+          if (n > MAX_LOOPS) { echo "FLASH_LOOPS (${n}) exceeds safety ceiling (${MAX_LOOPS}); clamping."; n = MAX_LOOPS }
+          echo "Normalized FLASH_LOOPS: ${n}"
+          env.FLASH_LOOPS_NORM = n.toString()
+
+          for (int i = 1; i <= n; i++) {
+            echo "Starting flash round ${i} of ${n}"
+            sh """
+  ssh ${env.REMOTE_USER}@${env.REMOTE_IP} powershell -NoProfile -Command - <<'PS'
+chcp 65001 | Out-Null
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+\$env:PYTHONIOENCODING = 'utf-8'
+\$env:PYTHONUTF8 = '1'
+\$env:ROUND_INDEX = '${i}/${n}'
+
+\$prevFolder   = "${env.PREVIOUS_FOLDER}"
+\$latestFolder = "${env.LATEST_FOLDER}"
+if ([string]::IsNullOrWhiteSpace(\$prevFolder) -or [string]::IsNullOrWhiteSpace(\$latestFolder)) {
+  Write-Host "[FAIL] PREVIOUS_FOLDER or LATEST_FOLDER is empty. Aborting."
+  exit 1
+}
+
+\$oldPath = "C:\\Jenkins\\NewVersion\\\$prevFolder"
+\$newPath = "C:\\Jenkins\\NewVersion\\\$latestFolder"
+Write-Host " Using --old=\$oldPath --new=\$newPath"
+
+Set-Location 'C:\\Jenkins\\workspace\\Auto_UDS'
+
+\$flashScript = '${env.FLASH_SCRIPT}'
+\$flashPath = "C:\\Jenkins\\workspace\\Auto_UDS\\\$flashScript"
+if (-Not (Test-Path \$flashPath)) {
+  Write-Host "[FAIL] Flash script not found: \$flashPath"
+  exit 1
+}
+
+Write-Host " Running \$flashScript (round ${i}/${n}) ..."
+& 'C:\\Jenkins\\workspace\\Auto_UDS\\.venv\\Scripts\\python.exe' -X utf8 -u \$flashPath `
+  --old "\$oldPath" `
+  --new "\$newPath"
+
+if (\$LASTEXITCODE -ne 0) {
+  Write-Host "[FAIL] Flash script failed with code \$LASTEXITCODE (round ${i}/${n})"
+  exit \$LASTEXITCODE
+} else {
+  Write-Host "[OK] Flash round ${i}/${n} completed successfully"
+}
+PS
+"""
+
+          }
+        }
+      }
+    }
+
+    stage('Flash Summary') {
+  steps {
+    script {
+      echo '----------------------------------------'
+      echo 'Collecting version details and generating summary...'
+      echo '----------------------------------------'
+
+      def result = sh(
+        script: """
+          ssh ${env.REMOTE_USER}@${env.REMOTE_IP} powershell -NoLogo -NoProfile -NonInteractive -Command - <<'PS'
+${'$'}ErrorActionPreference = 'Stop'
+${'$'}ProgressPreference = 'SilentlyContinue'
+
+${'$'}root = 'C:\\Jenkins\\NewVersion'
+${'$'}prev = '${env.PREVIOUS_FOLDER}'
+${'$'}latest = '${env.LATEST_FOLDER}'
+
+function Get-HexPair([string]${'$'}dirPath) {
+  ${'$'}subdir = '${env.FW_SUBDIR}'
+  ${'$'}merged = Join-Path ${'$'}dirPath ${'$'}subdir
+  if (-not (Test-Path -LiteralPath ${'$'}merged -PathType Container)) {
+    # fallback: search directly in the version folder
+    ${'$'}merged = ${'$'}dirPath
+  }
+
+  ${'$'}appFilter  = "${env.HEX_FILTER_APP}"
+  ${'$'}bootFilter = "${env.HEX_FILTER_BOOT}"
+
+  ${'$'}app  = Get-ChildItem -LiteralPath ${'$'}merged -Filter ${'$'}appFilter  -ErrorAction SilentlyContinue |
+           Sort-Object LastWriteTime -Descending | Select-Object -First 1
+  ${'$'}boot = Get-ChildItem -LiteralPath ${'$'}merged -Filter ${'$'}bootFilter -ErrorAction SilentlyContinue |
+           Sort-Object LastWriteTime -Descending | Select-Object -First 1
+
+  ${'$'}appName  = if (${'$'}app)  { ${'$'}app.Name }  else { 'NOT FOUND' }
+  ${'$'}bootName = if (${'$'}boot) { ${'$'}boot.Name } else { 'NOT FOUND' }
+  Write-Output "${'$'}appName|${'$'}bootName"
+}
+
+
+${'$'}prevPair = Get-HexPair (Join-Path ${'$'}root ${'$'}prev)
+${'$'}latestPair = Get-HexPair (Join-Path ${'$'}root ${'$'}latest)
+
+Write-Output "${'$'}prevPair|${'$'}latestPair"
+PS
+        """,
+        returnStdout: true
+      ).trim()
+
+      def parts = result.split('\\|', -1)
+      if (parts.size() < 4) {
+        error "Could not parse flash metadata. Raw output: '${result}'"
+      }
+
+      def prevApp  = parts[0] == 'NOT FOUND' ? 'NOT FOUND' : parts[0]
+      def prevBoot = parts[1] == 'NOT FOUND' ? 'NOT FOUND' : parts[1]
+      def newApp   = parts[2] == 'NOT FOUND' ? 'NOT FOUND' : parts[2]
+      def newBoot  = parts[3] == 'NOT FOUND' ? 'NOT FOUND' : parts[3]
+
+      def loops = env.FLASH_LOOPS_NORM ?: '1'
+      def now = sh(script: "date -u +'%Y-%m-%d %H:%M:%S UTC'", returnStdout: true).trim()
+
+      def summary = """
+----------------------------------------
+FLASH SUMMARY REPORT
+----------------------------------------
+Device                : ${params.DEVICE}
+Flash loops completed : ${params.DO_FLASH ? loops : '0 (skipped)'}
+Timestamp             : ${now}
+Previous folder       : ${env.PREVIOUS_FOLDER}
+  → App  hex          : ${prevApp}
+  → Boot hex          : ${prevBoot}
+Latest folder         : ${env.LATEST_FOLDER}
+  → App  hex          : ${newApp}
+  → Boot hex          : ${newBoot}
+----------------------------------------
+""".stripIndent()
+
+      echo summary
+    }
+  }
+}
+
+  }
+}
