@@ -140,6 +140,8 @@ send 22 23FB
 
 #DTC Enable/Disable
 send 2E 249C 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+send 11 03
+sleep 2000
 send 22 249C
 
 
