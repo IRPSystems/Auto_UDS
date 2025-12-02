@@ -258,7 +258,7 @@ def copying_files(version_str: str):
 
     # external_root = Path(r"Z:\V&V\UDS_Result")
     external_root = Path(r"Z:\V&V\Software_flashing_UPP\Flashing logs")
-    final_root = external_root / "UPP" / ("0" + version_str)
+    final_root = external_root / ("0" + version_str)
     print(final_root)
     dest_dir = final_root / "Flashing logs"
 
